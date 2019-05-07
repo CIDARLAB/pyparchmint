@@ -1,9 +1,10 @@
 from .params import Params
 from .target import Target
 
+
 class Connection:
 
-    def __init__(self, json):
+    def __init__(self, json=None):
 
         self.name = None
         self.ID = None

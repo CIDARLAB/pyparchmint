@@ -1,8 +1,9 @@
 from .params import Params
 
+
 class Component:
 
-    def __init__(self, json):
+    def __init__(self, json=None):
         self.name = None
         self.ID = None
         self.params = dict()

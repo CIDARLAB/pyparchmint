@@ -7,7 +7,7 @@ from .params import Params
 
 class Device:
 
-    def __init__(self, json):
+    def __init__(self, json=None):
         self.name = ""
         self.components = []
         self.connections = []
