@@ -7,6 +7,11 @@ class Params:
         if json:
             self.parseFromJSON(json)
 
+    def getParam(self, key):
+        return self.data[key]
+
+    def exists(self, key):
+        return key in self.data.keys()
 
     def parseFromJSON(self, json):
 

@@ -2,6 +2,7 @@ import networkx as nx
 
 from .component import Component
 from .connection import Connection
+from .params import Params
 
 
 class Device:
@@ -13,7 +14,10 @@ class Device:
         self.layers = []
         self.params = dict()
         self.features = [] # Store Raw JSON Objects for now
+        self.xspan = None
+        self.yspan = None
         self.G = nx.MultiGraph()
+
         if json:
             self.parseFromJSON(json)
             self.generateNetwork()
@@ -36,7 +40,20 @@ class Device:
 
         for connection in json["connections"]:
             self.addConnection(Connection(connection))
-    
+
+        if "params" in json.keys():
+            self.params = Params(json["params"])
+
+            if self.params.exists("xspan"):
+                self.xspan = self.params.getParam("xspan")
+            elif self.params.exists("width"):
+                self.xspan = self.params.getParam("width")
+
+            if self.params.exists("yspan"):
+                self.yspan = self.params.getParam("yspan")
+            elif self.params.exists("length"):
+                self.yspan = self.params.getParam("length")
+            
     def getComponents(self):
         return self.components
     
