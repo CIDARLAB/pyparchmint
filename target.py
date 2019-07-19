@@ -16,3 +16,10 @@ class Target:
 
     def __repr__(self):
         return str(self.__dict__)
+
+    def toParchMintV1(self):
+        data = {}
+        data["component"] = self.component
+        data["port"] = self.port
+
+        return data

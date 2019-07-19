@@ -12,7 +12,7 @@ class Device:
         self.components = []
         self.connections = []
         self.layers = []
-        self.params = dict()
+        self.params = Params()
         self.features = [] # Store Raw JSON Objects for now
         self.xspan = None
         self.yspan = None
@@ -21,7 +21,6 @@ class Device:
         if json:
             self.parseFromJSON(json)
             self.generateNetwork()
-    
 
     def addComponent(self, component):
         if isinstance(component, Component):
@@ -80,3 +79,15 @@ class Device:
     
     def __repr__(self):
         return str(self.__dict__)
+
+    def toParchMintV1(self):
+        data = {}
+
+        data["name"] = self.name
+        data["components"] = [c.toParchMintV1() for c in self.components]
+        data["connections"] = [c.toParchMintV1() for c in self.connections]
+        data["params"] = self.params.toParchMintV1()
+        data["version"] = 1
+
+        return data
+

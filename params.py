@@ -23,3 +23,7 @@ class Params:
 
     def __repr__(self):
         return str(self.__dict__)
+
+    def toParchMintV1(self):
+        return self.data
+    
