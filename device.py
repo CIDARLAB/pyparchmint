@@ -1,3 +1,4 @@
+from pyparchmint.layer import Layer
 import networkx as nx
 
 from .component import Component
@@ -26,6 +27,10 @@ class Device:
     def addConnection(self, connection):
         if isinstance(connection, Connection):
             self.connections.append(connection)
+    
+    def addLayer(self, layer):
+        if isinstance(layer, Layer):
+            self.layers.append(layer)
 
     def parseFromJSON(self, json):
         self.name = json["name"]
@@ -36,6 +41,9 @@ class Device:
 
         for connection in json["connections"]:
             self.addConnection(Connection(connection))
+
+        for layer in json["layers"]:
+            self.addLayer(Layer(layer))
     
     def getComponents(self):
         return self.components
