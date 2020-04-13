@@ -2,7 +2,7 @@ from .params import Params
 
 class Component:
 
-    def __init__(self, json):
+    def __init__(self, json=None):
         self.name = None
         self.ID = None
         self.params = dict()
@@ -25,3 +25,9 @@ class Component:
 
     def __repr__(self):
         return str(self.__dict__)
+
+    def __eq__(self, obj):
+        if isinstance(obj, Component):
+            return obj.ID == self.ID
+        else:
+            return False

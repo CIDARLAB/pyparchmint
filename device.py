@@ -22,6 +22,10 @@ class Device:
 
     def addComponent(self, component):
         if isinstance(component, Component):
+            #Check if Component Exists, if it does ignore it
+            if self.doesComponentExist(component):
+                print("Component {} already present in device, hence skipping the component".format(component.name))
+            
             self.components.append(component)
 
     def addConnection(self, connection):
@@ -65,6 +69,9 @@ class Device:
         for component in self.components:
             if component.ID == id:
                 return component.name
+
+    def doesComponentExist(self, component):
+        return (component in self.components)
     
     def __str__(self):
         return str(self.__dict__)
