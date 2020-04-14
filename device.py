@@ -14,7 +14,7 @@ class Device:
         self.layers = []
         self.params = dict()
         self.features = [] # Store Raw JSON Objects for now
-        self.G = nx.MultiGraph()
+        self.G = nx.MultiDiGraph()
         if json:
             self.parseFromJSON(json)
             self.generateNetwork()
