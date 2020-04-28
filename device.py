@@ -74,6 +74,18 @@ class Device:
             if component.ID == id:
                 return component.name
     
+    def componentExists(self, componentid:str)->bool:
+        if componentid in self.components:
+            return True
+        else:
+            return False
+
+    def connectionExists(self, connectionid:str)->bool:
+        if connectionid in self.connections:
+            return True
+        else:
+            return False
+
     def __str__(self):
         return str(self.__dict__)
     
