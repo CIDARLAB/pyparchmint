@@ -1,3 +1,4 @@
+from pyparchmint.layer import Layer
 import networkx as nx
 
 from .component import Component
@@ -24,11 +25,19 @@ class Device:
 
     def addComponent(self, component):
         if isinstance(component, Component):
+            #Check if Component Exists, if it does ignore it
+            if self.doesComponentExist(component):
+                print("Component {} already present in device, hence skipping the component".format(component.name))
+            
             self.components.append(component)
 
     def addConnection(self, connection):
         if isinstance(connection, Connection):
             self.connections.append(connection)
+    
+    def addLayer(self, layer):
+        if isinstance(layer, Layer):
+            self.layers.append(layer)
 
     def parseFromJSON(self, json):
         self.name = json["name"]
@@ -53,6 +62,9 @@ class Device:
             elif self.params.exists("length"):
                 self.yspan = self.params.getParam("length")
             
+        for layer in json["layers"]:
+            self.addLayer(Layer(layer))
+    
     def getComponents(self):
         return self.components
     
@@ -73,6 +85,9 @@ class Device:
         for component in self.components:
             if component.ID == id:
                 return component.name
+
+    def doesComponentExist(self, component):
+        return (component in self.components)
     
     def componentExists(self, componentid:str)->bool:
         if componentid in self.components:

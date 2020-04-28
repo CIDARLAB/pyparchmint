@@ -49,3 +49,8 @@ class Component:
         data["entity"] = self.entity
 
         return data
+    def __eq__(self, obj):
+        if isinstance(obj, Component):
+            return obj.ID == self.ID
+        else:
+            return False
