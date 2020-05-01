@@ -90,16 +90,30 @@ class Device:
         return (component in self.components)
     
     def componentExists(self, componentid:str)->bool:
-        if componentid in self.components:
-            return True
-        else:
-            return False
+        for component in self.components:
+            if componentid == component.ID:
+                return component
+        
+        return False
 
     def connectionExists(self, connectionid:str)->bool:
-        if connectionid in self.connections:
-            return True
-        else:
-            return False
+        for connection in self.connections:
+            if connectionid == self.connections:
+                return connection
+        
+        return False
+
+    def getComponent(self, id:str) -> Component:
+        if self.componentExists(id):
+            for component in self.components:
+                if component.ID == id:
+                    return component
+
+    def getConnection(self, id:str) -> Connection:
+        if self.connectionExists(id):
+            for connection in self.connections:
+                if connection.ID == id:
+                    return connection
 
     def __str__(self):
         return str(self.__dict__)
