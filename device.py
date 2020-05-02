@@ -1,6 +1,6 @@
 from pyparchmint.layer import Layer
 import networkx as nx
-
+from typing import Optional
 from .component import Component
 from .connection import Connection
 from .params import Params
@@ -103,13 +103,13 @@ class Device:
         
         return False
 
-    def getComponent(self, id:str) -> Component:
+    def getComponent(self, id:str) -> Optional[Component]:
         if self.componentExists(id):
             for component in self.components:
                 if component.ID == id:
                     return component
 
-    def getConnection(self, id:str) -> Connection:
+    def getConnection(self, id:str) -> Optional[Connection]:
         if self.connectionExists(id):
             for connection in self.connections:
                 if connection.ID == id:
