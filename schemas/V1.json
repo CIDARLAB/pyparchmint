@@ -44,7 +44,7 @@
                 "type": "string"
               },
               "port": {
-                "type": "string, null"
+                "type": ["null", "string"]
               }
             },
             "required": [
@@ -61,7 +61,7 @@
                   "type": "string"
                 },
                 "port": {
-                  "type": "string, null"
+                  "type": ["string", "null"]
                 }
               },
               "required": [
@@ -98,10 +98,10 @@
             }
           },
           "x-span": {
-            "type": "integer"
+            "type": ["integer", "null"]
           },
           "y-span": {
-            "type": "integer"
+            "type": ["integer", "null"]
           },
           "entity": {
             "type": "string"
