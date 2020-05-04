@@ -12,7 +12,8 @@ class Component:
         self.ypos = None
         self.xspan = None
         self.yspan = None
-        self.ports = [] 
+        self.ports = []
+        self.layers = []
 
         if json:
             self.parseFromJSON(json)

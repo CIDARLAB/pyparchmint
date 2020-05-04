@@ -7,9 +7,11 @@ class Connection:
 
         self.name = None
         self.ID = None
+        self.entity = None
         self.params = Params()
         self.source = None
         self.sinks = []
+        self.layer = None
 
         if json:
             self.parseFromJSON(json)
