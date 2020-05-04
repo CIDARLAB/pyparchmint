@@ -10,6 +10,9 @@ class Params:
     def getParam(self, key):
         return self.data[key]
 
+    def setParam(self, key:str, value):
+        self.data[key] = value
+
     def exists(self, key):
         return key in self.data.keys()
 
