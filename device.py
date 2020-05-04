@@ -129,6 +129,7 @@ class Device:
         data["connections"] = [c.toParchMintV1() for c in self.connections]
         data["params"] = self.params.toParchMintV1()
         data["version"] = 1
+        data["layers"] = [layer.toParchMintV1() for layer in self.layers]
 
         return data
 

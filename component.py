@@ -1,13 +1,14 @@
+from typing import Optional
 from .params import Params
 from .port import Port
 
 class Component:
 
     def __init__(self, json=None):
-        self.name = None
-        self.ID = None
+        self.name: Optional[str] = None
+        self.ID: Optional[str] = None
         self.params = Params()
-        self.entity = None
+        self.entity: Optional[str] = None
         self.xpos = None
         self.ypos = None
         self.xspan = None
@@ -48,8 +49,11 @@ class Component:
         data["params"] = self.params.toParchMintV1()
         data["ports"] = [p.toParchMintV1() for p in self.ports]
         data["entity"] = self.entity
-
+        data["x-span"] = self.xspan
+        data["y-span"] = self.yspan
+        
         return data
+
     def __eq__(self, obj):
         if isinstance(obj, Component):
             return obj.ID == self.ID

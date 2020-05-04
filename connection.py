@@ -1,3 +1,4 @@
+from typing import Optional
 from .params import Params
 from .target import Target
 
@@ -11,7 +12,7 @@ class Connection:
         self.params = Params()
         self.source = None
         self.sinks = []
-        self.layer = None
+        self.layer:Optional[str] = None
 
         if json:
             self.parseFromJSON(json)
@@ -40,5 +41,6 @@ class Connection:
         data["id"] = self.ID
         data["source"] = self.source.toParchMintV1()
         data["params"] = self.params.toParchMintV1()
+        data["layer"] = self.layer
 
         return data
