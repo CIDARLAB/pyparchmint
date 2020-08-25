@@ -1,6 +1,6 @@
 from typing import Optional
-from .params import Params
-from .target import Target
+from pyparchmint.params import Params
+from pyparchmint.target import Target
 
 class Connection:
 

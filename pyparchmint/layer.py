@@ -1,5 +1,5 @@
 from typing import Optional
-from .params import Params
+from pyparchmint.params import Params
 
 class Layer:
 
