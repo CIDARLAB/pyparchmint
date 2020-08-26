@@ -1,6 +1,7 @@
 from typing import Optional
-from .params import Params
-from .target import Target
+from parchmint.params import Params
+from parchmint.target import Target
+
 
 class Connection:
 
@@ -12,12 +13,12 @@ class Connection:
         self.params = Params()
         self.source = None
         self.sinks = []
-        self.layer:Optional[str] = None
+        self.layer: Optional[str] = None
 
         if json:
-            self.parseFromJSON(json)
+            self.parse_from_json(json)
 
-    def parseFromJSON(self, json):
+    def parse_from_json(self, json):
         self.name = json["name"]
         self.ID = json["id"]
         self.params = Params(json["params"])
@@ -28,19 +29,17 @@ class Connection:
             self.sinks.append(Target(target))
 
     def __str__(self):
-            return str(self.__dict__)
+        return str(self.__dict__)
 
     def __repr__(self):
         return str(self.__dict__)
 
-    def toParchMintV1(self):
-        data = {}
-        
-        data["sinks"] = [s.toParchMintV1() for s in self.sinks]
-        data["name"] = self.name
-        data["id"] = self.ID
-        data["source"] = self.source.toParchMintV1()
-        data["params"] = self.params.toParchMintV1()
-        data["layer"] = self.layer
-
-        return data
+    def to_parchmint_v1(self):
+        return {
+            "sinks": [s.to_parchmint_v1() for s in self.sinks],
+            "name": self.name,
+            "id": self.ID,
+            "source": self.source.to_parchmint_v1(),
+            "params": self.params.to_parchmint_v1(),
+            "layer": self.layer,
+        }

@@ -1,6 +1,7 @@
 from typing import Optional
-from .params import Params
-from .port import Port
+from parchmint.params import Params
+from parchmint.port import Port
+
 
 class Component:
 
@@ -17,9 +18,9 @@ class Component:
         self.layers = []
 
         if json:
-            self.parseFromJSON(json)
+            self.parse_from_json(json)
 
-    def parseFromJSON(self, json):
+    def parse_from_json(self, json):
         self.name = json["name"]
         self.ID = json["id"]
         self.entity = json["entity"]
@@ -32,27 +33,26 @@ class Component:
             self.ports.append(Port(port))
 
         if self.params:
-            self.xpos = self.params.getParam("position")[0]
-            self.ypos = self.params.getParam("position")[1]
+            self.xpos = self.params.get_param("position")[0]
+            self.ypos = self.params.get_param("position")[1]
 
     def __str__(self):
-            return str(self.__dict__)
+        return str(self.__dict__)
 
     def __repr__(self):
         return str(self.__dict__)
 
-    def toParchMintV1(self):
-        data = {}
-        data["name"] = self.name
-        data["id"] = self.ID
-        data["layers"] = self.layers
-        data["params"] = self.params.toParchMintV1()
-        data["ports"] = [p.toParchMintV1() for p in self.ports]
-        data["entity"] = self.entity
-        data["x-span"] = self.xspan
-        data["y-span"] = self.yspan
-        
-        return data
+    def to_parchmint_v1(self):
+        return {
+            "name": self.name,
+            "id": self.ID,
+            "layers": self.layers,
+            "params": self.params.to_parchmint_v1(),
+            "ports": [p.to_parchmint_v1() for p in self.ports],
+            "entity": self.entity,
+            "x-span": self.xspan,
+            "y-span": self.yspan,
+        }
 
     def __eq__(self, obj):
         if isinstance(obj, Component):

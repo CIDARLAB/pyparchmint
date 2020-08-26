@@ -5,28 +5,27 @@ class Params:
         self.data = dict()
 
         if json:
-            self.parseFromJSON(json)
+            self.parse_from_json(json)
 
-    def getParam(self, key):
+    def get_param(self, key):
         return self.data[key]
 
-    def setParam(self, key:str, value):
+    def set_param(self, key: str, value):
         self.data[key] = value
 
     def exists(self, key):
         return key in self.data.keys()
 
-    def parseFromJSON(self, json):
+    def parse_from_json(self, json):
 
         for key, value in json.items():
             self.data[key] = value
 
     def __str__(self):
-            return str(self.__dict__)
+        return str(self.__dict__)
 
     def __repr__(self):
         return str(self.__dict__)
 
-    def toParchMintV1(self):
+    def to_parchmint_v1(self):
         return self.data
-    

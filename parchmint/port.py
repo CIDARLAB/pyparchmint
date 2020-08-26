@@ -7,9 +7,9 @@ class Port:
         self.layer = None
 
         if json:
-            self.parseFromJSON(json)
+            self.parse_from_json(json)
     
-    def parseFromJSON(self, json):
+    def parse_from_json(self, json):
         self.x = json["x"]
         self.y = json["y"]
         self.label = json["label"]
@@ -21,12 +21,10 @@ class Port:
     def __repr__(self):
         return str(self.__dict__)
 
-    def toParchMintV1(self):
-        data = {}
-
-        data["x"] = self.x
-        data["y"] = self.y
-        data["label"] = self.label
-        data["layer"] = self.layer
-        
-        return data
+    def to_parchmint_v1(self):
+        return {
+            "x": self.x,
+            "y": self.y,
+            "label": self.label,
+            "layer": self.layer,
+        }
