@@ -5,9 +5,9 @@ class Target:
         self.port = None
 
         if json:
-            self.parseFromJSON(json)
+            self.parse_from_json(json)
 
-    def parseFromJSON(self, json):
+    def parse_from_json(self, json):
         self.component = json["component"]
         self.port = json["port"]
 
@@ -17,9 +17,8 @@ class Target:
     def __repr__(self):
         return str(self.__dict__)
 
-    def toParchMintV1(self):
-        data = {}
-        data["component"] = self.component
-        data["port"] = self.port
-
-        return data
+    def to_parchmint_v1(self):
+        return {
+            "component": self.component,
+            "port": self.port,
+        }

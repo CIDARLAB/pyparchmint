@@ -14,122 +14,127 @@ class Device:
         self.connections = []
         self.layers = []
         self.params = Params()
-        self.features = [] # Store Raw JSON Objects for now
+        self.features = []  # Store Raw JSON Objects for now
         self.xspan = None
         self.yspan = None
         self.G = nx.MultiGraph()
 
         if json:
-            self.parseFromJSON(json)
-            self.generateNetwork()
+            self.parse_from_json(json)
+            self.generate_network()
 
-    def addComponent(self, component):
+    def add_component(self, component):
         if isinstance(component, Component):
-            #Check if Component Exists, if it does ignore it
-            if self.doesComponentExist(component):
-                print("Component {} already present in device, hence skipping the component".format(component.name))
-            
+            # Check if Component Exists, if it does ignore it
+            if self.does_component_exist(component):
+                print(
+                    "Component {} already present in device, "
+                    "hence skipping the component".format(component.name)
+                )
             self.components.append(component)
 
-    def addConnection(self, connection):
+    def add_connection(self, connection):
         if isinstance(connection, Connection):
             self.connections.append(connection)
-    
-    def addLayer(self, layer):
+
+    def add_layer(self, layer):
         if isinstance(layer, Layer):
             self.layers.append(layer)
 
-    def parseFromJSON(self, json):
+    def parse_from_json(self, json):
         self.name = json["name"]
 
-        #Loop through the components
+        # Loop through the components
         for component in json["components"]:
-            self.addComponent(Component(component))
+            self.add_component(Component(component))
 
         for connection in json["connections"]:
-            self.addConnection(Connection(connection))
+            self.add_connection(Connection(connection))
 
         if "params" in json.keys():
             self.params = Params(json["params"])
 
             if self.params.exists("xspan"):
-                self.xspan = self.params.getParam("xspan")
+                self.xspan = self.params.get_param("xspan")
             elif self.params.exists("width"):
-                self.xspan = self.params.getParam("width")
+                self.xspan = self.params.get_param("width")
 
             if self.params.exists("yspan"):
-                self.yspan = self.params.getParam("yspan")
+                self.yspan = self.params.get_param("yspan")
             elif self.params.exists("length"):
-                self.yspan = self.params.getParam("length")
-            
+                self.yspan = self.params.get_param("length")
+
         for layer in json["layers"]:
-            self.addLayer(Layer(layer))
-    
-    def getComponents(self):
+            self.add_layer(Layer(layer))
+
+    def get_components(self):
         return self.components
-    
-    def getConnections(self):
+
+    def get_connections(self):
         return self.connections
 
-    def generateNetwork(self):
+    def generate_network(self):
         for component in self.components:
-            self.G.add_node(component.ID)
-        
+            self.G.add_node(component.id)
+
         for connection in self.connections:
             sourceref = connection.source.component
             for sink in connection.sinks:
                 sinkref = sink.component
-                self.G.add_edge(sourceref, sinkref, source_port=connection.source, sink_port=sink)
+                self.G.add_edge(
+                    sourceref,
+                    sinkref,
+                    source_port=connection.source,
+                    sink_port=sink,
+                )
 
-    def getNameForID(self, id):
+    def get_name_from_id(self, id):
         for component in self.components:
-            if component.ID == id:
+            if component.id == id:
                 return component.name
 
-    def doesComponentExist(self, component):
-        return (component in self.components)
-    
-    def componentExists(self, componentid:str)->bool:
+    def does_component_exist(self, component):
+        return component in self.components
+
+    def component_exists(self, component_id: str) -> bool:
         for component in self.components:
-            if componentid == component.ID:
+            if component_id == component.id:
                 return component
-        
+
         return False
 
-    def connectionExists(self, connectionid:str)->bool:
+    def connection_exists(self, connection_id: str) -> bool:
         for connection in self.connections:
-            if connectionid == self.connections:
+            if connection_id == self.connections:
                 return connection
-        
+
         return False
 
-    def getComponent(self, id:str) -> Optional[Component]:
-        if self.componentExists(id):
+    def get_component(self, id: str) -> Optional[Component]:
+        if self.component_exists(id):
             for component in self.components:
-                if component.ID == id:
+                if component.id == id:
                     return component
 
-    def getConnection(self, id:str) -> Optional[Connection]:
-        if self.connectionExists(id):
+    def get_connection(self, id: str) -> Optional[Connection]:
+        if self.connection_exists(id):
             for connection in self.connections:
-                if connection.ID == id:
+                if connection.id == id:
                     return connection
 
     def __str__(self):
         return str(self.__dict__)
-    
+
     def __repr__(self):
         return str(self.__dict__)
 
-    def toParchMintV1(self):
-        data = {}
-
-        data["name"] = self.name
-        data["components"] = [c.toParchMintV1() for c in self.components]
-        data["connections"] = [c.toParchMintV1() for c in self.connections]
-        data["params"] = self.params.toParchMintV1()
-        data["version"] = 1
-        data["layers"] = [layer.toParchMintV1() for layer in self.layers]
-
-        return data
+    def to_parchmint_v1(self):
+        return {
+            "name": self.name,
+            "components": [c.to_parchmint_v1() for c in self.components],
+            "connections": [c.to_parchmint_v1() for c in self.connections],
+            "params": self.params.to_parchmint_v1(),
+            "version": 1,
+            "layers": [layer.to_parchmint_v1() for layer in self.layers],
+        }
 
