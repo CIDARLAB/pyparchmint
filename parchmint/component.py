@@ -1,6 +1,6 @@
 from typing import Optional
-from pyparchmint.params import Params
-from pyparchmint.port import Port
+from parchmint.params import Params
+from parchmint.port import Port
 
 
 class Component:

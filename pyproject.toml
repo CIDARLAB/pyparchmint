@@ -1,10 +1,10 @@
 [tool.poetry]
-name = "pyparchmint"
+name = "parchmint"
 version = "0.1.0"
 description = ""
 authors = ["Radhakrishna Sanka"]
 packages = [
-    { include = "pyparchmint/*.py"}
+    { include = "parchmint/*.py"}
 ]
 
 [tool.poetry.dependencies]

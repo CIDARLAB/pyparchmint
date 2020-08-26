@@ -1,9 +1,9 @@
-from pyparchmint.layer import Layer
+from parchmint.layer import Layer
 import networkx as nx
 from typing import Optional
-from pyparchmint.component import Component
-from pyparchmint.connection import Connection
-from pyparchmint.params import Params
+from parchmint.component import Component
+from parchmint.connection import Connection
+from parchmint.params import Params
 
 
 class Device:
