@@ -75,7 +75,7 @@ class Device:
 
     def generate_network(self):
         for component in self.components:
-            self.G.add_node(component.id)
+            self.G.add_node(component.ID)
 
         for connection in self.connections:
             sourceref = connection.source.component
@@ -90,7 +90,7 @@ class Device:
 
     def get_name_from_id(self, id):
         for component in self.components:
-            if component.id == id:
+            if component.ID == id:
                 return component.name
 
     def does_component_exist(self, component):
@@ -98,7 +98,7 @@ class Device:
 
     def component_exists(self, component_id: str) -> bool:
         for component in self.components:
-            if component_id == component.id:
+            if component_id == component.ID:
                 return component
 
         return False
@@ -113,13 +113,13 @@ class Device:
     def get_component(self, id: str) -> Optional[Component]:
         if self.component_exists(id):
             for component in self.components:
-                if component.id == id:
+                if component.ID == id:
                     return component
 
     def get_connection(self, id: str) -> Optional[Connection]:
         if self.connection_exists(id):
             for connection in self.connections:
-                if connection.id == id:
+                if connection.ID == id:
                     return connection
 
     def __str__(self):
