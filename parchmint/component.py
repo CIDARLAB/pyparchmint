@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from parchmint.params import Params
 from parchmint.port import Port
 
@@ -19,6 +19,10 @@ class Component:
 
         if json:
             self.parse_from_json(json)
+
+    def add_component_ports(self, ports:List[Port]) -> None:
+        for port in ports:
+            self.ports.append(port)
 
     def parse_from_json(self, json):
         self.name = json["name"]
