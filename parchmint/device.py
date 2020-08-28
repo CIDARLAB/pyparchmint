@@ -99,14 +99,14 @@ class Device:
     def component_exists(self, component_id: str) -> bool:
         for component in self.components:
             if component_id == component.ID:
-                return component
+                return True
 
         return False
 
     def connection_exists(self, connection_id: str) -> bool:
         for connection in self.connections:
-            if connection_id == self.connections:
-                return connection
+            if connection_id == connection.ID:
+                return True
 
         return False
 
@@ -115,12 +115,16 @@ class Device:
             for component in self.components:
                 if component.ID == id:
                     return component
+        else:
+            return None
 
     def get_connection(self, id: str) -> Optional[Connection]:
         if self.connection_exists(id):
             for connection in self.connections:
                 if connection.ID == id:
                     return connection
+        else:
+            return None
 
     def __str__(self):
         return str(self.__dict__)
