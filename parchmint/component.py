@@ -1,7 +1,7 @@
 from typing import Optional, List
 from parchmint.params import Params
 from parchmint.port import Port
-
+from parchmint.layer import Layer
 
 class Component:
 
@@ -10,12 +10,12 @@ class Component:
         self.ID: Optional[str] = None
         self.params = Params()
         self.entity: Optional[str] = None
-        self.xpos = None
-        self.ypos = None
-        self.xspan = None
-        self.yspan = None
-        self.ports = []
-        self.layers = []
+        self.xpos: Optional[int] = None
+        self.ypos: Optional[int] = None
+        self.xspan: Optional[int] = None
+        self.yspan: Optional[int] = None
+        self.ports: List[Port] = []
+        self.layers: List[Layer] = []
 
         if json:
             self.parse_from_json(json)

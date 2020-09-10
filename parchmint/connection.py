@@ -7,12 +7,12 @@ class Connection:
 
     def __init__(self, json=None):
 
-        self.name = None
-        self.ID = None
-        self.entity = None
-        self.params = Params()
-        self.source = None
-        self.sinks = []
+        self.name: Optional[str] = None
+        self.ID: Optional[str] = None
+        self.entity: Optional[str] = None
+        self.params: Params = Params()
+        self.source: Optional[Target] = None
+        self.sinks: List[Target] = []
         self.layer: Optional[str] = None
 
         if json:

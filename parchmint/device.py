@@ -1,22 +1,23 @@
 from parchmint.layer import Layer
 import networkx as nx
-from typing import Optional
+from typing import Optional, List
 from parchmint.component import Component
 from parchmint.connection import Connection
 from parchmint.params import Params
+from parchmint.layer import Layer
 
 
 class Device:
 
     def __init__(self, json=None):
-        self.name = ""
-        self.components = []
-        self.connections = []
-        self.layers = []
-        self.params = Params()
+        self.name: str = ""
+        self.components: List[Component] = []
+        self.connections: List[Connection] = []
+        self.layers: List[Layer] = []
+        self.params: Params = Params()
         self.features = []  # Store Raw JSON Objects for now
-        self.xspan = None
-        self.yspan = None
+        self.xspan: Optional[int] = None
+        self.yspan: Optional[int] = None
         self.G = nx.MultiGraph()
 
         if json:
