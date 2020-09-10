@@ -5,7 +5,7 @@ from parchmint.params import Params
 class Layer:
 
     def __init__(self, json=None) -> None:
-        self.id: Optional[str] = None
+        self.ID: Optional[str] = None
         self.name: Optional[str] = None
         self.type: Optional[str] = None
         self.params: Params = Params()
@@ -15,14 +15,14 @@ class Layer:
 
     def parse_from_json(self, json):
         self.name = json["name"]
-        self.id = json["id"]
+        self.ID = json["id"]
         self.type = json["type"]
         self.params = Params(json["params"])
 
     def to_parchmint_v1(self):
         return {
             "name": self.name,
-            "id": self.id,
+            "id": self.ID,
             "type": self.type,
             "params": self.params.to_parchmint_v1(),
         }
