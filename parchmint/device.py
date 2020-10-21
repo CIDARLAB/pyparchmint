@@ -24,7 +24,7 @@ class Device:
             self.parse_from_json(json)
             self.generate_network()
 
-    def add_component(self, component):
+    def add_component(self, component: Component):
         if isinstance(component, Component):
             # Check if Component Exists, if it does ignore it
             if self.does_component_exist(component):
@@ -33,14 +33,30 @@ class Device:
                     "hence skipping the component".format(component.name)
                 )
             self.components.append(component)
+        else:
+            raise Exception("Could not add component since its not an instance of parchmint:Component")
 
-    def add_connection(self, connection):
+    def add_connection(self, connection: Connection):
         if isinstance(connection, Connection):
             self.connections.append(connection)
+        else:
+            raise Exception("Could not add component since its not an instance of parchmint:Connection")
 
     def add_layer(self, layer):
         if isinstance(layer, Layer):
             self.layers.append(layer)
+
+    def merge_netlist(self, netlist: Device):
+        # TODO - Figure out how to merge the layers later
+        for layer in netlist.layers:
+            if layer not in self.layers:
+                self.add_layer(layer)
+
+        for component in netlist.components:
+            self.add_component(component)
+
+        for connection in netlist.connections:
+            self.add_connection(connection)
 
     def parse_from_json(self, json):
         self.name = json["name"]
