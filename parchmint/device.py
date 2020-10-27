@@ -46,7 +46,7 @@ class Device:
         if isinstance(layer, Layer):
             self.layers.append(layer)
 
-    def merge_netlist(self, netlist: Device):
+    def merge_netlist(self, netlist):
         # TODO - Figure out how to merge the layers later
         for layer in netlist.layers:
             if layer not in self.layers:
