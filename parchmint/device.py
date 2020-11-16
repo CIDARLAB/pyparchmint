@@ -5,7 +5,12 @@ from parchmint.component import Component
 from parchmint.connection import Connection
 from parchmint.params import Params
 from parchmint.layer import Layer
+import jsonschema
+import pathlib
+import parchmint
+import json
 
+PROJECT_DIR = pathlib.Path(parchmint.__file__).parent.parent.absolute()
 
 class Device:
 
@@ -159,3 +164,16 @@ class Device:
             "layers": [layer.to_parchmint_v1() for layer in self.layers],
         }
 
+    @staticmethod
+    def validate_V1(json_str: str) -> None:
+        schema_path = PROJECT_DIR.joinpath("schemas").joinpath("V1.json")
+        with open(schema_path) as json_file: 
+            schema = json.load(json_file)
+            json_data = json.loads(json_str)
+            validator = jsonschema.Draft7Validator(schema)
+
+            errors = validator.iter_errors(json_data)  # get all validation errors
+
+            for error in errors:
+                print(error)
+                print('------')
