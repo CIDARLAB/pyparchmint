@@ -1,9 +1,9 @@
 class Port:
     def __init__(self, json=None):
-        self.x = None
-        self.y = None
-        self.label = None
-        self.layer = None
+        self.x: int = -1
+        self.y: int = -1
+        self.label: str = ""
+        self.layer: str = ""
 
         if json:
             self.parse_from_json(json)

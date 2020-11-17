@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Tuple
 from parchmint.params import Params
 from parchmint.port import Port
 from parchmint.layer import Layer
@@ -9,11 +9,11 @@ class Component:
         self.name: Optional[str] = None
         self.ID: Optional[str] = None
         self.params = Params()
-        self.entity: Optional[str] = None
-        self.xpos: Optional[int] = None
-        self.ypos: Optional[int] = None
-        self.xspan: Optional[int] = None
-        self.yspan: Optional[int] = None
+        self.entity: str = ""
+        self.xpos: int = -1
+        self.ypos: int = -1
+        self.xspan: int = -1
+        self.yspan: int = -1
         self.ports: List[Port] = []
         self.layers: List[Layer] = []
 
@@ -63,3 +63,15 @@ class Component:
             return obj.ID == self.ID
         else:
             return False
+
+    def get_port(self, label: str) -> Port:
+        for port in self.ports:
+            if label == port.label:
+                return port
+        raise Exception("Could not find port with the label: {}".format(label))
+
+    def get_absolute_port_coordinates(self, port_label: str) -> Tuple[float, float]:
+        port = self.get_port(port_label)
+        x = self.xpos + port.x
+        y = self.ypos + port.y
+        return (x, y)
