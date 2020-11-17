@@ -80,11 +80,15 @@ class Device:
                 self.xspan = self.params.get_param("xspan")
             elif self.params.exists("width"):
                 self.xspan = self.params.get_param("width")
+            elif self.params.exists("x-span"):
+                self.xspan = self.params.get_param("x-span")
 
             if self.params.exists("yspan"):
                 self.yspan = self.params.get_param("yspan")
             elif self.params.exists("length"):
                 self.yspan = self.params.get_param("length")
+            elif self.params.exists("y-span"):
+                self.yspan = self.params.get_param("y-span")
 
         for layer in json["layers"]:
             self.add_layer(Layer(layer))

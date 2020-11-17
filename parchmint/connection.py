@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 from parchmint.params import Params
 from parchmint.target import Target
 
@@ -21,6 +21,7 @@ class Connection:
     def parse_from_json(self, json):
         self.name = json["name"]
         self.ID = json["id"]
+        self.layer = json["layer"]
         self.params = Params(json["params"])
 
         self.source = Target(json["source"])

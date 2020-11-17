@@ -28,8 +28,8 @@ class Component:
         self.name = json["name"]
         self.ID = json["id"]
         self.entity = json["entity"]
-        self.xspan = json["xspan"]
-        self.yspan = json["yspan"]
+        self.xspan = json["x-span"]
+        self.yspan = json["y-span"]
         self.params = Params(json["params"])
         self.layers = json["layers"]
 
