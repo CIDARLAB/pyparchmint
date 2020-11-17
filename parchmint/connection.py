@@ -4,7 +4,6 @@ from parchmint.target import Target
 
 
 class Connection:
-
     def __init__(self, json=None):
 
         self.name: Optional[str] = None

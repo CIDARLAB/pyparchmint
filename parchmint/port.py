@@ -1,5 +1,4 @@
 class Port:
-
     def __init__(self, json=None):
         self.x = None
         self.y = None
@@ -8,7 +7,7 @@ class Port:
 
         if json:
             self.parse_from_json(json)
-    
+
     def parse_from_json(self, json):
         self.x = json["x"]
         self.y = json["y"]

@@ -2,11 +2,11 @@ from pathlib import Path
 from parchmint.device import Device
 import argparse
 
+
 def validate_V1():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument(
-        'input', help="This is the file thats used as the input ")
+    parser.add_argument("input", help="This is the file thats used as the input ")
 
     args = parser.parse_args()
     file_path = Path(args.input).resolve()

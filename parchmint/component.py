@@ -3,8 +3,8 @@ from parchmint.params import Params
 from parchmint.port import Port
 from parchmint.layer import Layer
 
-class Component:
 
+class Component:
     def __init__(self, json=None):
         self.name: Optional[str] = None
         self.ID: Optional[str] = None
@@ -20,7 +20,7 @@ class Component:
         if json:
             self.parse_from_json(json)
 
-    def add_component_ports(self, ports:List[Port]) -> None:
+    def add_component_ports(self, ports: List[Port]) -> None:
         for port in ports:
             self.ports.append(port)
 

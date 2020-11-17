@@ -3,7 +3,6 @@ from parchmint.params import Params
 
 
 class Layer:
-
     def __init__(self, json=None) -> None:
         self.ID: Optional[str] = None
         self.name: Optional[str] = None
@@ -38,4 +37,3 @@ class Layer:
             return o.ID == self.ID
         else:
             return False
-

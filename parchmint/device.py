@@ -12,8 +12,8 @@ import json
 
 PROJECT_DIR = pathlib.Path(parchmint.__file__).parent.parent.absolute()
 
-class Device:
 
+class Device:
     def __init__(self, json=None):
         self.name: str = ""
         self.components: List[Component] = []
@@ -39,13 +39,17 @@ class Device:
                 )
             self.components.append(component)
         else:
-            raise Exception("Could not add component since its not an instance of parchmint:Component")
+            raise Exception(
+                "Could not add component since its not an instance of parchmint:Component"
+            )
 
     def add_connection(self, connection: Connection):
         if isinstance(connection, Connection):
             self.connections.append(connection)
         else:
-            raise Exception("Could not add component since its not an instance of parchmint:Connection")
+            raise Exception(
+                "Could not add component since its not an instance of parchmint:Connection"
+            )
 
     def add_layer(self, layer):
         if isinstance(layer, Layer):
@@ -171,7 +175,7 @@ class Device:
     @staticmethod
     def validate_V1(json_str: str) -> None:
         schema_path = PROJECT_DIR.joinpath("schemas").joinpath("V1.json")
-        with open(schema_path) as json_file: 
+        with open(schema_path) as json_file:
             schema = json.load(json_file)
             json_data = json.loads(json_str)
             validator = jsonschema.Draft7Validator(schema)
@@ -180,4 +184,4 @@ class Device:
 
             for error in errors:
                 print(error)
-                print('------')
+                print("------")

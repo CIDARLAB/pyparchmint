@@ -1,5 +1,4 @@
 class Target:
-
     def __init__(self, json=None):
         self.component = None
         self.port = None
