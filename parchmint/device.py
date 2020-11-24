@@ -23,7 +23,7 @@ class Device:
         self.features = []  # Store Raw JSON Objects for now
         self.xspan: Optional[int] = None
         self.yspan: Optional[int] = None
-        self.G = nx.MultiGraph()
+        self.G = nx.MultiDiGraph()
 
         if json:
             self.parse_from_json(json)
