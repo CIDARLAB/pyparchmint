@@ -55,6 +55,14 @@ class Device:
         if isinstance(layer, Layer):
             self.layers.append(layer)
 
+    def get_layer(self, layer_id: str) -> Layer:
+        for layer in self.layers:
+            if layer.ID == layer_id:
+                return layer
+        raise Exception(
+            "Could not find Layer: {} in device {}".format(layer_id, self.name)
+        )
+
     def merge_netlist(self, netlist):
         # TODO - Figure out how to merge the layers later
         for layer in netlist.layers:
