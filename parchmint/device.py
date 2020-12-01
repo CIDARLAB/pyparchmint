@@ -4,7 +4,6 @@ from typing import Optional, List
 from parchmint.component import Component
 from parchmint.connection import Connection
 from parchmint.params import Params
-from parchmint.layer import Layer
 import jsonschema
 import pathlib
 import parchmint

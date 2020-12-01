@@ -7,7 +7,7 @@ class Connection:
     def __init__(self, json=None):
 
         self.name: Optional[str] = None
-        self.ID: Optional[str] = None
+        self.ID: str = ""
         self.entity: Optional[str] = None
         self.params: Params = Params()
         self.source: Optional[Target] = None

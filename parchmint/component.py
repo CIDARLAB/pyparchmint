@@ -6,8 +6,8 @@ from parchmint.layer import Layer
 
 class Component:
     def __init__(self, json=None):
-        self.name: Optional[str] = None
-        self.ID: Optional[str] = None
+        self.name: str = ""
+        self.ID: str = ""
         self.params = Params()
         self.entity: str = ""
         self.xpos: int = -1
