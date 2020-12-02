@@ -50,7 +50,7 @@ class Component:
         return {
             "name": self.name,
             "id": self.ID,
-            "layers": self.layers,
+            "layers": [layer.ID for layer in self.layers],
             "params": self.params.to_parchmint_v1(),
             "ports": [p.to_parchmint_v1() for p in self.ports],
             "entity": self.entity,

@@ -168,14 +168,15 @@ class Device:
         return str(self.__dict__)
 
     def to_parchmint_v1(self):
-        return {
-            "name": self.name,
-            "components": [c.to_parchmint_v1() for c in self.components],
-            "connections": [c.to_parchmint_v1() for c in self.connections],
-            "params": self.params.to_parchmint_v1(),
-            "version": 1,
-            "layers": [layer.to_parchmint_v1() for layer in self.layers],
-        }
+        ret = dict()
+        ret["name"] = self.name
+        ret["components"] = [c.to_parchmint_v1() for c in self.components]
+        ret["connections"] = [c.to_parchmint_v1() for c in self.connections]
+        ret["params"] = self.params.to_parchmint_v1()
+        ret["layers"] = [layer.to_parchmint_v1() for layer in self.layers]
+        ret["version"] = 1
+
+        return ret
 
     @staticmethod
     def validate_V1(json_str: str) -> None:

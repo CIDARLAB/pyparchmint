@@ -7,6 +7,7 @@ class Layer:
         self.ID: Optional[str] = None
         self.name: Optional[str] = None
         self.type: Optional[str] = None
+        self.group: str = ""
         self.params: Params = Params()
 
         if json:
@@ -16,6 +17,7 @@ class Layer:
         self.name = json["name"]
         self.ID = json["id"]
         self.type = json["type"]
+        self.group = json["group"]
         self.params = Params(json["params"])
 
     def to_parchmint_v1(self):
@@ -24,6 +26,7 @@ class Layer:
             "id": self.ID,
             "type": self.type,
             "params": self.params.to_parchmint_v1(),
+            "group": self.type,
         }
 
     def __str__(self):
