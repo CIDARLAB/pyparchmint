@@ -50,11 +50,17 @@ class Device:
                 "Could not add component since its not an instance of parchmint:Connection"
             )
 
-    def add_layer(self, layer):
+    def add_layer(self, layer) -> None:
         if isinstance(layer, Layer):
             self.layers.append(layer)
 
-    def merge_netlist(self, netlist):
+    def get_layer(self, id: str) -> Layer:
+        for layer in self.layers:
+            if layer.ID == id:
+                return layer
+        raise Exception("Could not find the layer {}".format(id))
+
+    def merge_netlist(self, netlist) -> None:
         # TODO - Figure out how to merge the layers later
         for layer in netlist.layers:
             if layer not in self.layers:
