@@ -1,4 +1,4 @@
-from typing import Optional, List, Tuple
+from typing import List, Tuple
 from parchmint.params import Params
 from parchmint.port import Port
 from parchmint.layer import Layer
