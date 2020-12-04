@@ -35,6 +35,9 @@ class Layer:
     def __repr__(self):
         return str(self.__dict__)
 
+    def __hash__(self):
+        return hash(str(self))
+
     def __eq__(self, o: object) -> bool:
         if isinstance(o, Layer):
             return o.ID == self.ID

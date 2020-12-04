@@ -1,3 +1,4 @@
+from parchmint.layer import Layer
 from typing import List, Optional
 from parchmint.params import Params
 from parchmint.target import Target
@@ -12,7 +13,7 @@ class Connection:
         self.params: Params = Params()
         self.source: Optional[Target] = None
         self.sinks: List[Target] = []
-        self.layer: Optional[str] = None
+        self.layer: Layer = None
 
         if json:
             self.parse_from_json(json)
@@ -41,5 +42,5 @@ class Connection:
             "id": self.ID,
             "source": self.source.to_parchmint_v1(),
             "params": self.params.to_parchmint_v1(),
-            "layer": self.layer,
+            "layer": self.layer.ID,
         }

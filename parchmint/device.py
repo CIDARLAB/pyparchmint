@@ -62,14 +62,24 @@ class Device:
 
     def merge_netlist(self, netlist) -> None:
         # TODO - Figure out how to merge the layers later
+        # First create a map of layers
+        layer_mapping = dict()
         for layer in netlist.layers:
             if layer not in self.layers:
                 self.add_layer(layer)
+                layer_mapping[layer] = layer
+            else:
+                layer_mapping[layer] = self.get_layer(layer.ID)
 
         for component in netlist.components:
+            new_layers = []
+            for layer in component.layers:
+                new_layers.append(layer_mapping[layer])
+            component.layers = new_layers
             self.add_component(component)
 
         for connection in netlist.connections:
+            connection.layer = layer_mapping[connection.layer]
             self.add_connection(connection)
 
     def parse_from_json(self, json):
