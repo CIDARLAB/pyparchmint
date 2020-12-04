@@ -54,8 +54,8 @@ class Component:
             "params": self.params.to_parchmint_v1(),
             "ports": [p.to_parchmint_v1() for p in self.ports],
             "entity": self.entity,
-            "x-span": self.xspan,
-            "y-span": self.yspan,
+            "x-span": int(self.xspan),
+            "y-span": int(self.yspan),
         }
 
     def __eq__(self, obj):
