@@ -1,3 +1,4 @@
+from __future__ import annotations
 from parchmint.layer import Layer
 import networkx as nx
 from typing import Optional, List
@@ -85,12 +86,16 @@ class Device:
     def parse_from_json(self, json):
         self.name = json["name"]
 
+        # First always add the layers
+        for layer in json["layers"]:
+            self.add_layer(Layer(layer))
+
         # Loop through the components
         for component in json["components"]:
-            self.add_component(Component(component))
+            self.add_component(Component(component, self))
 
         for connection in json["connections"]:
-            self.add_connection(Connection(connection))
+            self.add_connection(Connection(connection, self))
 
         if "params" in json.keys():
             self.params = Params(json["params"])
@@ -108,9 +113,6 @@ class Device:
                 self.yspan = self.params.get_param("length")
             elif self.params.exists("y-span"):
                 self.yspan = self.params.get_param("y-span")
-
-        for layer in json["layers"]:
-            self.add_layer(Layer(layer))
 
     def get_components(self):
         return self.components
