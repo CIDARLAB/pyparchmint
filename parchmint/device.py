@@ -1,10 +1,10 @@
+from __future__ import annotations
 from parchmint.layer import Layer
 import networkx as nx
 from typing import Optional, List
 from parchmint.component import Component
 from parchmint.connection import Connection
 from parchmint.params import Params
-from parchmint.layer import Layer
 import jsonschema
 import pathlib
 import parchmint
@@ -51,39 +51,51 @@ class Device:
                 "Could not add component since its not an instance of parchmint:Connection"
             )
 
-    def add_layer(self, layer):
+    def add_layer(self, layer) -> None:
         if isinstance(layer, Layer):
             self.layers.append(layer)
 
-    def get_layer(self, layer_id: str) -> Layer:
+    def get_layer(self, id: str) -> Layer:
         for layer in self.layers:
-            if layer.ID == layer_id:
+            if layer.ID == id:
                 return layer
-        raise Exception(
-            "Could not find Layer: {} in device {}".format(layer_id, self.name)
-        )
+        raise Exception("Could not find the layer {}".format(id))
 
-    def merge_netlist(self, netlist):
+    def merge_netlist(self, netlist) -> None:
         # TODO - Figure out how to merge the layers later
+        # First create a map of layers
+        layer_mapping = dict()
         for layer in netlist.layers:
             if layer not in self.layers:
                 self.add_layer(layer)
+                layer_mapping[layer] = layer
+            else:
+                layer_mapping[layer] = self.get_layer(layer.ID)
 
         for component in netlist.components:
+            new_layers = []
+            for layer in component.layers:
+                new_layers.append(layer_mapping[layer])
+            component.layers = new_layers
             self.add_component(component)
 
         for connection in netlist.connections:
+            connection.layer = layer_mapping[connection.layer]
             self.add_connection(connection)
 
     def parse_from_json(self, json):
         self.name = json["name"]
 
+        # First always add the layers
+        for layer in json["layers"]:
+            self.add_layer(Layer(layer))
+
         # Loop through the components
         for component in json["components"]:
-            self.add_component(Component(component))
+            self.add_component(Component(component, self))
 
         for connection in json["connections"]:
-            self.add_connection(Connection(connection))
+            self.add_connection(Connection(connection, self))
 
         if "params" in json.keys():
             self.params = Params(json["params"])
@@ -101,9 +113,6 @@ class Device:
                 self.yspan = self.params.get_param("length")
             elif self.params.exists("y-span"):
                 self.yspan = self.params.get_param("y-span")
-
-        for layer in json["layers"]:
-            self.add_layer(Layer(layer))
 
     def get_components(self):
         return self.components
@@ -171,14 +180,15 @@ class Device:
         return str(self.__dict__)
 
     def to_parchmint_v1(self):
-        return {
-            "name": self.name,
-            "components": [c.to_parchmint_v1() for c in self.components],
-            "connections": [c.to_parchmint_v1() for c in self.connections],
-            "params": self.params.to_parchmint_v1(),
-            "version": 1,
-            "layers": [layer.to_parchmint_v1() for layer in self.layers],
-        }
+        ret = dict()
+        ret["name"] = self.name
+        ret["components"] = [c.to_parchmint_v1() for c in self.components]
+        ret["connections"] = [c.to_parchmint_v1() for c in self.connections]
+        ret["params"] = self.params.to_parchmint_v1()
+        ret["layers"] = [layer.to_parchmint_v1() for layer in self.layers]
+        ret["version"] = 1
+
+        return ret
 
     @staticmethod
     def validate_V1(json_str: str) -> None:
