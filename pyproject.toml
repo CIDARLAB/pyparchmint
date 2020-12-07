@@ -3,6 +3,7 @@ name = "parchmint"
 version = "0.2.4"
 description = ""
 authors = ["Radhakrishna Sanka"]
+license = "BSD-3-Clause"
 packages = [
     { include = "parchmint/*.py"}
 ]
