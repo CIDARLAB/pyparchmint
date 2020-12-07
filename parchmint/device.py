@@ -157,21 +157,17 @@ class Device:
 
         return False
 
-    def get_component(self, id: str) -> Optional[Component]:
-        if self.component_exists(id):
-            for component in self.components:
-                if component.ID == id:
-                    return component
-        else:
-            return None
+    def get_component(self, id: str) -> Component:
+        for component in self.components:
+            if component.ID == id:
+                return component
+        raise Exception("Could not find component with id {}".format(id))
 
-    def get_connection(self, id: str) -> Optional[Connection]:
-        if self.connection_exists(id):
-            for connection in self.connections:
-                if connection.ID == id:
-                    return connection
-        else:
-            return None
+    def get_connection(self, id: str) -> Connection:
+        for connection in self.connections:
+            if connection.ID == id:
+                return connection
+        raise Exception("Could not find connection with id {}".format(id))
 
     def __str__(self):
         return str(self.__dict__)
