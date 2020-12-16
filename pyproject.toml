@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "parchmint"
-version = "0.2.4"
+version = "0.2.5"
 description = ""
 authors = ["Radhakrishna Sanka"]
 license = "BSD-3-Clause"
