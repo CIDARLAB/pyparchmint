@@ -1,6 +1,6 @@
 from __future__ import annotations
 from parchmint.layer import Layer
-from typing import List, Optional
+from typing import List, Optional, Tuple
 from parchmint.params import Params
 from parchmint.target import Target
 
@@ -46,6 +46,16 @@ class Connection:
     def __repr__(self):
         return str(self.__dict__)
 
+    def add_waypoints_path(
+        self, source: Target, sink: Target, waypoints: List[Tuple[int, int]]
+    ) -> None:
+        path = Path(source, sink, waypoints)
+        if self.params.exists("paths"):
+            paths = self.params.get_param("paths")
+            paths.append(path.to_parchmint_v1())
+        else:
+            self.params.set_param("paths", [path.to_parchmint_v1()])
+
     def to_parchmint_v1(self):
         return {
             "sinks": [s.to_parchmint_v1() for s in self.sinks],
@@ -54,4 +64,23 @@ class Connection:
             "source": self.source.to_parchmint_v1(),
             "params": self.params.to_parchmint_v1(),
             "layer": self.layer.ID,
+        }
+
+
+class Path:
+    def __init__(
+        self, source: Target, sink: Target, waypoints: List[Tuple[int, int]] = []
+    ) -> None:
+        super().__init__()
+        self.__source: Target = source
+        self.__sink: Target = sink
+        self.__waypoints: List[Tuple[int, int]] = waypoints
+
+    def to_parchmint_v1(self):
+        return {
+            "source": None
+            if self.__source is None
+            else self.__source.to_parchmint_v1(),
+            "sinks": None if self.__sink is None else self.__sink.to_parchmint_v1(),
+            "wayPoints": [list(wp) for wp in self.__waypoints],
         }
