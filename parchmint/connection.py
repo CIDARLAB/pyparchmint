@@ -49,7 +49,7 @@ class Connection:
     def add_waypoints_path(
         self, source: Target, sink: Target, waypoints: List[Tuple[int, int]]
     ) -> None:
-        path = Path(source, sink, waypoints)
+        path = ConnectionPath(source, sink, waypoints)
         if self.params.exists("paths"):
             paths = self.params.get_param("paths")
             paths.append(path.to_parchmint_v1())
@@ -67,7 +67,7 @@ class Connection:
         }
 
 
-class Path:
+class ConnectionPath:
     def __init__(
         self, source: Target, sink: Target, waypoints: List[Tuple[int, int]] = []
     ) -> None:
