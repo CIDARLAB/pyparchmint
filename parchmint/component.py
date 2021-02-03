@@ -46,8 +46,9 @@ class Component:
             self.ports.append(Port(port))
 
         if self.params:
-            self.xpos = self.params.get_param("position")[0]
-            self.ypos = self.params.get_param("position")[1]
+            if self.params.exists("position"):
+                self.xpos = self.params.get_param("position")[0]
+                self.ypos = self.params.get_param("position")[1]
 
     def __str__(self):
         return str(self.__dict__)
