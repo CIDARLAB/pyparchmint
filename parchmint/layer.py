@@ -26,7 +26,7 @@ class Layer:
             "id": self.ID,
             "type": self.type,
             "params": self.params.to_parchmint_v1(),
-            "group": self.type,
+            "group": self.group,
         }
 
     def __str__(self):
