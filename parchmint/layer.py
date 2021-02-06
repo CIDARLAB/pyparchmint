@@ -4,6 +4,11 @@ from parchmint.params import Params
 
 class Layer:
     def __init__(self, json=None) -> None:
+        """Creates a new instance Layer
+
+        Args:
+            json (dict, optional): json dict after json.loads(). Defaults to None.
+        """
         self.ID: Optional[str] = None
         self.name: Optional[str] = None
         self.type: Optional[str] = None
@@ -14,6 +19,11 @@ class Layer:
             self.parse_from_json(json)
 
     def parse_from_json(self, json):
+        """Loads instance data json dict from json.loads()
+
+        Args:
+            json ([type]): [description]
+        """
         self.name = json["name"]
         self.ID = json["id"]
         self.type = json["type"]
@@ -21,12 +31,17 @@ class Layer:
         self.params = Params(json["params"])
 
     def to_parchmint_v1(self):
+        """Returns the json dict
+
+        Returns:
+            dict: dictionary that can be used in json.dumps()
+        """
         return {
             "name": self.name,
             "id": self.ID,
             "type": self.type,
             "params": self.params.to_parchmint_v1(),
-            "group": self.type,
+            "group": self.group,
         }
 
     def __str__(self):

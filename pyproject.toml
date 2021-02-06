@@ -8,6 +8,11 @@ packages = [
     { include = "parchmint/*.py"}
 ]
 
+include = [
+    "schemas/*",
+]
+
+
 [tool.poetry.dependencies]
 python = "^3.8"
 networkx = "^2.5"
