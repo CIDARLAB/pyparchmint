@@ -1,5 +1,4 @@
 from __future__ import annotations
-from parchmint.device import Device
 from typing import List, Tuple
 from parchmint.params import Params
 from parchmint.port import Port
@@ -44,7 +43,7 @@ class Component:
         for port in ports:
             self.ports.append(port)
 
-    def parse_from_json(self, json, device_ref: Device = None):
+    def parse_from_json(self, json, device_ref=None):
         """Parses from the json dict
 
         Args:
