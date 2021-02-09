@@ -45,7 +45,7 @@ class Device:
         """
         if isinstance(component, Component):
             # Check if Component Exists, if it does ignore it
-            if self.does_component_exist(component):
+            if self.component_exists(component.ID):
                 print(
                     "Component {} already present in device, "
                     "hence skipping the component".format(component.name)
