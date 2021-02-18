@@ -20,8 +20,6 @@ class Component:
         self.ID: str = ""
         self.params = Params()
         self.entity: str = ""
-        self.xpos: int = -1
-        self.ypos: int = -1
         self.xspan: int = -1
         self.yspan: int = -1
         self.ports: List[Port] = []
@@ -33,6 +31,66 @@ class Component:
                     "Cannot Parse Component from JSON with no Device Reference, check device_ref parameter in constructor "
                 )
             self.parse_from_json(json, device_ref)
+
+    @property
+    def xpos(self) -> int:
+        """returns the x coordinate of the component
+
+        Raises:
+            KeyError: when no position parameter object is found for the parchmint object
+
+        Returns:
+            int: x-coordinate
+        """
+        try:
+            return self.params.get_param("position")[0]
+        except Exception:
+            print("Could not find xpos for component")
+            raise KeyError
+
+    @xpos.setter
+    def xpos(self, value) -> None:
+        """Sets the x-coordinate for the component
+
+        Args:
+            value (int): x coordianate of the object
+        """
+        if self.params.exists("position"):
+            pos = self.params.get_param("position")
+            pos[0] = value
+            self.params.set_param("position", pos)
+        else:
+            self.params.set_param("position", [value, -1])
+
+    @property
+    def ypos(self) -> int:
+        """Returns the y-coordinate in the parchmint object
+
+        Raises:
+            KeyError: When no position parameter is found in the parchmint object
+
+        Returns:
+            int: y coordinate of the component
+        """
+        try:
+            return self.params.get_param("position")[1]
+        except Exception:
+            print("Could not find xpos for component")
+            raise KeyError
+
+    @ypos.setter
+    def ypos(self, value) -> None:
+        """Sets the y-coordinate of the component
+
+        Args:
+            value (int): y coordinate
+        """
+        if self.params.exists("position"):
+            pos = self.params.get_param("position")
+            pos[1] = value
+            self.params.set_param("position", pos)
+        else:
+            self.params.set_param("position", [-1, value])
 
     def add_component_ports(self, ports: List[Port]) -> None:
         """Adds component ports to the component
@@ -81,7 +139,8 @@ class Component:
         Returns:
             dict: dictionary that can be used in json.dumps()
         """
-        return {
+
+        ret = {
             "name": self.name,
             "id": self.ID,
             "layers": [layer.ID for layer in self.layers],
@@ -91,6 +150,8 @@ class Component:
             "x-span": int(self.xspan),
             "y-span": int(self.yspan),
         }
+
+        return ret
 
     def __eq__(self, obj):
         if isinstance(obj, Component):
