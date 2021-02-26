@@ -3,7 +3,7 @@ from __future__ import annotations
 from networkx.algorithms import components
 from parchmint.layer import Layer
 import networkx as nx
-from typing import Dict, Optional, List
+from typing import Dict, Optional, List, overload
 from parchmint.component import Component
 from parchmint.connection import Connection
 from parchmint.params import Params
@@ -68,22 +68,53 @@ class Device:
             self.parse_from_json(json)
             self.generate_network()
 
-    def map_valve(self, valve: Component, connection: Connection) -> None:
+    def map_valve(
+        self,
+        valve: Component,
+        connection: Connection,
+        type_info: Optional[ValveType] = None,
+    ) -> None:
         """Maps the valve to a connection in the device
 
         Args:
             valve (Component): valve component
             connection (Connection): connection on which the valve is mapped
+            type_info (Optional[ValveType]): Type informaiton of the valve
+
         """
         self._valve_map[valve] = connection
+        if type_info is not None:
+            self.update_valve_type(valve, type_info)
 
     def get_valves(self) -> List[Component]:
+        """Returns the list of valves in the device
+
+        Returns:
+            List[Component]: Valve Component Objects
+        """
         return list(self._valve_map.keys())
 
     def get_valve_connection(self, valve: Component) -> Connection:
+        """Returns the connection associated with the valve object
+
+        Args:
+            valve (Component): Valve object for which we are finding the connection
+
+        Returns:
+            Connection: connection object on which the valve is placed
+        """
         return self._valve_map[valve]
 
     def update_valve_type(self, valve: Component, type_info: ValveType) -> None:
+        """Updates the type of the valve to normally closed  or normally open
+
+        Args:
+            valve (Component): Valve object we want to update
+            type_info (ValveType): Valve Type
+
+        Raises:
+            KeyError: Raises the error if the valve object is not mapped as a valve in the device
+        """
         if valve in list(self._valve_map.keys()):
             self._valve_type_map[valve] = type_info
         else:
