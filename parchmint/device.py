@@ -1,4 +1,6 @@
 from __future__ import annotations
+
+from networkx.algorithms import components
 from parchmint.layer import Layer
 import networkx as nx
 from typing import Dict, Optional, List
@@ -74,6 +76,22 @@ class Device:
             connection (Connection): connection on which the valve is mapped
         """
         self._valve_map[valve] = connection
+
+    def get_valves(self) -> List[Component]:
+        return list(self._valve_map.keys())
+
+    def get_valve_connection(self, valve: Component) -> Connection:
+        return self._valve_map[valve]
+
+    def update_valve_type(self, valve: Component, type_info: ValveType) -> None:
+        if valve in list(self._valve_map.keys()):
+            self._valve_type_map[valve] = type_info
+        else:
+            raise KeyError(
+                "Could not update type for valve: {} since it is not found in the valveMap of they device".format(
+                    valve.ID
+                )
+            )
 
     def add_component(self, component: Component):
         """Adds a component object to the device
