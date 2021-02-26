@@ -1,7 +1,7 @@
 from __future__ import annotations
 from parchmint.layer import Layer
 import networkx as nx
-from typing import Optional, List
+from typing import Dict, Optional, List
 from parchmint.component import Component
 from parchmint.connection import Connection
 from parchmint.params import Params
@@ -9,8 +9,36 @@ import jsonschema
 import pathlib
 import parchmint
 import json
+from enum import Enum
+
 
 PROJECT_DIR = pathlib.Path(parchmint.__file__).parent.parent.absolute()
+
+
+class ValveType(Enum):
+    NORMALLY_OPEN = 0
+    NORMALLY_CLOSED = 1
+
+    def __str__(self) -> str:
+        if self == ValveType.NORMALLY_OPEN:
+            return "NORMALLY_OPEN"
+        elif self == ValveType.NORMALLY_CLOSED:
+            return "NORMALLY_CLOSED"
+        else:
+            raise Exception("Could not generate Valve Type string")
+
+    def __eq__(self, o: object) -> bool:
+        if o.__class__ is ValveType:
+            return super().__eq__(o)
+        elif o.__class__ is str:
+            if self is ValveType.NORMALLY_OPEN and o == "NORMALLY_OPEN":
+                return True
+            elif self is ValveType.NORMALLY_CLOSED and o == "NORMALLY_CLOSED":
+                return True
+            else:
+                return False
+        else:
+            return False
 
 
 class Device:
@@ -30,9 +58,22 @@ class Device:
         self.yspan: Optional[int] = None
         self.G = nx.MultiDiGraph()
 
+        # Stores the valve / connection mappings
+        self._valve_map: Dict[Component, Connection] = dict()
+        self._valve_type_map: Dict[Component, ValveType] = dict()
+
         if json:
             self.parse_from_json(json)
             self.generate_network()
+
+    def map_valve(self, valve: Component, connection: Connection) -> None:
+        """Maps the valve to a connection in the device
+
+        Args:
+            valve (Component): valve component
+            connection (Connection): connection on which the valve is mapped
+        """
+        self._valve_map[valve] = connection
 
     def add_component(self, component: Component):
         """Adds a component object to the device
@@ -161,6 +202,25 @@ class Device:
                 self.yspan = self.params.get_param("length")
             elif self.params.exists("y-span"):
                 self.yspan = self.params.get_param("y-span")
+
+        if "valveMap" in json.keys():
+            valve_map = json["valveMap"]
+
+            for key, value in valve_map.items():
+                self._valve_map[self.get_component(key)] = self.get_connection(value)
+
+        if "valveTypeMap" in json.keys():
+            valve_type_map = json["valveTypeMap"]
+
+            for key, value in valve_type_map.items():
+                if value is ValveType.NORMALLY_OPEN:
+                    self._valve_type_map[
+                        self.get_component(key)
+                    ] = ValveType.NORMALLY_OPEN
+                else:
+                    self._valve_type_map[
+                        self.get_component(key)
+                    ] = ValveType.NORMALLY_CLOSED
 
     def get_components(self) -> List[Component]:
         """Returns the components in the device
@@ -292,6 +352,23 @@ class Device:
         ret["layers"] = [layer.to_parchmint_v1() for layer in self.layers]
         ret["version"] = 1
 
+        return ret
+
+    def to_parchmint_v1_x(self):
+        ret = self.to_parchmint_v1()
+
+        # Modify the version of the parchmint
+        ret["version"] = 1.2
+
+        # Add the valvemap information
+        valve_map = dict()
+        valve_type_map = dict()
+        for valve, connection in self._valve_map.items():
+            valve_map[valve.ID] = connection.ID
+        ret["valveMap"] = valve_map
+        for valve, valve_type in self._valve_type_map.items():
+            valve_type_map[valve.ID] = str(valve_type)
+        ret["valveTypeMap"] = valve_type_map
         return ret
 
     @staticmethod
