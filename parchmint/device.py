@@ -5,6 +5,8 @@ from typing import Optional, List
 from parchmint.component import Component
 from parchmint.connection import Connection
 from parchmint.params import Params
+from parchmint.feasibilitymatcher import FeasibilityMatcher
+
 import jsonschema
 import pathlib
 import parchmint
@@ -12,6 +14,7 @@ import json
 
 PROJECT_DIR = pathlib.Path(parchmint.__file__).parent.parent.absolute()
 
+# GM = nx.algorithms.isomorphism.GraphMatcher(device1, device2)
 
 class Device:
     def __init__(self, json=None):
@@ -33,6 +36,39 @@ class Device:
         if json:
             self.parse_from_json(json)
             self.generate_network()
+
+
+    # add compare function
+    # -pass device, compare devices
+    # - check connections, components, print if its same or not
+    # - have a flag to print parameter differences 
+
+    def is_feasible(self, device: Device) -> bool:
+        """compare against the input device. Return true if they are semnatcally feasible.
+
+        Args:
+            device (Device): expected device
+
+        Returns:
+            bool: If semntically feasible, return true. Else false.
+        """
+
+        self.generate_network()
+
+        FM = FeasibilityMatcher(self.G, device.G)
+
+        feasible = True
+
+        for node in self.G.nodes:
+            # find string
+            G1_component = self.get_component(node)
+            G2_component = device.get_component(node)
+
+            if not FM.semantic_feasibility(G1_component, G2_component):
+                feasible = False
+        
+        return feasible
+
 
     def add_component(self, component: Component):
         """Adds a component object to the device
