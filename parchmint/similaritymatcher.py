@@ -18,78 +18,95 @@ class SimilarityMatcher(DiGraphMatcher):
         G1,
         G2,
         # semantic_information: Dict[str, NodeFilter],
-        compare_params=False
+        compare_params=False,
+        check_connection_target=False
     ):
         # self._semantic_information = semantic_information
-        self.G1_device = G1
-        self.G2_device = G2
-        self.compare_params = compare_params
-        self.G1_param_diff_list = []
-        self.G2_param_diff_list = []
-        self.G1_layer_diff_list = []
-        self.G2_layer_diff_list = []
-        self.G1_port_diff_list = []
-        self.G2_port_diff_list = []
+        self._G1_device = G1
+        self._G2_device = G2
+        self._param_flag = compare_params
+        self._connection_flag = check_connection_target
+        self._G1_in_edges = G1.G.in_edges
+        self._G1_out_edges = G1.G.out_edges
+        self._G2_in_edges = G2.G.in_edges
+        self._G2_out_edges = G2.G.out_edges
+        self._G1_in_edges_diff_list = []
+        self._G1_out_edges_diff_list = []
+        self._G2_in_edges_diff_list = []
+        self._G2_out_edges_diff_list = []
+        self._G1_param_diff_list = []
+        self._G2_param_diff_list = []
+        self._G1_layer_diff_list = []
+        self._G2_layer_diff_list = []
+        self._G1_port_diff_list = []
+        self._G2_port_diff_list = []
 
         super(SimilarityMatcher, self).__init__(G1.G, G2.G)
 
     def semantic_feasibility(self, G1_node, G2_node) -> bool:
-        """Returns True if adding (G1_node, G2_node) is symantically feasible.
-        The semantic feasibility function should return True if it is
-        acceptable to add the candidate pair (G1_node, G2_node) to the current
-        partial isomorphism mapping.   The logic should focus on semantic
-        information contained in the edge data or a formalized node class.
-        By acceptable, we mean that the subsequent mapping can still become a
-        complete isomorphism mapping.  Thus, if adding the candidate pair
-        definitely makes it so that the subsequent mapping cannot become a
-        complete isomorphism mapping, then this function must return False.
-        The default semantic feasibility function always returns True. The
-        effect is that semantics are not considered in the matching of G1
-        and G2.
-        The semantic checks might differ based on the what type of test is
-        being performed.  A keyword description of the test is stored in
-        self.test.  Here is a quick description of the currently implemented
-        tests::
-          test='graph'
-            Indicates that the graph matcher is looking for a graph-graph
-            isomorphism.
-          test='subgraph'
-            Indicates that the graph matcher is looking for a subgraph-graph
-            isomorphism such that a subgraph of G1 is isomorphic to G2.
-        Any subclass which redefines semantic_feasibility() must maintain
-        the above form to keep the match() method functional. Implementations
-        should consider multigraphs.
-        """
+      """Overriding semantic_feasibility to compare the layers, params, ports, and connections
+
+      Args:
+          G1_node (str): node 1
+          G2_node (str): node 2
+
+      Returns:
+          bool: if they are semantically feasible, return true. else return false. 
+      """
 
         # check each components. If not same, print out the difference and return false. 
-        feasible = True
+      feasible = True
 
 
-        G1_component = self.G1_device.get_component(G1_node)
-        G2_component = self.G2_device.get_component(G2_node)
+      G1_component = self._G1_device.get_component(G1_node)
+      G2_component = self._G2_device.get_component(G2_node)
 
+      # compare connectivities
+      for item in self._G1_in_edges:
+        conn_g1 = self._G1_in_edges[item]
+        conn_g2 = self._G2_in_edges[item]
 
-        if G1_component.layers != G2_component.layers:
-          print("layer wrong")
-          feasible = False
-        
-        # store all the differences
-
-        if G1_component.params != G2_component.params:
-          print("params wrong")
-          self.G1_param_diff_list.append(G1_component.params)
-          self.G2_param_diff_list.append(G2_component.params)
-
-          if self.compare_params is True:
+        if conn_g1['source_port'].component != conn_g2['source_port'].component:
+          print("source port wrong")
+          self._G1_in_edges_diff_list.append(conn_g1['source_port'].component)
+          self._G2_in_edges_diff_list.append(conn_g2['source_port'].component)
+          if self._connection_flag:
             feasible = False
-          else:
-            feasible = True          
+        
+        if conn_g1['sink_port'].component != conn_g2['sink_port'].component:
+          print("sink port wrong")
+          self._G1_out_edges_diff_list.append(conn_g1['source_port'].component)
+          self._G2_out_edges_diff_list.append(conn_g2['source_port'].component)
+          if self._connection_flag:
+            feasible = False
 
-        if G1_component.ports != G2_component.ports:
-          print("ports wrong")
+      # compare layers
+      if G1_component.layers != G2_component.layers:
+        print("layer wrong")
+        self._G1_layer_diff_list.append(G1_component.layers)
+        self._G2_layer_diff_list.append(G2_component.layers)
+        feasible = False
+      
+
+      # compare params
+      if G1_component.params != G2_component.params:
+        print("params wrong")
+        self._G1_param_diff_list.append(G1_component.params)
+        self._G2_param_diff_list.append(G2_component.params)
+
+        if self._param_flag is True:
           feasible = False
+        else:
+          feasible = True          
 
-        return feasible        
+      # compare ports
+      if G1_component.ports != G2_component.ports:
+        print("ports wrong")
+        self._G1_port_diff_list.append(G1_component.ports)
+        self._G2_port_diff_list.append(G2_component.ports)
+        feasible = False
+
+      return feasible        
       
       
     def print_params_diff(self) -> None:
@@ -99,8 +116,8 @@ class SimilarityMatcher(DiGraphMatcher):
 
       print("----Param differences----")
 
-      for i in range(len(self.G1_param_diff_list)):
-        print(f'G1: {self.G1_param_diff_list[i]}, G2: {self.G2_param_diff_list[i]}')
+      for i in range(len(self._G1_param_diff_list)):
+        print(f'G1: {self._G1_param_diff_list[i]}, G2: {self._G2_param_diff_list[i]}')
 
       print("----End----")
 
@@ -112,8 +129,8 @@ class SimilarityMatcher(DiGraphMatcher):
 
       print("----Layer differences----")
 
-      for i in range(len(self.G1_layer_diff_list)):
-        print(f'G1: {self.G1_layer_diff_list[i]}, G2: {self.G2_layer_diff_list[i]}')
+      for i in range(len(self._G1_layer_diff_list)):
+        print(f'G1: {self._G1_layer_diff_list[i]}, G2: {self._G2_layer_diff_list[i]}')
 
       print("----End----")
 
@@ -123,9 +140,34 @@ class SimilarityMatcher(DiGraphMatcher):
       This method prints out the difference in the ports between G1 and G2
       """
 
-      print("----Layer differences----")
+      print("----Port differences----")
 
-      for i in range(len(self.G1_port_diff_list)):
-        print(f'G1: {self.G1_port_diff_list[i]}, G2: {self.G2_port_diff_list[i]}')
+      for i in range(len(self._G1_port_diff_list)):
+        print(f'G1: {self._G1_port_diff_list[i]}, G2: {self._G2_port_diff_list[i]}')
+
+      print("----End----")
+
+
+    def print_in_edges_diff(self) -> None:
+      """
+      This method prints out the difference in the in edges between G1 and G2
+      """
+
+      print("----In edges differences----")
+
+      for i in range(len(self._G1_in_edges_diff_list)):
+        print(f'G1: {self._G1_in_edges_diff_list[i]}, G2: {self._G2_in_edges_diff_list[i]}')
+
+      print("----End----")
+
+    def print_out_edges_diff(self) -> None:
+      """
+      This method prints out the difference in the out edges between G1 and G2
+      """
+
+      print("----Out edges differences----")
+
+      for i in range(len(self._G1_out_edges_diff_list)):
+        print(f'G1: {self._G1_out_edges_diff_list[i]}, G2: {self._G2_out_edges_diff_list[i]}')
 
       print("----End----")

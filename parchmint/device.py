@@ -61,6 +61,8 @@ class Device:
         SM.print_params_diff()
         SM.print_layers_diff()
         SM.print_port_diff()
+        SM.print_in_edges_diff()
+        SM.print_out_edges_diff()
 
         if is_same:
             print("Match!")

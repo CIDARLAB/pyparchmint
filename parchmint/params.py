@@ -1,3 +1,6 @@
+from os import truncate
+
+
 class Params:
     def __init__(self, json=None):
         """Creates an instance of the params
@@ -9,6 +12,32 @@ class Params:
 
         if json:
             self.parse_from_json(json)
+
+
+    def __ne__(self, other) -> bool:
+        """operator overload to compare two params. 
+        ex. P1 != P2
+
+        Args:
+            other (Params): P2 part 
+
+        Returns:
+            bool: Return true if NOT equal. Otherwise false
+        """
+        len1 = len(self.data)
+        len2 = len(self.data)
+
+        if len1 != len2:
+            return True
+        else:
+            for item in self.data:
+                if item not in other.data: 
+                    return True
+                else:
+                    if self.data[item] != other.data[item]:
+                        return True
+
+        return False
 
     def get_param(self, key: str):
         """Returns the value stored against the key
