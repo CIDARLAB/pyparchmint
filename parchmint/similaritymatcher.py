@@ -1,4 +1,6 @@
+from __future__ import annotations
 from os import truncate
+# from parchmint.device import Device
 from typing import Dict
 from networkx.algorithms.isomorphism import DiGraphMatcher
 from networkx.classes import digraph
@@ -6,21 +8,32 @@ from networkx.classes import digraph
 # from lfr.fig.fluidinteractiongraph import FluidInteractionGraph
 
 
-class FeasibilityMatcher(DiGraphMatcher):
+class SimilarityMatcher(DiGraphMatcher):
     """Implementation of VF2 algorithm for matching undirected graphs.
     Suitable for Graph and MultiGraph instances.
     """
 
     def __init__(
         self,
-        G1: digraph.DiGraph,
-        G2: digraph.DiGraph,
+        G1,
+        G2,
         # semantic_information: Dict[str, NodeFilter],
+        compare_params=False
     ):
         # self._semantic_information = semantic_information
-        super(FeasibilityMatcher, self).__init__(G1, G2)
+        self.G1_device = G1
+        self.G2_device = G2
+        self.compare_params = compare_params
+        self.G1_param_diff_list = []
+        self.G2_param_diff_list = []
+        self.G1_layer_diff_list = []
+        self.G2_layer_diff_list = []
+        self.G1_port_diff_list = []
+        self.G2_port_diff_list = []
 
-    def semantic_feasibility(self, G1_node, G2_node):
+        super(SimilarityMatcher, self).__init__(G1.G, G2.G)
+
+    def semantic_feasibility(self, G1_node, G2_node) -> bool:
         """Returns True if adding (G1_node, G2_node) is symantically feasible.
         The semantic feasibility function should return True if it is
         acceptable to add the candidate pair (G1_node, G2_node) to the current
@@ -50,21 +63,69 @@ class FeasibilityMatcher(DiGraphMatcher):
 
         # check each components. If not same, print out the difference and return false. 
         feasible = True
-        
-        if G1_node.layers != G2_node.layers:
+
+
+        G1_component = self.G1_device.get_component(G1_node)
+        G2_component = self.G2_device.get_component(G2_node)
+
+
+        if G1_component.layers != G2_component.layers:
           print("layer wrong")
           feasible = False
         
-        if G1_node.params != G2_node.params:
-          print("params wrong")
-          feasible = False
+        # store all the differences
 
-        if G1_node.ports != G2_node.ports:
+        if G1_component.params != G2_component.params:
+          print("params wrong")
+          self.G1_param_diff_list.append(G1_component.params)
+          self.G2_param_diff_list.append(G2_component.params)
+
+          if self.compare_params is True:
+            feasible = False
+          else:
+            feasible = True          
+
+        if G1_component.ports != G2_component.ports:
           print("ports wrong")
           feasible = False
 
         return feasible        
       
-        # if G1_node.layer
-          # print(f'G1: {G1_node}\nG2: {G2_node}\n NOT feasible')
-          # return False
+      
+    def print_params_diff(self) -> None:
+      """
+      This method prints out the difference in the parameters between G1 and G2
+      """
+
+      print("----Param differences----")
+
+      for i in range(len(self.G1_param_diff_list)):
+        print(f'G1: {self.G1_param_diff_list[i]}, G2: {self.G2_param_diff_list[i]}')
+
+      print("----End----")
+
+    
+    def print_layers_diff(self) -> None:
+      """
+      This method prints out the difference in the layers between G1 and G2
+      """
+
+      print("----Layer differences----")
+
+      for i in range(len(self.G1_layer_diff_list)):
+        print(f'G1: {self.G1_layer_diff_list[i]}, G2: {self.G2_layer_diff_list[i]}')
+
+      print("----End----")
+
+
+    def print_port_diff(self) -> None:
+      """
+      This method prints out the difference in the ports between G1 and G2
+      """
+
+      print("----Layer differences----")
+
+      for i in range(len(self.G1_port_diff_list)):
+        print(f'G1: {self.G1_port_diff_list[i]}, G2: {self.G2_port_diff_list[i]}')
+
+      print("----End----")

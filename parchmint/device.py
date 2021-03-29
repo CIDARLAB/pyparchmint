@@ -5,7 +5,7 @@ from typing import Optional, List
 from parchmint.component import Component
 from parchmint.connection import Connection
 from parchmint.params import Params
-from parchmint.feasibilitymatcher import FeasibilityMatcher
+from parchmint.similaritymatcher import SimilarityMatcher
 
 import jsonschema
 import pathlib
@@ -43,7 +43,7 @@ class Device:
     # - check connections, components, print if its same or not
     # - have a flag to print parameter differences 
 
-    def is_feasible(self, device: Device) -> bool:
+    def compare(self, device: Device) -> bool:
         """compare against the input device. Return true if they are semnatcally feasible.
 
         Args:
@@ -55,20 +55,19 @@ class Device:
 
         self.generate_network()
 
-        FM = FeasibilityMatcher(self.G, device.G)
+        SM = SimilarityMatcher(self, device)
 
-        feasible = True
+        is_same = SM.is_isomorphic()
+        SM.print_params_diff()
+        SM.print_layers_diff()
+        SM.print_port_diff()
 
-        for node in self.G.nodes:
-            # find string
-            G1_component = self.get_component(node)
-            G2_component = device.get_component(node)
-
-            if not FM.semantic_feasibility(G1_component, G2_component):
-                feasible = False
+        if is_same:
+            print("Match!")
+        else:
+            print("Not Match!")
         
-        return feasible
-
+        return is_same
 
     def add_component(self, component: Component):
         """Adds a component object to the device
