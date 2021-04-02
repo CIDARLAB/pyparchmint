@@ -66,17 +66,27 @@ class SimilarityMatcher(DiGraphMatcher):
         conn_g1 = self._G1_in_edges[item]
         conn_g2 = self._G2_in_edges[item]
 
-        if conn_g1['source_port'].component != conn_g2['source_port'].component:
+        g1_source = conn_g1['source_port']
+        g2_source = conn_g2['source_port']
+
+        g1_sink = conn_g1['sink_port']
+        g2_sink = conn_g2['sink_port']
+
+        if (g1_source.component != g2_source.component) or (g1_source.port != g2_source.port):
           print("source port wrong")
-          self._G1_in_edges_diff_list.append(conn_g1['source_port'].component)
-          self._G2_in_edges_diff_list.append(conn_g2['source_port'].component)
+          self._G1_in_edges_diff_list.append(g1_source.component)
+          self._G1_in_edges_diff_list.append(g1_source.port)
+          self._G2_in_edges_diff_list.append(g2_source.component)
+          self._G2_in_edges_diff_list.append(g2_source.port)
           if self._connection_flag:
             feasible = False
         
-        if conn_g1['sink_port'].component != conn_g2['sink_port'].component:
+        if (g1_sink.component != g2_sink.component) or (g1_sink.port != g2_sink.port):
           print("sink port wrong")
-          self._G1_out_edges_diff_list.append(conn_g1['source_port'].component)
-          self._G2_out_edges_diff_list.append(conn_g2['source_port'].component)
+          self._G1_out_edges_diff_list.append(g1_sink.component)
+          self._G1_out_edges_diff_list.append(g1_sink.port)
+          self._G2_out_edges_diff_list.append(g2_sink.component)
+          self._G2_out_edges_diff_list.append(g2_sink.port)
           if self._connection_flag:
             feasible = False
 
@@ -155,8 +165,8 @@ class SimilarityMatcher(DiGraphMatcher):
 
       print("----In edges differences----")
 
-      for i in range(len(self._G1_in_edges_diff_list)):
-        print(f'G1: {self._G1_in_edges_diff_list[i]}, G2: {self._G2_in_edges_diff_list[i]}')
+      for i in range(0, len(self._G1_in_edges_diff_list), 2):
+        print(f'G1: {self._G1_in_edges_diff_list[i]} -port: {self._G1_in_edges_diff_list[i+1]}, G2: {self._G2_in_edges_diff_list[i]} -port: {self._G2_in_edges_diff_list[i+1]}')
 
       print("----End----")
 
@@ -167,7 +177,7 @@ class SimilarityMatcher(DiGraphMatcher):
 
       print("----Out edges differences----")
 
-      for i in range(len(self._G1_out_edges_diff_list)):
-        print(f'G1: {self._G1_out_edges_diff_list[i]}, G2: {self._G2_out_edges_diff_list[i]}')
+      for i in range(0, len(self._G1_out_edges_diff_list), 2):
+        print(f'G1: {self._G1_out_edges_diff_list[i]} -port: {self._G1_out_edges_diff_list[i+1]}, G2: {self._G2_out_edges_diff_list[i]} -port: {self._G2_out_edges_diff_list[i+1]}')
 
       print("----End----")
