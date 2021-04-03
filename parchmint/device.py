@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from networkx.algorithms import components
 from parchmint.layer import Layer
 import networkx as nx
-from typing import Dict, Optional, List, overload
+from typing import Dict, Optional, List
 from parchmint.component import Component
 from parchmint.connection import Connection
 from parchmint.params import Params
+from parchmint.similaritymatcher import SimilarityMatcher
+
 import jsonschema
 import pathlib
 import parchmint
@@ -15,6 +16,8 @@ from enum import Enum
 
 
 PROJECT_DIR = pathlib.Path(parchmint.__file__).parent.parent.absolute()
+
+# GM = nx.algorithms.isomorphism.GraphMatcher(device1, device2)
 
 
 class ValveType(Enum):
@@ -124,6 +127,39 @@ class Device:
                 )
             )
 
+    # add compare function
+    # -pass device, compare devices
+    # - check connections, components, print if its same or not
+    # - have a flag to print parameter differences
+
+    def compare(self, device: Device) -> bool:
+        """compare against the input device. Return true if they are semnatcally feasible.
+
+        Args:
+            device (Device): expected device
+
+        Returns:
+            bool: If semntically feasible, return true. Else false.
+        """
+
+        self.generate_network()
+
+        SM = SimilarityMatcher(self, device)
+
+        is_same = SM.is_isomorphic()
+        SM.print_params_diff()
+        SM.print_layers_diff()
+        SM.print_port_diff()
+        SM.print_in_edges_diff()
+        SM.print_out_edges_diff()
+
+        if is_same:
+            print("Match!")
+        else:
+            print("Not Match!")
+
+        return is_same
+
     def add_component(self, component: Component):
         """Adds a component object to the device
 
@@ -203,6 +239,7 @@ class Device:
                 self.add_layer(layer)
                 layer_mapping[layer] = layer
             else:
+                assert layer.ID is not None
                 layer_mapping[layer] = self.get_layer(layer.ID)
 
         for component in netlist.components:
