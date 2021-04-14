@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-from networkx.algorithms import components
 from parchmint.layer import Layer
 import networkx as nx
-from typing import Dict, Optional, List, overload
+from typing import Dict, Optional, List
 from parchmint.component import Component
 from parchmint.connection import Connection
 from parchmint.params import Params
@@ -203,6 +202,7 @@ class Device:
                 self.add_layer(layer)
                 layer_mapping[layer] = layer
             else:
+                assert layer.ID is not None
                 layer_mapping[layer] = self.get_layer(layer.ID)
 
         for component in netlist.components:
