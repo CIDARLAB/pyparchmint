@@ -21,8 +21,8 @@ class ConnectionPath:
             waypoints (List[Tuple[int, int]], optional): list of the coordinates. Defaults to [].
         """
         super().__init__()
-        self.__source: Target = source
-        self.__sink: Target = sink
+        self.__source: Optional[Target] = source
+        self.__sink: Optional[Target] = sink
         self.__waypoints: List[Tuple[int, int]] = waypoints
 
         if json is not None:
@@ -30,10 +30,12 @@ class ConnectionPath:
 
     @property
     def source(self) -> Target:
+        assert self.__source is not None
         return self.__source
 
     @property
     def sink(self) -> Target:
+        assert self.__sink is not None
         return self.__sink
 
     @property
@@ -81,7 +83,7 @@ class Connection:
         self.params: Params = Params()
         self.source: Optional[Target] = None
         self.sinks: List[Target] = []
-        self.layer: Layer = None
+        self.layer: Optional[Layer] = None
         self._paths: List[ConnectionPath] = []
 
         if json:
