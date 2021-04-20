@@ -225,15 +225,18 @@ class Device:
         self.name = json["name"]
 
         # First always add the layers
-        for layer in json["layers"]:
-            self.add_layer(Layer(layer))
+        if "layers" in json.keys():
+            for layer in json["layers"]:
+                self.add_layer(Layer(layer))
 
         # Loop through the components
-        for component in json["components"]:
-            self.add_component(Component(component, self))
+        if "components" in json.keys():
+            for component in json["components"]:
+                self.add_component(Component(component, self))
 
-        for connection in json["connections"]:
-            self.add_connection(Connection(connection, self))
+        if "connections" in json.keys():
+            for connection in json["connections"]:
+                self.add_connection(Connection(connection, self))
 
         if "params" in json.keys():
             self.params = Params(json["params"])
