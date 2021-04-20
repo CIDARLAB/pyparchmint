@@ -119,7 +119,7 @@ class Connection:
 
         self.source = Target(json["source"])
 
-        if "sinks" in json.keys():
+        if json["sinks"]:
             for target in json["sinks"]:
                 self.sinks.append(Target(target))
         else:

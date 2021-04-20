@@ -262,7 +262,7 @@ class Device:
         self.name = json["name"]
 
         # First always add the layers
-        if "layer" in json.keys():
+        if "layers" in json.keys():
             for layer in json["layers"]:
                 self.add_layer(Layer(layer))
         else:
