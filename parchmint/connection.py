@@ -117,9 +117,12 @@ class Connection:
 
         self.source = Target(json["source"])
 
-        if json["sinks"]:
-            for target in json["sinks"]:
-                self.sinks.append(Target(target))
+        if "sinks" in json.keys():
+            if json["sinks"]:
+                for target in json["sinks"]:
+                    self.sinks.append(Target(target))
+            else:
+                print("connection", self.name, "does not have any sinks")
         else:
             print("connection", self.name, "does not have any sinks")
 
