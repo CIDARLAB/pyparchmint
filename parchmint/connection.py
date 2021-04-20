@@ -117,8 +117,9 @@ class Connection:
 
         self.source = Target(json["source"])
 
-        for target in json["sinks"]:
-            self.sinks.append(Target(target))
+        if "sinks" in json.keys():
+            for target in json["sinks"]:
+                self.sinks.append(Target(target))
 
         # TODO - Change this in the v1.2 version
         if "waypoints" in json.keys():
