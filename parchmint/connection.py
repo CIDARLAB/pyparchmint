@@ -120,6 +120,8 @@ class Connection:
         if "sinks" in json.keys():
             for target in json["sinks"]:
                 self.sinks.append(Target(target))
+        else:
+            print("connection", self.name, "does not have any sinks")
 
         # TODO - Change this in the v1.2 version
         if "waypoints" in json.keys():
