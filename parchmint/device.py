@@ -225,15 +225,24 @@ class Device:
         self.name = json["name"]
 
         # First always add the layers
-        for layer in json["layers"]:
-            self.add_layer(Layer(layer))
+        if "layers" in json.keys():
+            for layer in json["layers"]:
+                self.add_layer(Layer(layer))
+        else:
+            print("no layers found")
 
         # Loop through the components
-        for component in json["components"]:
-            self.add_component(Component(component, self))
+        if "components" in json.keys():
+            for component in json["components"]:
+                self.add_component(Component(component, self))
+        else:
+            print("no components found")
 
-        for connection in json["connections"]:
-            self.add_connection(Connection(connection, self))
+        if "connections" in json.keys():
+            for connection in json["connections"]:
+                self.add_connection(Connection(connection, self))
+        else:
+            print("no connections found")
 
         if "params" in json.keys():
             self.params = Params(json["params"])
@@ -251,7 +260,9 @@ class Device:
                 self.yspan = self.params.get_param("length")
             elif self.params.exists("y-span"):
                 self.yspan = self.params.get_param("y-span")
-
+        else:
+            print("no params found")
+        
         if "valveMap" in json.keys():
             valve_map = json["valveMap"]
 
