@@ -1,3 +1,5 @@
+![Docs Status](https://readthedocs.org/projects/pyparchmint/badge/)
+
 # ParchMINT object library in Python
 
 ## About
