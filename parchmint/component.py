@@ -1,13 +1,15 @@
 from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from parchmint.device import Device
 
 from typing import List, Tuple
+
+from parchmint.layer import Layer
 from parchmint.params import Params
 from parchmint.port import Port
-from parchmint.layer import Layer
 
 
 class Component:
