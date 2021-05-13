@@ -47,7 +47,7 @@ class ValveType(Enum):
 
 
 class Device:
-    def __init__(self, json=None):
+    def __init__(self, json_data=None):
         """Creates a new device object
 
         Args:
@@ -67,8 +67,8 @@ class Device:
         self._valve_map: Dict[Component, Connection] = dict()
         self._valve_type_map: Dict[Component, ValveType] = dict()
 
-        if json:
-            self.parse_from_json(json)
+        if json_data:
+            self.parse_from_json(json_data)
             self.generate_network()
 
     def map_valve(
@@ -253,36 +253,36 @@ class Device:
             connection.layer = layer_mapping[connection.layer]
             self.add_connection(connection)
 
-    def parse_from_json(self, json) -> None:
+    def parse_from_json(self, json_data) -> None:
         """Returns the json dict
 
         Returns:
             dict: dictionary that can be used in json.dumps()
         """
-        self.name = json["name"]
+        self.name = json_data["name"]
 
         # First always add the layers
-        if "layers" in json.keys():
-            for layer in json["layers"]:
+        if "layers" in json_data.keys():
+            for layer in json_data["layers"]:
                 self.add_layer(Layer(layer))
         else:
             print("no layers found")
 
         # Loop through the components
-        if "components" in json.keys():
-            for component in json["components"]:
+        if "components" in json_data.keys():
+            for component in json_data["components"]:
                 self.add_component(Component(component, self))
         else:
             print("no components found")
 
-        if "connections" in json.keys():
-            for connection in json["connections"]:
+        if "connections" in json_data.keys():
+            for connection in json_data["connections"]:
                 self.add_connection(Connection(connection, self))
         else:
             print("no connections found")
 
-        if "params" in json.keys():
-            self.params = Params(json["params"])
+        if "params" in json_data.keys():
+            self.params = Params(json_data["params"])
 
             if self.params.exists("xspan"):
                 self.xspan = self.params.get_param("xspan")
@@ -300,14 +300,14 @@ class Device:
         else:
             print("no params found")
 
-        if "valveMap" in json.keys():
-            valve_map = json["valveMap"]
+        if "valveMap" in json_data.keys():
+            valve_map = json_data["valveMap"]
 
             for key, value in valve_map.items():
                 self._valve_map[self.get_component(key)] = self.get_connection(value)
 
-        if "valveTypeMap" in json.keys():
-            valve_type_map = json["valveTypeMap"]
+        if "valveTypeMap" in json_data.keys():
+            valve_type_map = json_data["valveTypeMap"]
 
             for key, value in valve_type_map.items():
                 if value is ValveType.NORMALLY_OPEN:
