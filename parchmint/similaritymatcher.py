@@ -1,6 +1,8 @@
 from __future__ import annotations
-from networkx.algorithms.isomorphism import DiGraphMatcher
+
 from typing import TYPE_CHECKING
+
+from networkx.algorithms.isomorphism import DiGraphMatcher
 
 if TYPE_CHECKING:
     from parchmint import Device

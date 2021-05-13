@@ -1,19 +1,19 @@
 from __future__ import annotations
 
-from parchmint.layer import Layer
-import networkx as nx
-from typing import Dict, Optional, List
-from parchmint.component import Component
-from parchmint.connection import Connection
-from parchmint.params import Params
-from parchmint.similaritymatcher import SimilarityMatcher
+import json
+import pathlib
+from enum import Enum
+from typing import Dict, List, Optional
 
 import jsonschema
-import pathlib
-import parchmint
-import json
-from enum import Enum
+import networkx as nx
 
+import parchmint
+from parchmint.component import Component
+from parchmint.connection import Connection
+from parchmint.layer import Layer
+from parchmint.params import Params
+from parchmint.similaritymatcher import SimilarityMatcher
 
 PROJECT_DIR = pathlib.Path(parchmint.__file__).parent.parent.absolute()
 

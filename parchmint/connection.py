@@ -1,6 +1,8 @@
 from __future__ import annotations
-from parchmint.layer import Layer
+
 from typing import List, Optional, Tuple
+
+from parchmint.layer import Layer
 from parchmint.params import Params
 from parchmint.target import Target
 

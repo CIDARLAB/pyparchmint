@@ -13,13 +13,12 @@ class Params:
         if json:
             self.parse_from_json(json)
 
-
     def __ne__(self, other) -> bool:
-        """operator overload to compare two params. 
+        """operator overload to compare two params.
         ex. P1 != P2
 
         Args:
-            other (Params): P2 part 
+            other (Params): P2 part
 
         Returns:
             bool: Return true if NOT equal. Otherwise false
@@ -31,7 +30,7 @@ class Params:
             return True
         else:
             for item in self.data:
-                if item not in other.data: 
+                if item not in other.data:
                     return True
                 else:
                     if self.data[item] != other.data[item]:
