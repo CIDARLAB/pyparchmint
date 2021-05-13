@@ -299,7 +299,7 @@ class Device:
                 self.yspan = self.params.get_param("y-span")
         else:
             print("no params found")
-        
+
         if "valveMap" in json.keys():
             valve_map = json["valveMap"]
 
@@ -341,9 +341,9 @@ class Device:
             self.G.add_node(component.ID, component_ref=component)
 
         for connection in self.connections:
-            sourceref = connection.source._component
+            sourceref = connection.source.component
             for sink in connection.sinks:
-                sinkref = sink._component
+                sinkref = sink.component
                 self.G.add_edge(
                     sourceref,
                     sinkref,
