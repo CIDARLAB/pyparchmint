@@ -64,8 +64,8 @@ class Device:
         self.G = nx.MultiDiGraph()
 
         # Stores the valve / connection mappings
-        self._valve_map: Dict[Component, Connection] = dict()
-        self._valve_type_map: Dict[Component, ValveType] = dict()
+        self._valve_map: Dict[Component, Connection] = {}
+        self._valve_type_map: Dict[Component, ValveType] = {}
 
         if json_data:
             self.parse_from_json(json_data)
@@ -233,7 +233,7 @@ class Device:
         """
         # TODO - Figure out how to merge the layers later
         # First create a map of layers
-        layer_mapping = dict()
+        layer_mapping = {}
         for layer in netlist.layers:
             if layer not in self.layers:
                 self.add_layer(layer)
@@ -441,7 +441,7 @@ class Device:
         Returns:
             dict: dictionary that can be used in json.dumps()
         """
-        ret = dict()
+        ret = {}
         ret["name"] = self.name
         ret["components"] = [c.to_parchmint_v1() for c in self.components]
         ret["connections"] = [c.to_parchmint_v1() for c in self.connections]
@@ -458,8 +458,8 @@ class Device:
         ret["version"] = 1.2
 
         # Add the valvemap information
-        valve_map = dict()
-        valve_type_map = dict()
+        valve_map = {}
+        valve_type_map = {}
         for valve, connection in self._valve_map.items():
             valve_map[valve.ID] = connection.ID
         ret["valveMap"] = valve_map

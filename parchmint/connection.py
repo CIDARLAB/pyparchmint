@@ -12,7 +12,7 @@ class ConnectionPath:
         self,
         source: Target = None,
         sink: Target = None,
-        waypoints: List[Tuple[int, int]] = [],
+        waypoints: List[Tuple[int, int]] = None,
         json=None,
     ) -> None:
         """Creates a new connection path object
@@ -22,6 +22,8 @@ class ConnectionPath:
             sink (Target): sink corresponding to the path
             waypoints (List[Tuple[int, int]], optional): list of the coordinates. Defaults to [].
         """
+        if waypoints is None:
+            waypoints = []
         super().__init__()
         self.__source: Optional[Target] = source
         self.__sink: Optional[Target] = sink

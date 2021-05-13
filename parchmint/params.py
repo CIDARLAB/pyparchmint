@@ -8,7 +8,7 @@ class Params:
         Args:
             json (dict, optional): json dict form json.loads(). Defaults to None.
         """
-        self.data = dict()
+        self.data = {}
 
         if json:
             self.parse_from_json(json)
