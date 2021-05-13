@@ -160,7 +160,7 @@ class Device:
 
         return is_same
 
-    def add_component(self, component: Component):
+    def add_component(self, component: Component) -> None:
         """Adds a component object to the device
 
         Args:
@@ -182,7 +182,7 @@ class Device:
                 "Could not add component since its not an instance of parchmint:Component"
             )
 
-    def add_connection(self, connection: Connection):
+    def add_connection(self, connection: Connection) -> None:
         """Adds a connection object to the device
 
         Args:
@@ -352,7 +352,7 @@ class Device:
                     connection_ref=connection,
                 )
 
-    def get_name_from_id(self, id: str) -> Optional[str]:
+    def get_name_from_id(self, id: str) -> str:
         """Returns the name of the component with the corresponding id
 
         Args:
@@ -364,6 +364,8 @@ class Device:
         for component in self.components:
             if component.ID == id:
                 return component.name
+
+        raise Exception("Could not find component with ID: {}".format(id))
 
     def component_exists(self, component_id: str) -> bool:
         """checks if component exists in the device
@@ -451,7 +453,7 @@ class Device:
 
         return ret
 
-    def to_parchmint_v1_x(self):
+    def to_parchmint_v1_x(self) -> Dict:
         ret = self.to_parchmint_v1()
 
         # Modify the version of the parchmint
