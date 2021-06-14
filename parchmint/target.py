@@ -51,7 +51,7 @@ class Target:
         return self._port
 
     @port.setter
-    def port(self, value: str) -> None:
+    def port(self, value: Optional[str]) -> None:
         """Sets the port in the target
 
         Args:
