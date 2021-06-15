@@ -141,7 +141,6 @@ class Device:
         Returns:
             bool: If semntically feasible, return true. Else false.
         """
-
         self.generate_network()
 
         SM = SimilarityMatcher(self, device)
