@@ -146,7 +146,6 @@ class Component:
         Returns:
             dict: dictionary that can be used in json.dumps()
         """
-
         ret = {
             "name": self.name,
             "id": self.ID,

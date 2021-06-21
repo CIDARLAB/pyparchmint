@@ -34,12 +34,14 @@ class ConnectionPath:
 
     @property
     def source(self) -> Target:
-        assert self.__source is not None
+        if self.__source is None:
+            raise AssertionError
         return self.__source
 
     @property
     def sink(self) -> Target:
-        assert self.__sink is not None
+        if self.__sink is None:
+            raise AssertionError
         return self.__sink
 
     @property

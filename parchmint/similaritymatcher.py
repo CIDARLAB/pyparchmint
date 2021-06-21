@@ -53,8 +53,6 @@ class SimilarityMatcher(DiGraphMatcher):
         Returns:
             bool: if they are semantically feasible, return true. else return false.
         """
-
-        # check each components. If not same, print out the difference and return false.
         feasible = True
 
         G1_component = self._G1_device.get_component(G1_node)
@@ -124,7 +122,6 @@ class SimilarityMatcher(DiGraphMatcher):
         """
         This method prints out the difference in the parameters between G1 and G2
         """
-
         print("----Param differences----")
 
         for i in range(len(self._G1_param_diff_list)):
@@ -138,7 +135,6 @@ class SimilarityMatcher(DiGraphMatcher):
         """
         This method prints out the difference in the layers between G1 and G2
         """
-
         print("----Layer differences----")
 
         for i in range(len(self._G1_layer_diff_list)):
@@ -152,7 +148,6 @@ class SimilarityMatcher(DiGraphMatcher):
         """
         This method prints out the difference in the ports between G1 and G2
         """
-
         print("----Port differences----")
 
         for i in range(len(self._G1_port_diff_list)):
@@ -164,7 +159,6 @@ class SimilarityMatcher(DiGraphMatcher):
         """
         This method prints out the difference in the in edges between G1 and G2
         """
-
         print("----In edges differences----")
 
         for i in range(0, len(self._G1_in_edges_diff_list), 2):
@@ -178,7 +172,6 @@ class SimilarityMatcher(DiGraphMatcher):
         """
         This method prints out the difference in the out edges between G1 and G2
         """
-
         print("----Out edges differences----")
 
         for i in range(0, len(self._G1_out_edges_diff_list), 2):
