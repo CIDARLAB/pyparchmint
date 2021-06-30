@@ -1,6 +1,8 @@
 from __future__ import annotations
-from parchmint.layer import Layer
+
 from typing import List, Optional, Tuple
+
+from parchmint.layer import Layer
 from parchmint.params import Params
 from parchmint.target import Target
 
@@ -10,7 +12,7 @@ class ConnectionPath:
         self,
         source: Target = None,
         sink: Target = None,
-        waypoints: List[Tuple[int, int]] = [],
+        waypoints: List[Tuple[int, int]] = None,
         json=None,
     ) -> None:
         """Creates a new connection path object
@@ -20,9 +22,11 @@ class ConnectionPath:
             sink (Target): sink corresponding to the path
             waypoints (List[Tuple[int, int]], optional): list of the coordinates. Defaults to [].
         """
+        if waypoints is None:
+            waypoints = []
         super().__init__()
-        self.__source: Target = source
-        self.__sink: Target = sink
+        self.__source: Optional[Target] = source
+        self.__sink: Optional[Target] = sink
         self.__waypoints: List[Tuple[int, int]] = waypoints
 
         if json is not None:
@@ -30,10 +34,14 @@ class ConnectionPath:
 
     @property
     def source(self) -> Target:
+        if self.__source is None:
+            raise AssertionError
         return self.__source
 
     @property
     def sink(self) -> Target:
+        if self.__sink is None:
+            raise AssertionError
         return self.__sink
 
     @property
@@ -81,7 +89,7 @@ class Connection:
         self.params: Params = Params()
         self.source: Optional[Target] = None
         self.sinks: List[Target] = []
-        self.layer: Layer = None
+        self.layer: Optional[Layer] = None
         self._paths: List[ConnectionPath] = []
         self.features: List[str] = []
 
@@ -145,8 +153,20 @@ class Connection:
 
         self.source = Target(json["source"])
 
-        for target in json["sinks"]:
-            self.sinks.append(Target(target))
+        if "sinks" in json.keys():
+            if json["sinks"]:
+                for target in json["sinks"]:
+                    self.sinks.append(Target(target))
+            else:
+                print("connection", self.name, "does not have any sinks")
+        else:
+            print("connection", self.name, "does not have any sinks")
+
+        # TODO - Change this in the v1.2 version
+        if "waypoints" in json.keys():
+            waypoints_raw = json["waypoints"]
+            waypoints = [(wp[0], wp[1]) for wp in waypoints_raw]
+            self.add_waypoints_path(None, None, waypoints)
         
         self.features = json["features"]  # array of feature IDs
 

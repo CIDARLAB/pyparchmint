@@ -1,6 +1,7 @@
-from pathlib import Path
-from parchmint.device import Device
 import argparse
+from pathlib import Path
+
+from parchmint.device import Device
 
 
 def validate_V1():
