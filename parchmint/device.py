@@ -1,20 +1,23 @@
 from __future__ import annotations
 
-from networkx.algorithms import components
-from parchmint.layer import Layer
+import json
+import pathlib
+from enum import Enum
+from typing import Dict, List, Optional
+
+import jsonschema
 import networkx as nx
-from typing import Dict, Optional, List, overload
+
+import parchmint
 from parchmint.component import Component
 from parchmint.connection import Connection
+from parchmint.layer import Layer
 from parchmint.params import Params
-import jsonschema
-import pathlib
-import parchmint
-import json
-from enum import Enum
-
+from parchmint.similaritymatcher import SimilarityMatcher
 
 PROJECT_DIR = pathlib.Path(parchmint.__file__).parent.parent.absolute()
+
+# GM = nx.algorithms.isomorphism.GraphMatcher(device1, device2)
 
 
 class ValveType(Enum):
@@ -44,7 +47,7 @@ class ValveType(Enum):
 
 
 class Device:
-    def __init__(self, json=None):
+    def __init__(self, json_data=None):
         """Creates a new device object
 
         Args:
@@ -61,11 +64,11 @@ class Device:
         self.G = nx.MultiDiGraph()
 
         # Stores the valve / connection mappings
-        self._valve_map: Dict[Component, Connection] = dict()
-        self._valve_type_map: Dict[Component, ValveType] = dict()
+        self._valve_map: Dict[Component, Connection] = {}
+        self._valve_type_map: Dict[Component, ValveType] = {}
 
-        if json:
-            self.parse_from_json(json)
+        if json_data:
+            self.parse_from_json(json_data)
             self.generate_network()
 
     def map_valve(
@@ -124,7 +127,39 @@ class Device:
                 )
             )
 
-    def add_component(self, component: Component):
+    # add compare function
+    # -pass device, compare devices
+    # - check connections, components, print if its same or not
+    # - have a flag to print parameter differences
+
+    def compare(self, device: Device) -> bool:
+        """compare against the input device. Return true if they are semnatcally feasible.
+
+        Args:
+            device (Device): expected device
+
+        Returns:
+            bool: If semntically feasible, return true. Else false.
+        """
+        self.generate_network()
+
+        SM = SimilarityMatcher(self, device)
+
+        is_same = SM.is_isomorphic()
+        SM.print_params_diff()
+        SM.print_layers_diff()
+        SM.print_port_diff()
+        SM.print_in_edges_diff()
+        SM.print_out_edges_diff()
+
+        if is_same:
+            print("Match!")
+        else:
+            print("Not Match!")
+
+        return is_same
+
+    def add_component(self, component: Component) -> None:
         """Adds a component object to the device
 
         Args:
@@ -146,7 +181,7 @@ class Device:
                 "Could not add component since its not an instance of parchmint:Component"
             )
 
-    def add_connection(self, connection: Connection):
+    def add_connection(self, connection: Connection) -> None:
         """Adds a connection object to the device
 
         Args:
@@ -197,12 +232,13 @@ class Device:
         """
         # TODO - Figure out how to merge the layers later
         # First create a map of layers
-        layer_mapping = dict()
+        layer_mapping = {}
         for layer in netlist.layers:
             if layer not in self.layers:
                 self.add_layer(layer)
                 layer_mapping[layer] = layer
             else:
+                assert layer.ID is not None
                 layer_mapping[layer] = self.get_layer(layer.ID)
 
         for component in netlist.components:
@@ -216,30 +252,36 @@ class Device:
             connection.layer = layer_mapping[connection.layer]
             self.add_connection(connection)
 
-    def parse_from_json(self, json) -> None:
+    def parse_from_json(self, json_data) -> None:
         """Returns the json dict
 
         Returns:
             dict: dictionary that can be used in json.dumps()
         """
-        self.name = json["name"]
+        self.name = json_data["name"]
 
         # First always add the layers
-        if "layers" in json.keys():
-            for layer in json["layers"]:
+        if "layers" in json_data.keys():
+            for layer in json_data["layers"]:
                 self.add_layer(Layer(layer))
+        else:
+            print("no layers found")
 
         # Loop through the components
-        if "components" in json.keys():
-            for component in json["components"]:
+        if "components" in json_data.keys():
+            for component in json_data["components"]:
                 self.add_component(Component(component, self))
+        else:
+            print("no components found")
 
-        if "connections" in json.keys():
-            for connection in json["connections"]:
+        if "connections" in json_data.keys():
+            for connection in json_data["connections"]:
                 self.add_connection(Connection(connection, self))
+        else:
+            print("no connections found")
 
-        if "params" in json.keys():
-            self.params = Params(json["params"])
+        if "params" in json_data.keys():
+            self.params = Params(json_data["params"])
 
             if self.params.exists("xspan"):
                 self.xspan = self.params.get_param("xspan")
@@ -254,15 +296,17 @@ class Device:
                 self.yspan = self.params.get_param("length")
             elif self.params.exists("y-span"):
                 self.yspan = self.params.get_param("y-span")
+        else:
+            print("no params found")
 
-        if "valveMap" in json.keys():
-            valve_map = json["valveMap"]
+        if "valveMap" in json_data.keys():
+            valve_map = json_data["valveMap"]
 
             for key, value in valve_map.items():
                 self._valve_map[self.get_component(key)] = self.get_connection(value)
 
-        if "valveTypeMap" in json.keys():
-            valve_type_map = json["valveTypeMap"]
+        if "valveTypeMap" in json_data.keys():
+            valve_type_map = json_data["valveTypeMap"]
 
             for key, value in valve_type_map.items():
                 if value is ValveType.NORMALLY_OPEN:
@@ -296,9 +340,9 @@ class Device:
             self.G.add_node(component.ID, component_ref=component)
 
         for connection in self.connections:
-            sourceref = connection.source._component
+            sourceref = connection.source.component
             for sink in connection.sinks:
-                sinkref = sink._component
+                sinkref = sink.component
                 self.G.add_edge(
                     sourceref,
                     sinkref,
@@ -307,7 +351,7 @@ class Device:
                     connection_ref=connection,
                 )
 
-    def get_name_from_id(self, id: str) -> Optional[str]:
+    def get_name_from_id(self, id: str) -> str:
         """Returns the name of the component with the corresponding id
 
         Args:
@@ -319,6 +363,8 @@ class Device:
         for component in self.components:
             if component.ID == id:
                 return component.name
+
+        raise Exception("Could not find component with ID: {}".format(id))
 
     def component_exists(self, component_id: str) -> bool:
         """checks if component exists in the device
@@ -396,7 +442,7 @@ class Device:
         Returns:
             dict: dictionary that can be used in json.dumps()
         """
-        ret = dict()
+        ret = {}
         ret["name"] = self.name
         ret["components"] = [c.to_parchmint_v1() for c in self.components]
         ret["connections"] = [c.to_parchmint_v1() for c in self.connections]
@@ -406,15 +452,15 @@ class Device:
 
         return ret
 
-    def to_parchmint_v1_x(self):
+    def to_parchmint_v1_x(self) -> Dict:
         ret = self.to_parchmint_v1()
 
         # Modify the version of the parchmint
         ret["version"] = 1.2
 
         # Add the valvemap information
-        valve_map = dict()
-        valve_type_map = dict()
+        valve_map = {}
+        valve_type_map = {}
         for valve, connection in self._valve_map.items():
             valve_map[valve.ID] = connection.ID
         ret["valveMap"] = valve_map
