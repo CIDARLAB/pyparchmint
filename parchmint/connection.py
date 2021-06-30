@@ -26,7 +26,7 @@ class ConnectionPath:
         self.__waypoints: List[Tuple[int, int]] = waypoints
 
         if json is not None:
-            self.parse_parchmint_v1(json)
+            self.parse_parchmint_v1_x(json)
 
     @property
     def source(self) -> Target:
@@ -83,6 +83,7 @@ class Connection:
         self.sinks: List[Target] = []
         self.layer: Layer = None
         self._paths: List[ConnectionPath] = []
+        self.features: List[str] = []
 
         if json:
             if device_ref is None:
@@ -90,7 +91,7 @@ class Connection:
                     "Cannot Parse Connection from JSON with no Device Reference, check device_ref parameter in constructor "
                 )
 
-            self.parse_from_json(json, device_ref)
+            self.parse_from_json_v1_x(json, device_ref)
 
     def parse_from_json(self, json, device_ref=None):
         """Parses from the json dict
@@ -146,6 +147,8 @@ class Connection:
 
         for target in json["sinks"]:
             self.sinks.append(Target(target))
+        
+        self.features = json["features"]  # array of feature IDs
 
     def __str__(self):
         return str(self.__dict__)
@@ -204,5 +207,5 @@ class Connection:
             "params": self.params.to_parchmint_v1(),
             "layer": self.layer.ID,
             "paths": [path.to_parchmint_v1() for path in self._paths],
-            "features": [],
+            "features": self.features,
         }
