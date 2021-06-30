@@ -161,12 +161,6 @@ class Connection:
                 print("connection", self.name, "does not have any sinks")
         else:
             print("connection", self.name, "does not have any sinks")
-
-        # TODO - Change this in the v1.2 version
-        if "waypoints" in json.keys():
-            waypoints_raw = json["waypoints"]
-            waypoints = [(wp[0], wp[1]) for wp in waypoints_raw]
-            self.add_waypoints_path(None, None, waypoints)
         
         self.features = json["features"]  # array of feature IDs
 
