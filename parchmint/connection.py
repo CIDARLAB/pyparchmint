@@ -79,6 +79,7 @@ class Connection:
     to connect different microfluidic components.
 
     """
+
     def __init__(self, json=None, device_ref=None):
         """[summary]
 
@@ -140,7 +141,7 @@ class Connection:
 
         Args:
             json (dict): json dict after json.loads()
-        """        
+        """
         if device_ref is None:
             raise Exception(
                 "Cannot Parse Connection from JSON with no Device Reference, check device_ref parameter in constructor "
@@ -167,7 +168,7 @@ class Connection:
                 print("connection", self.name, "does not have any sinks")
         else:
             print("connection", self.name, "does not have any sinks")
-        
+
         self.features = json["features"]  # array of feature IDs
 
     def __str__(self):
@@ -229,5 +230,5 @@ class Connection:
             "paths": [path.to_parchmint_v1() for path in self._paths],
             "features": self.features,
         }
-        
+
         return ret
