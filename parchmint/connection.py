@@ -73,6 +73,12 @@ class ConnectionPath:
 
 
 class Connection:
+    """Connection Object represented in parchmint
+
+    Connection object encapsulates all types of channels that can be drawn
+    to connect different microfluidic components.
+
+    """
     def __init__(self, json=None, device_ref=None):
         """[summary]
 
