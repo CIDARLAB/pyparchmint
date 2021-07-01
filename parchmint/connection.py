@@ -223,3 +223,5 @@ class Connection:
             "paths": [path.to_parchmint_v1() for path in self._paths],
             "features": self.features,
         }
+        
+        return ret
