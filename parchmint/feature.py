@@ -1,4 +1,6 @@
 
+from typing_extensions import ParamSpec
+from parchmint.params import Params
 from typing import Optional
 
 
@@ -12,27 +14,35 @@ class Feature:
 
     """
 
-    def __init__(self, id:str = None, feature_type:str = None) -> None:
+    def __init__(self, id:str = None, feature_type:str = None, macro:str = None) -> None:
         """This is the feature constructor
 
         Args:
             id (str, optional): unique ID of the feature. Defaults to None.
             feature_type (str, optional): type of feature for manufacturing. Defaults 
                 to None.
-
+            macro (str, optional): Dictates how the design will be drawn
         Raises:
             ValueError: [description]
         """
         if id is None:
             raise ValueError()
+
+        if macro is None:
+            raise ValueError()
         
         self._ID:str = id
         self._feature_type:Optional[str] = feature_type
+        self._params: Params = Params()
+        self._macro:str = macro
 
     @property
     def ID(self) -> str:
         return self._ID
 
+    @property
+    def params(self) -> Params:
+        return self._params
 
 class ConnectionFeature:
     """ConnectionFeature type object that enables modifications to the connection
