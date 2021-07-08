@@ -1,4 +1,5 @@
 from __future__ import annotations
+from parchmint.feature import ConnectionFeature, Feature
 
 from typing import List, Optional, Tuple
 
@@ -13,6 +14,7 @@ class ConnectionPath:
         source: Target = None,
         sink: Target = None,
         waypoints: List[Tuple[int, int]] = None,
+        features: List[ConnectionFeature] = None,
         json=None,
     ) -> None:
         """Creates a new connection path object
@@ -24,10 +26,15 @@ class ConnectionPath:
         """
         if waypoints is None:
             waypoints = []
+        
+        if features is None:
+            features = []
+
         super().__init__()
         self.__source: Optional[Target] = source
         self.__sink: Optional[Target] = sink
         self.__waypoints: List[Tuple[int, int]] = waypoints
+        self.__features: List[ConnectionFeature] = features
 
         if json is not None:
             self.parse_parchmint_v1_x(json)
@@ -48,6 +55,10 @@ class ConnectionPath:
     def waypoints(self) -> List[Tuple[int, int]]:
         return self.__waypoints
 
+    @property
+    def features(self) -> List[ConnectionFeature]:
+        return self.__features
+
     @waypoints.setter
     def waypoints(self, value: List[Tuple[int, int]]):
         self.__waypoints = value
@@ -64,12 +75,14 @@ class ConnectionPath:
             else self.__source.to_parchmint_v1(),
             "sink": None if self.__sink is None else self.__sink.to_parchmint_v1(),
             "wayPoints": [list(wp) for wp in self.__waypoints],
+            "features": [{"id":item.ID, "position": item.position} for item in self.__features]
         }
 
-    def parse_parchmint_v1(self, json) -> None:
+    def parse_parchmint_v1_x(self, json) -> None:
         self.__source = Target(json=json["source"])
         self.__sink = Target(json=json["sink"])
         self.__waypoints = [(wp[0], wp[1]) for wp in json["wayPoints"]]
+        self.__features = []
 
 
 class Connection:
@@ -98,7 +111,6 @@ class Connection:
         self.sinks: List[Target] = []
         self.layer: Optional[Layer] = None
         self._paths: List[ConnectionPath] = []
-        self.features: List[str] = []
 
         if json:
             if device_ref is None:
@@ -200,13 +212,22 @@ class Connection:
         Returns:
             dict: dictionary that can be used in json.dumps()
         """
+
+        source_parchmint = None
+        if self.source is not None:
+            source_parchmint = self.source.to_parchmint_v1()
+
+        layer_id = None
+        if self.layer is not None: 
+            layer_id = self.layer.ID 
+
         ret = {
             "sinks": [s.to_parchmint_v1() for s in self.sinks],
             "name": self.name,
             "id": self.ID,
-            "source": self.source.to_parchmint_v1(),
+            "source": source_parchmint,
             "params": self.params.to_parchmint_v1(),
-            "layer": self.layer.ID,
+            "layer": layer_id,
         }
 
         ret["paths"] = [path.to_parchmint_v1() for path in self._paths]
@@ -220,13 +241,21 @@ class Connection:
             dict: dictionary that can be used in json.dumps()
         """
 
+        source_parchmint = None
+        if self.source is not None:
+            source_parchmint = self.source.to_parchmint_v1()
+
+        layer_id = None
+        if self.layer is not None: 
+            layer_id = self.layer.ID 
+
         ret = {
             "sinks": [s.to_parchmint_v1() for s in self.sinks],
             "name": self.name,
             "id": self.ID,
-            "source": self.source.to_parchmint_v1(),
+            "source": source_parchmint,
             "params": self.params.to_parchmint_v1(),
-            "layer": self.layer.ID,
+            "layer": layer_id,
             "paths": [path.to_parchmint_v1() for path in self._paths],
             "features": self.features,
         }
