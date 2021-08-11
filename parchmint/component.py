@@ -13,6 +13,8 @@ from parchmint.port import Port
 
 
 class Component:
+    """The component class describes all the components in the device."""
+
     def __init__(self, json=None, device_ref: Device = None):
         """Creates a new Component object
 
@@ -195,3 +197,6 @@ class Component:
         x = self.xpos + port.x
         y = self.ypos + port.y
         return (x, y)
+
+    def __hash__(self) -> int:
+        return hash(repr(self))

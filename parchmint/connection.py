@@ -1,4 +1,5 @@
 from __future__ import annotations
+from os import error
 
 from typing import List, Optional, Tuple
 
@@ -8,6 +9,10 @@ from parchmint.target import Target
 
 
 class ConnectionPath:
+    """Describes the connection path which is a member of the connection, it consists of
+    the source and sink targets and a list of waypoints that connect them.
+    """
+
     def __init__(
         self,
         source: Target = None,
@@ -30,26 +35,52 @@ class ConnectionPath:
         self.__waypoints: List[Tuple[int, int]] = waypoints
 
         if json is not None:
-            self.parse_parchmint_v1_x(json)
+            self.parse_parchmint_v1(json)
 
     @property
     def source(self) -> Target:
+        """Returns the source information of the connection path
+
+        Raises:
+            Error: No source was set in the connection path
+
+        Returns:
+            Target: Source information
+        """
         if self.__source is None:
-            raise AssertionError
+            raise error("No value set to the source")
         return self.__source
 
     @property
     def sink(self) -> Target:
+        """Returns the sink information of the connection path
+
+        Raises:
+            Error: No sink was set in the connection path
+
+        Returns:
+            Target: Sink information
+        """
         if self.__sink is None:
-            raise AssertionError
+            raise error("No value set to the sink")
         return self.__sink
 
     @property
     def waypoints(self) -> List[Tuple[int, int]]:
+        """Returns the waypoints in the connection path
+
+        Returns:
+            List[Tuple[int, int]]: The list of waypoints
+        """
         return self.__waypoints
 
     @waypoints.setter
     def waypoints(self, value: List[Tuple[int, int]]):
+        """Sets teh waypoints of the connection path
+
+        Args:
+            value (List[Tuple[int, int]]): List of co-ordinate tuples
+        """
         self.__waypoints = value
 
     def to_parchmint_v1(self):
@@ -169,7 +200,8 @@ class Connection:
         else:
             print("connection", self.name, "does not have any sinks")
 
-        self.features = json["features"]  # array of feature IDs
+        if "features" in json.keys():
+            self.features = json["features"]
 
     def __str__(self):
         return str(self.__dict__)
@@ -204,9 +236,9 @@ class Connection:
             "sinks": [s.to_parchmint_v1() for s in self.sinks],
             "name": self.name,
             "id": self.ID,
-            "source": self.source.to_parchmint_v1(),
-            "params": self.params.to_parchmint_v1(),
-            "layer": self.layer.ID,
+            "source": self.source.to_parchmint_v1() if self.source else None,
+            "params": self.params.to_parchmint_v1() if self.params else None,
+            "layer": self.layer.ID if self.layer else None,
         }
 
         ret["paths"] = [path.to_parchmint_v1() for path in self._paths]
@@ -224,11 +256,14 @@ class Connection:
             "sinks": [s.to_parchmint_v1() for s in self.sinks],
             "name": self.name,
             "id": self.ID,
-            "source": self.source.to_parchmint_v1(),
+            "source": self.source.to_parchmint_v1() if self.source else None,
             "params": self.params.to_parchmint_v1(),
-            "layer": self.layer.ID,
+            "layer": self.layer.ID if self.layer else None,
             "paths": [path.to_parchmint_v1() for path in self._paths],
             "features": self.features,
         }
 
         return ret
+
+    def __hash__(self) -> int:
+        return hash(repr(self))

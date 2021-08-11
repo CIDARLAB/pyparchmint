@@ -21,6 +21,8 @@ PROJECT_DIR = pathlib.Path(parchmint.__file__).parent.parent.absolute()
 
 
 class ValveType(Enum):
+    """Types of the valves"""
+
     NORMALLY_OPEN = 0
     NORMALLY_CLOSED = 1
 
@@ -47,6 +49,10 @@ class ValveType(Enum):
 
 
 class Device:
+    """The device object is the top level object for describing a microfluidic device.
+    It contains the entire list of components, connections and all the relationships
+    between them"""
+
     def __init__(self, json_data=None):
         """Creates a new device object
 
@@ -70,6 +76,15 @@ class Device:
         if json_data:
             self.parse_from_json(json_data)
             self.generate_network()
+
+    @property
+    def valves(self) -> List[Component]:
+        """Returns the valve components in the device
+
+        Returns:
+            List[Component]: List of valve components in the device
+        """
+        return list(self._valve_map.keys())
 
     def map_valve(
         self,
@@ -340,6 +355,8 @@ class Device:
             self.G.add_node(component.ID, component_ref=component)
 
         for connection in self.connections:
+            if connection.source is None:
+                raise Exception("Source is None for connection {}".format(connection))
             sourceref = connection.source.component
             for sink in connection.sinks:
                 sinkref = sink.component

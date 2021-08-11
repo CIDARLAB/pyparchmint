@@ -51,8 +51,8 @@ class Layer:
     def __repr__(self):
         return str(self.__dict__)
 
-    def __hash__(self):
-        return hash(str(self))
+    def __hash__(self) -> int:
+        return hash(repr(self))
 
     def __eq__(self, o: object) -> bool:
         if isinstance(o, Layer):

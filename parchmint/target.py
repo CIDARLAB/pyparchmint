@@ -81,3 +81,6 @@ class Target:
             return obj.component == self.component and obj.port == self.port
         else:
             return False
+
+    def __hash__(self) -> int:
+        return hash(repr(self))

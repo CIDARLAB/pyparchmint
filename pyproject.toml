@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "parchmint"
-version = "0.2.10"
+version = "0.2.11"
 description = "Parchmint is data interchange standard for representing microfluidic designs. Check out https://parchmint.org for more information."
 authors = ["Radhakrishna Sanka"]
 license = "BSD-3-Clause"
@@ -27,6 +27,8 @@ rope = "^0.18.0"
 Sphinx = "^3.4.3"
 sphinx-rtd-theme = "^0.5.1"
 sphinxcontrib-napoleon = "^0.7"
+isort = "^5.9.3"
+
 
 [build-system]
 requires = ["poetry>=0.12"]

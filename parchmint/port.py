@@ -49,3 +49,6 @@ class Port:
             return obj.label == self.label
         else:
             return False
+
+    def __hash__(self) -> int:
+        return hash(repr(self))
