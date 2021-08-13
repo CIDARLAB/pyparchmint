@@ -1,6 +1,6 @@
 from __future__ import annotations
-from os import error
 
+from os import error
 from typing import List, Optional, Tuple
 
 from parchmint.layer import Layer
