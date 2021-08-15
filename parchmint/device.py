@@ -189,6 +189,13 @@ class Device:
 
         return is_same
 
+    def add_feature(self, feature: Feature) -> None:
+        """Adds a feature to the device
+        Args:
+            feature (Feature): Feature object to be added
+        """
+        self.features.append(feature)
+
     def add_component(self, component: Component) -> None:
         """Adds a component object to the device
 
@@ -485,7 +492,14 @@ class Device:
         return ret
 
     def to_parchmint_v1_x(self) -> Dict:
-        ret = self.to_parchmint_v1()
+        ret = {}
+        ret["name"] = self.name
+        ret["components"] = [c.to_parchmint_v1() for c in self.components]
+        ret["connections"] = [c.to_parchmint_v1_x() for c in self.connections]
+        ret["params"] = self.params.to_parchmint_v1()
+        ret["layers"] = [layer.to_parchmint_v1() for layer in self.layers]
+
+        ret["features"] = [feature.to_parchmint_v1_x() for feature in self.features]
 
         # Modify the version of the parchmint
         ret["version"] = 1.2

@@ -241,12 +241,15 @@ class Connection:
         self.name = json_data["name"]
         self.ID = json_data["id"]
         self.layer = device_ref.get_layer(json_data["layer"])
+        self.entity = json_data["entity"]
 
         # Pull out the paths
         if "paths" in json_data.keys():
             json_paths = json_data["paths"]
             for json_path in json_paths:
-                self._paths.append(ConnectionPath(json_data=json_path))
+                self._paths.append(
+                    ConnectionPath(json_data=json_path, device_ref=device_ref)
+                )
         else:
             print("No path data found for connection {}".format(self.ID))
 

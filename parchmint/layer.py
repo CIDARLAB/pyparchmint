@@ -10,7 +10,7 @@ class Layer:
         Args:
             json (dict, optional): json dict after json.loads(). Defaults to None.
         """
-        self.ID: Optional[str] = None
+        self._id: Optional[str] = None
         self.name: Optional[str] = None
         self.type: Optional[str] = None
         self.group: str = ""
@@ -18,6 +18,29 @@ class Layer:
 
         if json_data:
             self.parse_from_json(json_data)
+
+    @property
+    def ID(self) -> str:
+        """Returns the ID of the layer
+
+        Raises:
+            ValueError: if ID is not set
+
+        Returns:
+            str: ID of the layer
+        """
+        if self._id is None:
+            raise ValueError("ID is not set")
+        return self._id
+
+    @ID.setter
+    def ID(self, value: str) -> None:
+        """Sets the id of the layer
+
+        Args:
+            value (str): id of the layer
+        """
+        self._id = value
 
     def parse_from_json(self, json_data):
         """Loads instance data json dict from json.loads()

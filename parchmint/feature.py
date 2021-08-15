@@ -1,25 +1,52 @@
 from __future__ import annotations
+from parchmint.layer import Layer
 
 from typing import Optional
 from parchmint.params import Params
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from parchmint.device import Device
 
 
 class Feature:
+    """Feature represent atomic manufacturing artifacts"""
+
     def __init__(
         self,
         id: Optional[str] = None,
         feature_type: Optional[str] = None,
         macro: Optional[str] = None,
         params: Optional[Params] = None,
+        layer: Optional[Layer] = None,
         json_data=None,
+        device_ref: Device = None,
     ) -> None:
+        """Constructor for the feature class
+
+        Args:
+            id (Optional[str], optional): id of the feature. Defaults to None.
+            feature_type (Optional[str], optional): feature type(geometric operation). Defaults to None.
+            macro (Optional[str], optional): unique key indicating the drawing algorithm. Defaults to None.
+            params (Optional[Params], optional): geometric parameters for the feature. Defaults to None.
+            layer (Optional[Layer], optional): layer in which the feature is in. Defaults to None.
+            json_data ([type], optional): loads the data from json. Defaults to None.
+            device_ref (Device, optional): pointer to the device object. Defaults to None.
+
+        Raises:
+            ValueError: Raises an error if the device pointer isn't there during the json loading process
+        """
         self._id = id
         self._type = feature_type
         self._macro = macro
         self._params = params
+        self._layer = layer
 
         if json_data is not None:
-            self.from_parchmint_v1_x(json_data)
+            if device_ref is not None:
+                self.from_parchmint_v1_x(json_data, device_ref)
+            else:
+                raise ValueError("device_ref is required")
 
     @property
     def ID(self) -> str:
@@ -81,9 +108,10 @@ class Feature:
             "type": self.type,
             "macro": self.macro,
             "params": self.params.to_parchmint_v1(),
+            "layerID": self._layer.ID if self._layer is not None else None,
         }
 
-    def from_parchmint_v1_x(self, json_data) -> None:
+    def from_parchmint_v1_x(self, json_data, device_ref: Device) -> None:
         """
         Parses the JSON data of feature
         """
@@ -91,3 +119,4 @@ class Feature:
         self.type = json_data["type"]
         self.macro = json_data["macro"]
         self.params = Params(json_data=json_data["params"])
+        self._layer = device_ref.get_layer(json_data["layerID"])
