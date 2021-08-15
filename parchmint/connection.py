@@ -1,11 +1,16 @@
 from __future__ import annotations
 from os import error
+from parchmint.feature import Feature
 
 from typing import List, Optional, Tuple
 
 from parchmint.layer import Layer
 from parchmint.params import Params
 from parchmint.target import Target
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from parchmint.device import Device
 
 
 class ConnectionPath:
@@ -19,6 +24,7 @@ class ConnectionPath:
         sink: Target = None,
         waypoints: List[Tuple[int, int]] = None,
         json_data=None,
+        device_ref: Device = None,
     ) -> None:
         """Creates a new connection path object
 
@@ -33,9 +39,29 @@ class ConnectionPath:
         self.__source: Optional[Target] = source
         self.__sink: Optional[Target] = sink
         self.__waypoints: List[Tuple[int, int]] = waypoints
-
+        self.__features: List[Feature] = []
         if json_data is not None:
-            self.parse_parchmint_v1(json_data)
+            if device_ref is not None:
+                self.from_parchmint_v1(json_data, device_ref)
+            else:
+                raise ValueError("device_ref is required")
+
+    @property
+    def features(self) -> List[Feature]:
+        """Returns the features of the connection path
+
+        Returns:
+            List[str]: list of features
+        """
+        return self.__features
+
+    @features.setter
+    def features(self, features: List[Feature]) -> None:
+        """Sets the feature array
+        Args:
+            features (List[str]): List of feature ids
+        """
+        self.__features = features
 
     @property
     def source(self) -> Target:
@@ -51,6 +77,14 @@ class ConnectionPath:
             raise error("No value set to the source")
         return self.__source
 
+    @source.setter
+    def source(self, source: Target) -> None:
+        """Sets the source of the connection path
+        Args:
+            source (Target): source of the connection path
+        """
+        self.__source = source
+
     @property
     def sink(self) -> Target:
         """Returns the sink information of the connection path
@@ -64,6 +98,14 @@ class ConnectionPath:
         if self.__sink is None:
             raise error("No value set to the sink")
         return self.__sink
+
+    @sink.setter
+    def sink(self, sink: Target) -> None:
+        """Sets the sink of the connection path
+        Args:
+            sink (Target): sink of the connection path
+        """
+        self.__sink = sink
 
     @property
     def waypoints(self) -> List[Tuple[int, int]]:
@@ -83,6 +125,15 @@ class ConnectionPath:
         """
         self.__waypoints = value
 
+    def add_waypoint(self, x: int, y: int) -> None:
+        """Adds a waypoint to the connection path
+
+        Args:
+            x (int): x co-ordinate of the waypoint
+            y (int): y co-ordinate of the waypoint
+        """
+        self.__waypoints.append((x, y))
+
     def to_parchmint_v1(self):
         """Returns the json dict
 
@@ -95,16 +146,23 @@ class ConnectionPath:
             else self.__source.to_parchmint_v1(),
             "sink": None if self.__sink is None else self.__sink.to_parchmint_v1(),
             "wayPoints": [list(wp) for wp in self.__waypoints],
+            "features": [feat.ID for feat in self.__features],
         }
 
-    def parse_parchmint_v1(self, json_data) -> None:
-        self.__source = Target(json=json_data["source"])
-        self.__sink = Target(json=json_data["sink"])
+    def from_parchmint_v1(self, json_data, device_ref: Device) -> None:
+        self.__source = Target(json_data=json_data["source"])
+        self.__sink = Target(json_data=json_data["sink"])
         self.__waypoints = (
             [(wp[0], wp[1]) for wp in json_data["wayPoints"]]
             if json_data["wayPoints"] is not None
             else []
         )
+        if "features" in json_data:
+            self.__features = [
+                device_ref.get_feature(feat_id) for feat_id in json_data["features"]
+            ]
+        else:
+            self.__features = []
 
 
 class Connection:
@@ -133,7 +191,6 @@ class Connection:
         self.sinks: List[Target] = []
         self.layer: Optional[Layer] = None
         self._paths: List[ConnectionPath] = []
-        self.features: List[str] = []
 
         if json_data:
             if device_ref is None:
@@ -206,9 +263,6 @@ class Connection:
         else:
             print("connection", self.name, "does not have any sinks")
 
-        if "features" in json_data.keys():
-            self.features = json_data["features"]
-
     def __str__(self):
         return str(self.__dict__)
 
@@ -218,6 +272,10 @@ class Connection:
     @property
     def paths(self) -> List[ConnectionPath]:
         return self._paths
+
+    @paths.setter
+    def paths(self, value: List[ConnectionPath]):
+        self._paths = value
 
     def add_waypoints_path(
         self, source: Target, sink: Target, waypoints: List[Tuple[int, int]]
@@ -266,7 +324,7 @@ class Connection:
             "params": self.params.to_parchmint_v1(),
             "layer": self.layer.ID if self.layer else None,
             "paths": [path.to_parchmint_v1() for path in self._paths],
-            "features": self.features,
+            "entity": self.entity,
         }
 
         return ret

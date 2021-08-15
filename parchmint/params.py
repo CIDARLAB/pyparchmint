@@ -1,8 +1,5 @@
-from os import truncate
-
-
 class Params:
-    def __init__(self, json=None):
+    def __init__(self, json_data=None):
         """Creates an instance of the params
 
         Args:
@@ -10,8 +7,8 @@ class Params:
         """
         self.data = {}
 
-        if json:
-            self.parse_from_json(json)
+        if json_data:
+            self.parse_from_json(json_data)
 
     def __ne__(self, other) -> bool:
         """operator overload to compare two params.

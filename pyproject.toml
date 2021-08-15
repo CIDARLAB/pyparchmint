@@ -28,6 +28,7 @@ Sphinx = "^3.4.3"
 sphinx-rtd-theme = "^0.5.1"
 sphinxcontrib-napoleon = "^0.7"
 isort = "^5.9.3"
+pytest = "^6.2.4"
 
 
 [build-system]

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from parchmint.feature import Feature
 import pathlib
 from enum import Enum
 from typing import Dict, List, Optional
@@ -64,7 +65,7 @@ class Device:
         self.connections: List[Connection] = []
         self.layers: List[Layer] = []
         self.params: Params = Params()
-        self.features = []  # Store Raw JSON Objects for now
+        self.features: List[Feature] = []  # Store Raw JSON Objects for now
         self.xspan: Optional[int] = None
         self.yspan: Optional[int] = None
         self.G = nx.MultiDiGraph()
@@ -76,6 +77,20 @@ class Device:
         if json_data:
             self.parse_from_json(json_data)
             self.generate_network()
+
+    def get_feature(self, feature_id: str) -> Feature:
+        """Returns the feature object with the given name
+
+        Args:
+            name (str): name of the feature
+
+        Returns:
+            Feature: Feature object with the given name
+        """
+        for feature in self.features:
+            if feature.ID == feature_id:
+                return feature
+        raise Exception("Feature not found")
 
     @property
     def valves(self) -> List[Component]:
@@ -285,18 +300,18 @@ class Device:
         # Loop through the components
         if "components" in json_data.keys():
             for component in json_data["components"]:
-                self.add_component(Component(component, self))
+                self.add_component(Component(json_data=component, device_ref=self))
         else:
             print("no components found")
 
         if "connections" in json_data.keys():
             for connection in json_data["connections"]:
-                self.add_connection(Connection(connection, self))
+                self.add_connection(Connection(json_data=connection, device_ref=self))
         else:
             print("no connections found")
 
         if "params" in json_data.keys():
-            self.params = Params(json_data["params"])
+            self.params = Params(json_data=json_data["params"])
 
             if self.params.exists("xspan"):
                 self.xspan = self.params.get_param("xspan")
