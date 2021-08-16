@@ -1,4 +1,8 @@
+from parchmint.device import Device
+from pathlib import Path
 import subprocess
+import sys
+import glob
 
 
 def test():
@@ -7,3 +11,13 @@ def test():
     `poetry run python -u -m unittest discover`
     """
     subprocess.run(["pytest", "-vv"])
+
+
+def validate_dir_V1():
+    # glob through all the files in the argv directory with .json extension
+    files = glob.glob("{}/**/*.json".format(sys.argv[1]), recursive=True)
+    for file in files:
+        print(file)
+        file_path = Path(file).resolve()
+        with open(file_path) as data_file:
+            Device.validate_V1(data_file.read())

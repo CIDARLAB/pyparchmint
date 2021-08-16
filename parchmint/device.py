@@ -533,3 +533,5 @@ class Device:
             for error in errors:
                 print(error)
                 print("------")
+            else:
+                print("No errors found")
