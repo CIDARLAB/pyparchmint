@@ -166,6 +166,6 @@ def device_dict(
             "valve1": "NORMALLY_OPEN",
             "valve2": "NORMALLY_CLOSED",
         },
-        "version": 1.2,
+        "version": "1.2",
     }
     return ret

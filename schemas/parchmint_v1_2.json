@@ -1,0 +1,233 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "$id": "https://parchmint.org/schema/parchmint_v1_2.json",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "layers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      }
+    },
+    "connections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "layer": {
+            "type": "string"
+          },
+          "source": {
+            "type": "object",
+            "properties": {
+              "component": {
+                "type": "string"
+              },
+              "port": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "component",
+              "port"
+            ]
+          },
+          "sinks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "component": {
+                  "type": "string"
+                },
+                "port": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "component",
+                "port"
+              ]
+            }
+          },
+          "paths": {
+            "items": {
+              "type": "object",
+              "source": {
+                "type": "object",
+                "properties": {
+                  "component": {
+                    "type": "string"
+                  },
+                  "port": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "component",
+                  "port"
+                ]
+              },
+              "sink": {
+                "type": "object",
+                "properties": {
+                  "component": {
+                    "type": "string"
+                  },
+                  "port": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "component",
+                  "port"
+                ]
+              },
+              "wayPoints": {
+                "type": "\"array\""
+              }
+            },
+            "required": [
+              "source",
+              "sink",
+              "wayPoints"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "layer",
+          "name",
+          "sinks",
+          "source"
+        ]
+      }
+    },
+    "components": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "layers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "x-span": {
+            "type": "integer"
+          },
+          "y-span": {
+            "type": "integer"
+          },
+          "entity": {
+            "type": "string"
+          },
+          "ports": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "layer": {
+                  "type": "string"
+                },
+                "x": {
+                  "type": "integer"
+                },
+                "y": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "label",
+                "layer",
+                "x",
+                "y"
+              ]
+            }
+          }
+        },
+        "required": [
+          "name",
+          "id",
+          "layers",
+          "x-span",
+          "y-span",
+          "entity",
+          "ports"
+        ]
+      }
+    },
+    "features": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "macro": {
+            "type": "string"
+          },
+          "layerID": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "macro",
+          "layerID"
+        ]
+      }
+    },
+    "valveMap": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "version": {
+      "type": "string",
+      "pattern": "1.2"
+    }
+  },
+  "required": [
+    "name",
+    "layers",
+    "value"
+  ]
+}

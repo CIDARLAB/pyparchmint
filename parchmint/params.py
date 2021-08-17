@@ -44,8 +44,11 @@ class Params:
         Returns:
             [type]: [description]
         """
-        return self.data[key]
-
+        if key in self.data:
+            return self.data[key]
+        else:
+            raise KeyError(f"{key} not found in params")
+        
     def set_param(self, key: str, value):
         """Sets the value for a given key to the param
 

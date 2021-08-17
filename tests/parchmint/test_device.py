@@ -17,8 +17,8 @@ def test_to_parchmint_v1_x(
 ):
     device = Device()
     device.name = "dev1"
-    device.params.set_param("x-span", 100000)
-    device.params.set_param("y-span", 50000)
+    device.xspan = 100000
+    device.yspan = 50000
     device.add_layer(Layer(json_data=layer_dict))
     device.add_feature(Feature(json_data=feature_dict, device_ref=device))
     con1 = Connection(json_data=connection_dict, device_ref=device)

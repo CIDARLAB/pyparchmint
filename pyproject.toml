@@ -42,7 +42,7 @@ to = {format = "setuppy", path = "setup.py"}
 [tool.poetry.scripts]
 parchmint-validate = "parchmint.cmdline:validate_V1"
 test = "scripts:test"
-validate_dir = "scripts:validate_dir_V1"
+validate_dir = "scripts:validate_dir_V1_2"
 
 [tool.poetry.extras]
 docs = ["sphinx"]
