@@ -1,8 +1,19 @@
-name: pytest
+name: CI
 
 on: [push, pull_request, workflow_dispatch]
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ricardochaves/python-lint@v1.4.0
+        with:
+          use-pylint: true
+          use-black: true
+          use-mypy: true
+          use-isort: true
+
   test:
     runs-on: ubuntu-latest
 
