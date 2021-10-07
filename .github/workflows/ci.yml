@@ -21,3 +21,16 @@ jobs:
         run: poetry install
       - name: Running pytest
         run: poetry run pytest
+
+  docs:
+    needs: [test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ammaraskar/sphinx-action@master
+        with:
+          docs-folder: "docs/"
+      - uses: actions/upload-artifact@v1
+        with:
+          name: DocumentationHTML
+          path: docs/_build/html/
