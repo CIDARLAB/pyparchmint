@@ -1,8 +1,9 @@
-from parchmint.device import Device
-from parchmint.component import Component
-from parchmint.feature import Feature
 import pytest
+
 from parchmint import Layer
+from parchmint.component import Component
+from parchmint.device import Device
+from parchmint.feature import Feature
 
 
 @pytest.fixture

@@ -1,9 +1,9 @@
+from parchmint import Device
+from parchmint.component import Component
+from parchmint.connection import Connection
 from parchmint.device import ValveType
 from parchmint.feature import Feature
 from parchmint.layer import Layer
-from parchmint.component import Component
-from parchmint.connection import Connection
-from parchmint import Device
 
 
 def test_to_parchmint_v1_x(
