@@ -1,6 +1,6 @@
-from parchmint.layer import Layer
 from parchmint import Params
 from parchmint.feature import Feature
+from parchmint.layer import Layer
 
 
 def test_to_parchmint_v1(feature_dict, params_dict, device, layer):

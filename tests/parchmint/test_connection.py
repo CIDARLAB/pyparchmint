@@ -1,9 +1,9 @@
-from parchmint.device import Device
-from parchmint.params import Params
-from parchmint.layer import Layer
-from parchmint.target import Target
 from parchmint import Connection, ConnectionPath
+from parchmint.device import Device
 from parchmint.feature import Feature
+from parchmint.layer import Layer
+from parchmint.params import Params
+from parchmint.target import Target
 
 
 def test_connectionPath_to_parchmint_v1(
