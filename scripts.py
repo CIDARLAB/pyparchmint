@@ -1,8 +1,9 @@
-from parchmint.device import Device
-from pathlib import Path
+import glob
 import subprocess
 import sys
-import glob
+from pathlib import Path
+
+from parchmint.device import Device
 
 
 def test():

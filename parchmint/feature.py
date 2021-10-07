@@ -1,9 +1,9 @@
 from __future__ import annotations
-from parchmint.layer import Layer
 
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
+
+from parchmint.layer import Layer
 from parchmint.params import Params
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from parchmint.device import Device
@@ -50,19 +50,19 @@ class Feature:
 
     @property
     def ID(self) -> str:
-        """ Returns the ID of the features"""
+        """Returns the ID of the features"""
         if self._id is None:
             raise ValueError("ID is not set")
         return self._id
 
     @ID.setter
     def ID(self, value: str) -> None:
-        """ Sets the ID of the features"""
+        """Sets the ID of the features"""
         self._id = value
 
     @property
     def type(self) -> str:
-        """ Returns the type of the features"""
+        """Returns the type of the features"""
         if self._type is not None:
             return self._type
         else:
@@ -70,12 +70,12 @@ class Feature:
 
     @type.setter
     def type(self, value: str) -> None:
-        """ Sets the type of the features"""
+        """Sets the type of the features"""
         self._type = value
 
     @property
     def macro(self) -> str:
-        """ Returns the macro of the features"""
+        """Returns the macro of the features"""
         if self._macro is not None:
             return self._macro
         else:
@@ -83,12 +83,12 @@ class Feature:
 
     @macro.setter
     def macro(self, value: str) -> None:
-        """ Sets the macro of the features"""
+        """Sets the macro of the features"""
         self._macro = value
 
     @property
     def params(self) -> Params:
-        """ Returns the params of the features"""
+        """Returns the params of the features"""
         if self._params is not None:
             return self._params
         else:
@@ -96,7 +96,7 @@ class Feature:
 
     @params.setter
     def params(self, value: Params) -> None:
-        """ Sets the params of the features"""
+        """Sets the params of the features"""
         self._params = value
 
     def to_parchmint_v1_x(self):

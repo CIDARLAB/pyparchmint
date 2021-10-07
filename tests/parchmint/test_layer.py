@@ -1,4 +1,4 @@
-from parchmint import Params, Layer
+from parchmint import Layer, Params
 
 
 def test_to_parchmint_v1(params_dict, layer_dict):
