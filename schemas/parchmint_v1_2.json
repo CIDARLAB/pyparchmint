@@ -227,7 +227,6 @@
   },
   "required": [
     "name",
-    "layers",
-    "value"
+    "layers"
   ]
 }
