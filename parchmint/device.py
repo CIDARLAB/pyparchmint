@@ -275,7 +275,7 @@ class Device:
                 self.G.add_edge(
                     connection.source.component,
                     sink.component,
-                    {"connection_id": connection.ID},
+                    connection_id=connection.ID,
                 )
         else:
             raise Exception(
