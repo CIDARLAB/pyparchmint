@@ -540,7 +540,10 @@ class Device:
         Returns:
             List[Connection]: list of connections for the given component
         """
-        return [self.get_connection(ID) for ID in self.G.edges[component.ID]]
+        edge_list = list(self.G.in_edges(component.ID))
+        edge_list.extend(list(self.G.out_edges(component.ID)))
+        connections = [self.G.get_edge_data(*e)[0]['connection_ref'] for e in edge_list]
+        return connections
 
     def __str__(self):
         return str(self.__dict__)
