@@ -275,6 +275,9 @@ class Device:
                 self.G.add_edge(
                     connection.source.component,
                     sink.component,
+                    source_port=connection.source,
+                    sink_port=sink,
+                    connection_ref=connection,
                     connection_id=connection.ID,
                 )
         else:
@@ -542,7 +545,7 @@ class Device:
         """
         edge_list = list(self.G.in_edges(component.ID))
         edge_list.extend(list(self.G.out_edges(component.ID)))
-        connections = [self.G.get_edge_data(*e)[0]['connection_ref'] for e in edge_list]
+        connections = [self.G.get_edge_data(*e)[0]["connection_ref"] for e in edge_list]
         return connections
 
     def __str__(self):
