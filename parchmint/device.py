@@ -272,7 +272,11 @@ class Device:
             self.connections.append(connection)
             # Connect the components associated here on the nx graph
             for sink in connection.sinks:
-                self.G.add_edge(connection.source.component, sink.component)
+                self.G.add_edge(
+                    connection.source.component,
+                    sink.component,
+                    {"connection_id": connection.ID},
+                )
         else:
             raise Exception(
                 "Could not add component since its not an instance of parchmint:Connection"
@@ -512,6 +516,31 @@ class Device:
             if connection.ID == id:
                 return connection
         raise Exception("Could not find connection with id {}".format(id))
+
+    def get_connections_for_edge(
+        self, source: Component, sink: Component
+    ) -> List[Connection]:
+        """Returns the connections for the given edge
+
+        Args:
+            source (Component): source component
+            sink (Component): sink component
+
+        Returns:
+            List[Connection]: list of connections for the given edge
+        """
+        return [self.get_connection(ID) for ID in self.G.edges[source, sink]]
+
+    def get_connections_for_component(self, component: Component) -> List[Connection]:
+        """Returns the connections for the given component
+
+        Args:
+            component (Component): component
+
+        Returns:
+            List[Connection]: list of connections for the given component
+        """
+        return [self.get_connection(ID) for ID in self.G.edges[component.ID]]
 
     def __str__(self):
         return str(self.__dict__)
