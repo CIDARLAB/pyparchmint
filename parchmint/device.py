@@ -258,7 +258,21 @@ class Device:
             Exception: if the arg is not a Connection type object
         """
         if isinstance(connection, Connection):
+            # Check if the source component is present in the device
+            if connection.source is None:
+                raise Exception("Connection source is not defined")
+
+            if self.component_exists(connection.source.component) is False:
+                raise Exception(
+                    "Source component {} not found in the device".format(
+                        connection.source
+                    )
+                )
+
             self.connections.append(connection)
+            # Connect the components associated here on the nx graph
+            for sink in connection.sinks:
+                self.G.add_edge(connection.source.component, sink.component)
         else:
             raise Exception(
                 "Could not add component since its not an instance of parchmint:Connection"
