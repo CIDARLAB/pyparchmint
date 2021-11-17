@@ -10,9 +10,9 @@ class Layer:
         Args:
             json (dict, optional): json dict after json.loads(). Defaults to None.
         """
-        self._id: Optional[str] = None
-        self.name: Optional[str] = None
-        self.type: Optional[str] = None
+        self._id: str = ""
+        self.name: str = ""
+        self.type: str = ""
         self.group: str = ""
         self.params: Params = Params()
 
@@ -29,8 +29,6 @@ class Layer:
         Returns:
             str: ID of the layer
         """
-        if self._id is None:
-            raise ValueError("ID is not set")
         return self._id
 
     @ID.setter
