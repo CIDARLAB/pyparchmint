@@ -135,7 +135,7 @@ class Device:
         self,
         valve: Component,
         connection: Connection,
-        type_info: Optional[ValveType] = None,
+        type_info: ValveType = ValveType.NORMALLY_OPEN,
     ) -> None:
         """Maps the valve to a connection in the device
 
