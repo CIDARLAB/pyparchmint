@@ -14,10 +14,11 @@ include = [
 
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = ">=3.8,<3.11"
 networkx = "^2.5"
 jsonschema = "^3.2.0"
 argparse = "^1.4.0"
+numpy = "^1.21.4"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.8.4"

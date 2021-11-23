@@ -10,6 +10,7 @@ from typing import List, Tuple
 from parchmint.layer import Layer
 from parchmint.params import Params
 from parchmint.port import Port
+import numpy as np
 
 
 class Component:
@@ -100,6 +101,31 @@ class Component:
             self.params.set_param("position", pos)
         else:
             self.params.set_param("position", [-1, value])
+
+    @property
+    def rotation(self) -> float:
+        """Returns the rotation of the component
+
+        Raises:
+            KeyError: when no rotation parameter is found
+
+        Returns:
+            int: rotation of the component
+        """
+        try:
+            return self.params.get_param("rotation")
+        except Exception:
+            print("Could not find rotation for component")
+            raise KeyError
+
+    @rotation.setter
+    def rotation(self, value):
+        """Sets the rotation of the component
+
+        Args:
+            value (int): rotation of the component
+        """
+        self.params.set_param("rotation", value)
 
     def add_component_ports(self, ports: List[Port]) -> None:
         """Adds component ports to the component
@@ -200,3 +226,120 @@ class Component:
 
     def __hash__(self) -> int:
         return hash(repr(self))
+
+    def rotate_point(
+        self, xpos: float, ypos: float, angle: float
+    ) -> Tuple[float, float]:
+        """Rotates a point around the topleft corner of the component clockwise
+
+        Args:
+            xpos (float): x coordinate of the point
+            ypos (float): y coordinate of the point
+            angle (float): angle of rotation in degrees
+
+        Returns:
+            Tuple[float, float]: A tuple containing the rotated coordinates
+        """
+        # Setup the center to be used the translation matrices
+        center_x = self.xspan / 2
+        center_y = self.yspan / 2
+
+        # Setup all the corner points
+        old_topLeft = np.array((0, 0, 1)).transpose()
+        old_topRight = np.array((self.xspan, 0, 1)).transpose()
+        old_bottomLeft = np.array((0, self.yspan, 1)).transpose()
+        old_bottomRight = np.array((self.xspan, self.yspan, 1)).transpose()
+
+        pos = np.array(((xpos), (ypos), (1)))
+
+        T1 = np.array(((1, 0, -center_x), (0, 1, -center_y), (0, 0, 1)))
+
+        theta = np.radians(angle)
+        c, s = np.cos(theta), np.sin(theta)
+        R = np.array(((c, -s, 0), (s, c, 0), (0, 0, 1)))
+        T2 = np.array(((1, 0, center_x), (0, 1, center_y), (0, 0, 1)))
+
+        # Rotate the topRight corner and the bottomLeft corner about the center
+        rotated_topLeft = T2.dot(R.dot(T1.dot(old_bottomLeft)))
+        rotated_topRight = T2.dot(R.dot(T1.dot(old_topLeft)))
+        rotated_bottomRight = T2.dot(R.dot(T1.dot(old_topRight)))
+        rotated_bottomLeft = T2.dot(R.dot(T1.dot(old_bottomRight)))
+
+        # Find the new position of the topleft corner by finding the min of all the corner points
+        xmin = min(
+            rotated_topLeft[0],
+            rotated_topRight[0],
+            rotated_bottomLeft[0],
+            rotated_bottomRight[0],
+        )
+        ymin = min(
+            rotated_topLeft[1],
+            rotated_topRight[1],
+            rotated_bottomLeft[1],
+            rotated_bottomRight[1],
+        )
+
+        T3 = np.array(((1, 0, -xmin), (0, 1, -ymin), (0, 0, 1)))
+
+        new_pos = T3.dot(T2.dot(R.dot(T1.dot(pos))))
+        return (round(new_pos[0]), round(new_pos[1]))
+
+    def get_rotated_component(self, angle: int) -> Component:
+        """Returns a new component with the same parameters but rotated by the given angle
+
+        Args:
+            angle (int): angle of rotation
+
+        Returns:
+            Component: [description]
+        """
+        new_topLeft = self.rotate_point(0, 0, angle)
+        new_topRight = self.rotate_point(self.xspan, 0, angle)
+        new_bottomLeft = self.rotate_point(0, self.yspan, angle)
+        new_bottomRight = self.rotate_point(self.xspan, self.yspan, angle)
+
+        # Find xmin, ymin, xmax, ymax for all the corner points
+        xmin = min(
+            new_topLeft[0], new_topRight[0], new_bottomLeft[0], new_bottomRight[0]
+        )
+        ymin = min(
+            new_topLeft[1], new_topRight[1], new_bottomLeft[1], new_bottomRight[1]
+        )
+        xmax = max(
+            new_topLeft[0], new_topRight[0], new_bottomLeft[0], new_bottomRight[0]
+        )
+        ymax = max(
+            new_topLeft[1], new_topRight[1], new_bottomLeft[1], new_bottomRight[1]
+        )
+
+        # Find the new xspan and yspan
+        new_xspan = abs(xmax - xmin)
+        new_yspan = abs(ymax - ymin)
+
+        # Create a new component with the rotated coordinates
+        rotated_component = Component()
+        rotated_component.name = self.name
+        rotated_component.ID = self.ID
+        rotated_component.layers = self.layers
+        rotated_component.params = self.params
+        rotated_component.xpos = xmin
+        rotated_component.ypos = ymin
+        rotated_component.entity = self.entity
+
+        # Add the x and y spans
+        rotated_component.xspan = int(new_xspan)
+        rotated_component.yspan = int(new_yspan)
+
+        # Set the rotation angle to 0 to ensure that future operations don't mistake this to not have a rotation
+        rotated_component.rotation = 0
+
+        # Create new ports with new rotated coordinates
+        for port in self.ports:
+            new_port = Port()
+            new_port.label = port.label
+            new_location = self.rotate_point(port.x, port.y, angle)
+            new_port.x = new_location[0]
+            new_port.y = new_location[1]
+            rotated_component.ports.append(new_port)
+
+        return rotated_component

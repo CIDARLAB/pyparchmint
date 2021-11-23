@@ -6,8 +6,8 @@ class Port:
         Args:
             json (dict, optional): json dict. Defaults to None.
         """
-        self.x: int = -1
-        self.y: int = -1
+        self.x: float = -1
+        self.y: float = -1
         self.label: str = ""
         self.layer: str = ""
 
