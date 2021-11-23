@@ -24,6 +24,23 @@ def component_for_rotation():
     return component
 
 
+def test_get_component_spacing(component_for_rotation):
+
+    # Should raise the exception since no component spacing is defined
+    with pytest.raises(Exception) as e_info:
+        component_spacing = component_for_rotation.component_spacing
+
+    # Should set the component spacing
+    component_for_rotation.params.set_param("componentSpacing", 2000)
+    assert component_for_rotation.component_spacing == 2000
+
+
+def test_set_component_spacing(component_for_rotation):
+    # Set the component spacing
+    component_for_rotation.component_spacing = 4000
+    assert component_for_rotation.component_spacing == 4000
+
+
 def test_component_to_parchmint_v1_x_dict(
     params_dict, layer_dict, port_dict, component_dict
 ):

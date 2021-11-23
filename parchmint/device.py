@@ -422,6 +422,18 @@ class Device:
         """
         return self.connections
 
+    def get_connection_between_components(self, source, sink) -> Connection:
+        """Returns the connection between two components
+
+        Args:
+            source (Component): source component
+            sink (Component): sink component
+
+        Returns:
+            Connection: connection between the two components
+        """
+        return self.G.get_edge_data(source, sink)["connection_ref"]
+
     def generate_network(self) -> None:
         """Generates the underlying graph"""
         for component in self.components:
@@ -532,7 +544,10 @@ class Device:
         Returns:
             List[Connection]: list of connections for the given edge
         """
-        return [self.get_connection(ID) for ID in self.G.edges[source, sink]]
+        return [
+            edge["connection_ref"]
+            for edge in list((self.G[source.ID][sink.ID]).values())
+        ]
 
     def get_connections_for_component(self, component: Component) -> List[Connection]:
         """Returns the connections for the given component

@@ -43,6 +43,24 @@ class Component:
             self.parse_from_json(json_data, device_ref)
 
     @property
+    def component_spacing(self) -> float:
+        """Returns the component spacing
+
+        Returns:
+            float: component spacing
+        """
+        return self.params.get_param("componentSpacing")
+
+    @component_spacing.setter
+    def component_spacing(self, value: float):
+        """Sets the component spacing
+
+        Args:
+            value (float): component spacing
+        """
+        self.params.set_param("componentSpacing", value)
+
+    @property
     def xpos(self) -> int:
         """returns the x coordinate of the component
 
