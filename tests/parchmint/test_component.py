@@ -81,9 +81,9 @@ def test_rotate_point(component_for_rotation):
     assert new_coordinates == (0, component_for_rotation.xspan / 2)
 
 
-def test_rotate_component(component_for_rotation):
+def test_get_rotated_component_definition(component_for_rotation):
     # Rotate the component
-    rotated_component = component_for_rotation.get_rotated_component(90)
+    rotated_component = component_for_rotation.get_rotated_component_definition(90)
     assert rotated_component.ports[0].x == component_for_rotation.yspan
     assert rotated_component.ports[0].y == component_for_rotation.xspan / 2
     assert rotated_component.ports[1].x == 0
@@ -102,3 +102,22 @@ def test_rotate_component(component_for_rotation):
             assert rotated_component.params.get_param(
                 key
             ) == component_for_rotation.params.get_param(key)
+
+
+def test_rotate_point_around_center(component_for_rotation):
+    rotated_point = component_for_rotation.rotate_point_around_center(1000, 0, 90)
+    assert rotated_point == (8000, 8000)
+
+
+def test_rotated_component(component_for_rotation):
+    old_rotation = 90
+    component_for_rotation.rotation = old_rotation
+    print("Top port: ", component_for_rotation.get_port("top"))
+    component_for_rotation.rotate_component()
+    assert component_for_rotation.xspan == 15000
+    assert component_for_rotation.yspan == 1000
+    assert component_for_rotation.xpos == -7000
+    assert component_for_rotation.ypos == 7000
+    assert component_for_rotation.rotation == old_rotation
+    port = component_for_rotation.get_port("top")
+    assert (port.x, port.y) == (8000, 7500)

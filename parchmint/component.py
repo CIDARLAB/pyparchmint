@@ -302,7 +302,36 @@ class Component:
         new_pos = T3.dot(T2.dot(R.dot(T1.dot(pos))))
         return (round(new_pos[0]), round(new_pos[1]))
 
-    def get_rotated_component(self, angle: int) -> Component:
+    def rotate_point_around_center(
+        self, xpos: float, ypos: float, angle: float
+    ) -> Tuple[float, float]:
+        """Rotates a point around the component center clockwise
+
+        Args:
+            xpos (float): x coordinate of the point
+            ypos (float): y coordinate of the point
+            angle (float): angle of rotation in degrees
+
+        Returns:
+            Tuple[float, float]: A tuple containing the rotated coordinates
+        """
+        # Setup the center to be used the translation matrices
+        center_x = self.xspan / 2
+        center_y = self.yspan / 2
+
+        pos = np.array(((xpos), (ypos), (1)))
+
+        T1 = np.array(((1, 0, -center_x), (0, 1, -center_y), (0, 0, 1)))
+
+        theta = np.radians(angle)
+        c, s = np.cos(theta), np.sin(theta)
+        R = np.array(((c, -s, 0), (s, c, 0), (0, 0, 1)))
+        T2 = np.array(((1, 0, center_x), (0, 1, center_y), (0, 0, 1)))
+
+        new_pos = T2.dot(R.dot(T1.dot(pos)))
+        return (round(new_pos[0]), round(new_pos[1]))
+
+    def get_rotated_component_definition(self, angle: int) -> Component:
         """Returns a new component with the same parameters but rotated by the given angle
 
         Args:
@@ -361,3 +390,52 @@ class Component:
             rotated_component.ports.append(new_port)
 
         return rotated_component
+
+    def rotate_component(self) -> None:
+        """Returns a new component with the same parameters but rotated by the given angle
+
+        Args:
+            angle (int): angle of rotation
+
+        Returns:
+            Component: [description]
+        """
+
+        new_topLeft = self.rotate_point_around_center(0, 0, self.rotation)
+        new_topRight = self.rotate_point_around_center(self.xspan, 0, self.rotation)
+        new_bottomLeft = self.rotate_point_around_center(0, self.yspan, self.rotation)
+        new_bottomRight = self.rotate_point_around_center(
+            self.xspan, self.yspan, self.rotation
+        )
+
+        # Find xmin, ymin, xmax, ymax for all the corner points
+        xmin = min(
+            new_topLeft[0], new_topRight[0], new_bottomLeft[0], new_bottomRight[0]
+        )
+        ymin = min(
+            new_topLeft[1], new_topRight[1], new_bottomLeft[1], new_bottomRight[1]
+        )
+        xmax = max(
+            new_topLeft[0], new_topRight[0], new_bottomLeft[0], new_bottomRight[0]
+        )
+        ymax = max(
+            new_topLeft[1], new_topRight[1], new_bottomLeft[1], new_bottomRight[1]
+        )
+
+        # Update the ports with new rotated coordinates first before we modify the x, y, xspan, yspan
+        for port in self.ports:
+            new_location = self.rotate_point_around_center(
+                port.x, port.y, self.rotation
+            )
+            port.x = new_location[0]
+            port.y = new_location[1]
+
+        # Find the new xspan and yspan
+        new_xspan = abs(xmax - xmin)
+        new_yspan = abs(ymax - ymin)
+        self.xspan = int(new_xspan)
+        self.yspan = int(new_yspan)
+
+        # Create a new component with the rotated coordinates
+        self.xpos = xmin
+        self.ypos = ymin
