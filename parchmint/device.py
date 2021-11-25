@@ -544,10 +544,18 @@ class Device:
         Returns:
             List[Connection]: list of connections for the given edge
         """
-        return [
-            edge["connection_ref"]
-            for edge in list((self.G[source.ID][sink.ID]).values())
-        ]
+        try:
+            return [
+                edge["connection_ref"]
+                for edge in list((self.G[source.ID][sink.ID]).values())
+            ]
+        except KeyError:
+            print(
+                "Warning ! - No connections found between {} and {}".format(
+                    source, sink
+                )
+            )
+            return []
 
     def get_connections_for_component(self, component: Component) -> List[Connection]:
         """Returns the connections for the given component

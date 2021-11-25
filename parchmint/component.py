@@ -192,6 +192,9 @@ class Component:
         Returns:
             dict: dictionary that can be used in json.dumps()
         """
+        # Set the position parameter if it doesnt exist, set it to -1, -1
+        if not self.params.exists("position"):
+            self.params.set_param("position", [-1, -1])
         ret = {
             "name": self.name,
             "id": self.ID,
@@ -316,8 +319,8 @@ class Component:
             Tuple[float, float]: A tuple containing the rotated coordinates
         """
         # Setup the center to be used the translation matrices
-        center_x = self.xspan / 2
-        center_y = self.yspan / 2
+        center_x = self.xpos + self.xspan / 2
+        center_y = self.ypos + self.yspan / 2
 
         pos = np.array(((xpos), (ypos), (1)))
 
@@ -395,17 +398,23 @@ class Component:
         """Returns a new component with the same parameters but rotated by the given angle
 
         Args:
-            angle (int): angle of rotation
+            None
 
         Returns:
-            Component: [description]
+            None
         """
 
-        new_topLeft = self.rotate_point_around_center(0, 0, self.rotation)
-        new_topRight = self.rotate_point_around_center(self.xspan, 0, self.rotation)
-        new_bottomLeft = self.rotate_point_around_center(0, self.yspan, self.rotation)
+        new_topLeft = self.rotate_point_around_center(
+            self.xpos + 0, self.ypos + 0, self.rotation
+        )
+        new_topRight = self.rotate_point_around_center(
+            self.xpos + self.xspan, self.ypos + 0, self.rotation
+        )
+        new_bottomLeft = self.rotate_point_around_center(
+            self.xpos + 0, self.ypos + self.yspan, self.rotation
+        )
         new_bottomRight = self.rotate_point_around_center(
-            self.xspan, self.yspan, self.rotation
+            self.xpos + self.xspan, self.ypos + self.yspan, self.rotation
         )
 
         # Find xmin, ymin, xmax, ymax for all the corner points

@@ -60,6 +60,8 @@ def test_get_connections_for_edge(temp_device, layer_dict, component_dict):
         connection2,
     ]
 
+    assert temp_device.get_connections_for_edge(component2, component1) == []
+
 
 def test_to_parchmint_v1_x(
     device_dict,
