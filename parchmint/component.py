@@ -32,7 +32,7 @@ class Component:
         self.entity: str = ""
         self.xspan: int = -1
         self.yspan: int = -1
-        self.ports: List[Port] = []
+        self._ports: List[Port] = []
         self.layers: List[Layer] = []
 
         if json_data is not None:
@@ -41,6 +41,15 @@ class Component:
                     "Cannot Parse Component from JSON with no Device Reference, check device_ref parameter in constructor "
                 )
             self.parse_from_json(json_data, device_ref)
+
+    @property
+    def ports(self) -> List[Port]:
+        """Returns the ports of the component
+
+        Returns:
+            List[Port]: list of ports
+        """
+        return self._ports
 
     @property
     def component_spacing(self) -> float:
@@ -152,7 +161,15 @@ class Component:
             ports (List[Port]): list of port objects
         """
         for port in ports:
-            self.ports.append(port)
+            self.add_component_port(port)
+
+    def add_component_port(self, port: Port) -> None:
+        """Adds a component port to the component
+
+        Args:
+            port (Port): port object
+        """
+        self._ports.append(port)
 
     def parse_from_json(self, json, device_ref=None):
         """Parses from the json dict
@@ -173,7 +190,7 @@ class Component:
         self.layers = [device_ref.get_layer(layer_id) for layer_id in json["layers"]]
 
         for port in json["ports"]:
-            self.ports.append(Port(port))
+            self.add_component_port(Port(port))
 
         if self.params:
             if self.params.exists("position"):
@@ -200,7 +217,7 @@ class Component:
             "id": self.ID,
             "layers": [layer.ID for layer in self.layers],
             "params": self.params.to_parchmint_v1(),
-            "ports": [p.to_parchmint_v1() for p in self.ports],
+            "ports": [p.to_parchmint_v1() for p in self._ports],
             "entity": self.entity,
             "x-span": int(self.xspan),
             "y-span": int(self.yspan),
@@ -226,7 +243,7 @@ class Component:
         Returns:
             Port: component port
         """
-        for port in self.ports:
+        for port in self._ports:
             if label == port.label:
                 return port
         raise Exception("Could not find port with the label: {}".format(label))
@@ -384,13 +401,13 @@ class Component:
         rotated_component.rotation = 0
 
         # Create new ports with new rotated coordinates
-        for port in self.ports:
+        for port in self._ports:
             new_port = Port()
             new_port.label = port.label
             new_location = self.rotate_point(port.x, port.y, angle)
             new_port.x = new_location[0]
             new_port.y = new_location[1]
-            rotated_component.ports.append(new_port)
+            rotated_component.add_component_port(new_port)
 
         return rotated_component
 
@@ -403,6 +420,13 @@ class Component:
         Returns:
             None
         """
+
+        # first rotate ports before everything gets confusion
+        for port in self._ports:
+            print(port.label, port.x, port.y)
+            new_location = self.rotate_point(port.x, port.y, self.rotation)
+            port.x = new_location[0]
+            port.y = new_location[1]
 
         new_topLeft = self.rotate_point_around_center(
             self.xpos + 0, self.ypos + 0, self.rotation
@@ -430,14 +454,6 @@ class Component:
         ymax = max(
             new_topLeft[1], new_topRight[1], new_bottomLeft[1], new_bottomRight[1]
         )
-
-        # Update the ports with new rotated coordinates first before we modify the x, y, xspan, yspan
-        for port in self.ports:
-            new_location = self.rotate_point_around_center(
-                port.x, port.y, self.rotation
-            )
-            port.x = new_location[0]
-            port.y = new_location[1]
 
         # Find the new xspan and yspan
         new_xspan = abs(xmax - xmin)

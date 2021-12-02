@@ -18,8 +18,8 @@ def component_for_rotation():
     bottom_port.label = "bottom"
     bottom_port.x = int(component.xspan / 2)
     bottom_port.y = component.yspan
-    component.ports.append(top_port)
-    component.ports.append(bottom_port)
+    component.add_component_port(top_port)
+    component.add_component_port(bottom_port)
 
     return component
 
@@ -42,8 +42,8 @@ def component2_for_rotation():
     bottom_port.label = "bottom"
     bottom_port.x = int(component.xspan / 2)
     bottom_port.y = component.yspan
-    component.ports.append(top_port)
-    component.ports.append(bottom_port)
+    component.add_component_port(top_port)
+    component.add_component_port(bottom_port)
 
     return component
 
@@ -75,7 +75,7 @@ def test_component_to_parchmint_v1_x_dict(
     component.params = Params(params_dict)
     component.entity = "MIXER"
     component.layers.append(layer)
-    component.ports.append(Port(port_dict))
+    component.add_component_port(Port(port_dict))
     component.xspan = 1000
     component.yspan = 5000
     # Test to see if the component dict is correct or not
@@ -128,6 +128,11 @@ def test_get_rotated_component_definition(
             assert rotated_component.params.get_param(
                 key
             ) == component_for_rotation.params.get_param(key)
+
+    port = rotated_component.get_port("top")
+    assert (port.x, port.y) == (15000, 500)
+    port = rotated_component.get_port("bottom")
+    assert (port.x, port.y) == (0, 500)
 
     # Its time to test this for a component with a non-0,0 position
     rotated_component = component2_for_rotation.get_rotated_component_definition(90)
@@ -185,7 +190,7 @@ def test_rotate_component(component_for_rotation, component2_for_rotation):
     assert component_for_rotation.ypos == 7000
     assert component_for_rotation.rotation == old_rotation
     port = component_for_rotation.get_port("top")
-    assert (port.x, port.y) == (8000, 7500)
+    assert (port.x, port.y) == (15000, 500)
 
     # now test this for the non origin located component
     component2_for_rotation.rotation = 90
@@ -200,3 +205,5 @@ def test_rotate_component(component_for_rotation, component2_for_rotation):
     assert component2_for_rotation.yspan == 1000
     assert component2_for_rotation.xpos == -5000
     assert component2_for_rotation.ypos == 9000
+    port = component2_for_rotation.get_port("top")
+    assert (port.x, port.y) == (15000, 500)

@@ -1,6 +1,6 @@
 import pytest
 
-from parchmint import Layer
+from parchmint.layer import Layer
 from parchmint.component import Component
 from parchmint.device import Device
 from parchmint.feature import Feature
