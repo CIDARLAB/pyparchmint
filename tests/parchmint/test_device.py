@@ -18,12 +18,37 @@ def temp_device():
     return device
 
 
+def test_add_feature(temp_device, feature_dict, layer_dict):
+    temp_device.add_layer(Layer(json_data=layer_dict))
+    feature = Feature(json_data=feature_dict, device_ref=temp_device)
+    temp_device.add_feature(feature)
+    assert feature in temp_device.features
+
+
+def test_remove_feature(temp_device, feature_dict, layer_dict):
+    temp_device.add_layer(Layer(json_data=layer_dict))
+    feature = Feature(json_data=feature_dict, device_ref=temp_device)
+    temp_device.add_feature(feature)
+    temp_device.remove_feature(feature.ID)
+    assert feature not in temp_device.features
+    assert temp_device.G.has_node(feature.ID) is False
+
+
 def test_add_compoent(temp_device, component_dict, layer_dict):
     temp_device.add_layer(Layer(json_data=layer_dict))
     component = Component(json_data=component_dict, device_ref=temp_device)
     temp_device.add_component(component)
     assert component in temp_device.components
     assert temp_device.G.has_node(component.ID)
+
+
+def test_remove_component(temp_device, component_dict, layer_dict):
+    temp_device.add_layer(Layer(json_data=layer_dict))
+    component = Component(json_data=component_dict, device_ref=temp_device)
+    temp_device.add_component(component)
+    temp_device.remove_component(component.ID)
+    assert component not in temp_device.components
+    assert temp_device.G.has_node(component.ID) is False
 
 
 def test_add_connection(
@@ -64,6 +89,34 @@ def test_add_connection(
     assert connection1 in temp_device.connections
     assert temp_device.G.has_edge(component1.ID, component2.ID)
 
+
+def test_remove_connection(temp_device, layer_dict, component_dict):
+    temp_device.add_layer(Layer(json_data=layer_dict))
+    component1 = Component(json_data=component_dict, device_ref=temp_device)
+    temp_device.add_component(component1)
+    component2 = Component(json_data=component_dict, device_ref=temp_device)
+    component2.ID = "c2"
+    component2.name = "c2"
+    temp_device.add_component(component2)
+
+    connection1 = Connection(device_ref=temp_device)
+    connection1.ID = "connection1"
+    source_target = Target()
+    source_target.component = component1.ID
+    source_target.port = "1"
+    connection1.source = source_target
+
+    sink_target = Target()
+    sink_target.component = component2.ID
+    sink_target.port = "1"
+    connection1.sinks.append(sink_target)
+
+    temp_device.add_connection(connection1)
+
+    temp_device.remove_connection(connection1.ID)
+
+    assert connection1 not in temp_device.connections
+    assert temp_device.G.has_edge(component1.ID, component2.ID) is False
 
 
 def test_get_connections_for_edge(temp_device, layer_dict, component_dict):

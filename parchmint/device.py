@@ -15,6 +15,7 @@ from parchmint.feature import Feature
 from parchmint.layer import Layer
 from parchmint.params import Params
 from parchmint.similaritymatcher import SimilarityMatcher
+from warnings import warn
 
 PROJECT_DIR = pathlib.Path(parchmint.__file__).parent.parent.absolute()
 
@@ -186,16 +187,26 @@ class Device:
                 )
             )
 
-    # add compare function
-    # -pass device, compare devices
-    # - check connections, components, print if its same or not
-    # - have a flag to print parameter differences
+    def remove_valve(self, valve_id) -> None:
+        """Removes the valve entry from the device, also deletes the component from the device's components
 
-    def compare(self, device: Device) -> bool:
+        Args:
+            valve_id (str): ID of the valve to be removed
+        """
+        for valve in self.valves:
+            if valve.ID == valve_id:
+                self._valve_map.pop(valve)
+                self._valve_type_map.pop(valve)
+                break
+
+        self.remove_component(valve_id)
+
+    def compare(self, device: Device, ignore_parameter_diffs: bool = True) -> bool:
         """compare against the input device. Return true if they are semnatcally feasible.
 
         Args:
             device (Device): expected device
+            ignore_parameter_diffs (bool): ignore parameter differences. Defaults to True.
 
         Returns:
             bool: If semntically feasible, return true. Else false.
@@ -224,6 +235,19 @@ class Device:
         """
         self.features.append(feature)
 
+    def remove_feature(self, feature_id: str) -> None:
+        """Removes a feature from the device
+        Args:
+            feature_id (str): ID of the feature to be removed
+        Raises:
+            Exception: Raises the error if the feature is not found in the device
+        """
+        for feature in self.features:
+            if feature.ID == feature_id:
+                self.features.remove(feature)
+                return
+        raise Exception("Feature not found")
+
     def add_component(self, component: Component) -> None:
         """Adds a component object to the device
 
@@ -246,6 +270,22 @@ class Device:
             raise Exception(
                 "Could not add component since its not an instance of parchmint:Component"
             )
+
+    def remove_component(self, component_id: str) -> None:
+        """Removes a component object from the device
+
+        Args:
+            component_id (str): ID of the component to be removed
+
+        Raises:
+            Exception: Raises the error if the component is not found in the device
+        """
+        for component in self.components:
+            if component.ID == component_id:
+                self.components.remove(component)
+                self.G.remove_node(component_id)
+                return
+        raise Exception("Component not found")
 
     def add_connection(self, connection: Connection) -> None:
         """Adds a connection object to the device
@@ -300,6 +340,24 @@ class Device:
                 "Could not add component since its not an instance of parchmint:Connection"
             )
 
+    def remove_connection(self, connection_id: str) -> None:
+        """Removes a connection object from the device
+
+        Args:
+            connection_id (str): ID of the connection to be removed
+
+        Raises:
+            Exception: Raises the error if the connection is not found in the device
+        """
+        for connection in self.connections:
+            if connection.ID == connection_id:
+                self.connections.remove(connection)
+                if connection.source is not None:
+                    for sink in connection.sinks:
+                        self.G.remove_edge(connection.source.component, sink.component)
+                return
+        raise Exception("Connection not found")
+
     def add_layer(self, layer: Layer) -> None:
         """Adds a layer to the device
 
@@ -308,6 +366,35 @@ class Device:
         """
         if isinstance(layer, Layer):
             self.layers.append(layer)
+
+    def remove_layer(self, layer_id: str) -> None:
+        """Removes a layer from the device, also removes all the components and connections corresponding to the layer
+
+        Args:
+            layer_id (str): ID of the layer to be removed
+        """
+        layer_to_delete = None
+        for layer in self.layers:
+            if layer.ID == layer_id:
+                layer_to_delete = layer
+
+        if layer_to_delete is None:
+            raise Exception("Layer not found")
+
+        # Remove all the components and connections associated with the layer
+        for component in self.components:
+            if set([layer.ID for layer in component.layers]) == set(layer_to_delete.ID):
+                self.remove_component(component.ID)
+            else:
+                warn(
+                    "Skipped removing component {} from the device".format(component.ID)
+                )
+
+        for connection in self.connections:
+            if connection.layer is None:
+                continue
+            if layer_to_delete.ID == connection.layer.ID:
+                self.remove_connection(connection.ID)
 
     def get_layer(self, id: str) -> Layer:
         """Returns the layer with the corresponding id
