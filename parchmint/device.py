@@ -74,7 +74,6 @@ class Device:
 
         if json_data:
             self.parse_from_json(json_data)
-            self.generate_network()
 
     @property
     def xspan(self) -> Optional[int]:
@@ -201,7 +200,6 @@ class Device:
         Returns:
             bool: If semntically feasible, return true. Else false.
         """
-        self.generate_network()
 
         SM = SimilarityMatcher(self, device)
 
@@ -243,6 +241,7 @@ class Device:
                     "hence skipping the component".format(component.name)
                 )
             self.components.append(component)
+            self.G.add_node(component.ID)
         else:
             raise Exception(
                 "Could not add component since its not an instance of parchmint:Component"
@@ -264,10 +263,26 @@ class Device:
 
             if self.component_exists(connection.source.component) is False:
                 raise Exception(
-                    "Source component {} not found in the device".format(
-                        connection.source
+                    "Source component {} not found in the device while adding connection: {}".format(
+                        connection.source, connection.ID
                     )
                 )
+
+            # Check if the connection sinks are defined / exist in the device
+            if len(connection.sinks) == 0:
+                print(
+                    "Warning: No sinks defined for connection {}".format(
+                        connection.name
+                    )
+                )
+
+            for sink in connection.sinks:
+                if self.component_exists(sink.component) is False:
+                    raise Exception(
+                        "Sink component {} not found in the device while adding connection: {}".format(
+                            sink, connection.name
+                        )
+                    )
 
             self.connections.append(connection)
             # Connect the components associated here on the nx graph
@@ -433,25 +448,6 @@ class Device:
             Connection: connection between the two components
         """
         return self.G.get_edge_data(source, sink)["connection_ref"]
-
-    def generate_network(self) -> None:
-        """Generates the underlying graph"""
-        for component in self.components:
-            self.G.add_node(component.ID, component_ref=component)
-
-        for connection in self.connections:
-            if connection.source is None:
-                raise Exception("Source is None for connection {}".format(connection))
-            sourceref = connection.source.component
-            for sink in connection.sinks:
-                sinkref = sink.component
-                self.G.add_edge(
-                    sourceref,
-                    sinkref,
-                    source_port=connection.source,
-                    sink_port=sink,
-                    connection_ref=connection,
-                )
 
     def get_name_from_id(self, id: str) -> str:
         """Returns the name of the component with the corresponding id

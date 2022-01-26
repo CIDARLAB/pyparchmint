@@ -114,6 +114,22 @@ def connection_dict(
 
 
 @pytest.fixture
+def pathless_connection_dict(params_dict, connection_path_dict, connection_target_dict, layer):
+
+    ret = {
+        "source": connection_target_dict,
+        "sinks": [connection_target_dict, connection_target_dict],
+        "paths": [],
+        "layer": layer.ID,
+        "id": "con1",
+        "name": "con1",
+        "entity": "CHANNEL",
+        "params": params_dict,
+    }
+    return ret
+
+
+@pytest.fixture
 def valve1_dict(layer_dict, params_dict):
     return {
         "name": "valve1",

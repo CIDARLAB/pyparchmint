@@ -18,6 +18,54 @@ def temp_device():
     return device
 
 
+def test_add_compoent(temp_device, component_dict, layer_dict):
+    temp_device.add_layer(Layer(json_data=layer_dict))
+    component = Component(json_data=component_dict, device_ref=temp_device)
+    temp_device.add_component(component)
+    assert component in temp_device.components
+    assert temp_device.G.has_node(component.ID)
+
+
+def test_add_connection(
+    temp_device, component_dict, pathless_connection_dict, connection_dict, layer_dict
+):
+    # Ideal scenario for this test, has all the components already present in the graph before inserting the connection
+    temp_device.add_layer(Layer(json_data=layer_dict))
+    component1 = Component(json_data=component_dict, device_ref=temp_device)
+    component2 = Component(json_data=component_dict, device_ref=temp_device)
+    component2.ID = "c2"
+    component2.name = "c2"
+
+    connection1 = Connection(json_data=pathless_connection_dict, device_ref=temp_device)
+    connection1.ID = "connection1"
+    source_target = Target()
+    source_target.component = component1.ID
+    source_target.port = "1"
+    connection1.source = source_target
+
+    sink_target = Target()
+    sink_target.component = component2.ID
+    sink_target.port = "1"
+    connection1.sinks.append(sink_target)
+
+    # First test to see if this raises an exception when there are no source and sink components added to the device
+    with pytest.raises(Exception):
+        temp_device.add_connection(connection1)
+
+    # Now add the source and see if it raises an exception
+    with pytest.raises(Exception):
+        temp_device.add_component(component1)
+        temp_device.add_connection(connection1)
+
+    # Now add the sink and see if it goes through without raising an exception
+    temp_device.add_component(component2)
+    temp_device.add_connection(connection1)
+
+    assert connection1 in temp_device.connections
+    assert temp_device.G.has_edge(component1.ID, component2.ID)
+
+
+
 def test_get_connections_for_edge(temp_device, layer_dict, component_dict):
     temp_device.add_layer(Layer(json_data=layer_dict))
     component1 = Component(json_data=component_dict, device_ref=temp_device)
