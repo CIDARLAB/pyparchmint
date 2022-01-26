@@ -7,10 +7,11 @@ if TYPE_CHECKING:
 
 from typing import List, Tuple
 
+import numpy as np
+
 from parchmint.layer import Layer
 from parchmint.params import Params
 from parchmint.port import Port
-import numpy as np
 
 
 class Component:

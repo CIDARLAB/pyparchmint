@@ -1,9 +1,9 @@
 import pytest
 
-from parchmint.layer import Layer
 from parchmint.component import Component
 from parchmint.device import Device
 from parchmint.feature import Feature
+from parchmint.layer import Layer
 
 
 @pytest.fixture
@@ -114,7 +114,9 @@ def connection_dict(
 
 
 @pytest.fixture
-def pathless_connection_dict(params_dict, connection_path_dict, connection_target_dict, layer):
+def pathless_connection_dict(
+    params_dict, connection_path_dict, connection_target_dict, layer
+):
 
     ret = {
         "source": connection_target_dict,
