@@ -19,6 +19,7 @@ networkx = "^2.5"
 jsonschema = "^3.2.0"
 argparse = "^1.4.0"
 numpy = "^1.21.4"
+tabulate = "^0.8.9"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.8.4"
