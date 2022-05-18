@@ -54,13 +54,13 @@ class Device:
     It contains the entire list of components, connections and all the relationships
     between them"""
 
-    def __init__(self, name: str):
+    def __init__(self, name: str = ""):
         """Creates a new device object
 
         Args:
             json (dict, optional): json dict after json.loads(). Defaults to None.
         """
-        self.name: str = ""
+        self.name: str = name
         self.components: List[Component] = []
         self.connections: List[Connection] = []
         self.layers: List[Layer] = []
