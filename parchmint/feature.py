@@ -44,7 +44,7 @@ class Feature:
 
         if json_data is not None:
             if device_ref is not None:
-                self.from_parchmint_v1_x(json_data, device_ref)
+                self.from_parchmint_v1_2(json_data, device_ref)
             else:
                 raise ValueError("device_ref is required")
 
@@ -99,7 +99,7 @@ class Feature:
         """ Sets the params of the features"""
         self._params = value
 
-    def to_parchmint_v1_x(self):
+    def to_parchmint_v1_2(self):
         """
         Returns a dict that can be converted to a json string
         """
@@ -111,7 +111,7 @@ class Feature:
             "layerID": self._layer.ID if self._layer is not None else None,
         }
 
-    def from_parchmint_v1_x(self, json_data, device_ref: Device) -> None:
+    def from_parchmint_v1_2(self, json_data, device_ref: Device) -> None:
         """
         Parses the JSON data of feature
         """

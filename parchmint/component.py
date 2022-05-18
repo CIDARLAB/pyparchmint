@@ -129,6 +129,7 @@ class Component:
         ret = {
             "name": self.name,
             "id": self.ID,
+            "entity": self.entity,
             "layers": [layer.ID for layer in self.layers],
             "params": self.params.to_parchmint_v1(),
             "ports": [p.to_parchmint_v1() for p in self.ports],
@@ -180,7 +181,7 @@ class Component:
         return hash(repr(self))
 
     @staticmethod
-    def from_parchmint_v1(json, device_ref=None):
+    def from_parchmint_v1(json_data, device_ref=None):
         """Creates a new Component object from the json dict
 
         Args:
@@ -197,15 +198,15 @@ class Component:
 
         component = Component()
         
-        component.name = json["name"]
-        component.ID = json["id"]
-        component.entity = json["entity"]
-        component.xspan = json["x-span"]
-        component.yspan = json["y-span"]
-        component.params = Params(json["params"])
-        component.layers = [device_ref.get_layer(layer_id) for layer_id in json["layers"]]
+        component.name = json_data["name"]
+        component.ID = json_data["id"]
+        component.entity = json_data["entity"]
+        component.xspan = json_data["x-span"]
+        component.yspan = json_data["y-span"]
+        component.params = Params(json_data["params"])
+        component.layers = [device_ref.get_layer(layer_id) for layer_id in json_data["layers"]]
 
-        for port in json["ports"]:
+        for port in json_data["ports"]:
             component.ports.append(Port(port))
 
         if component.params:
@@ -217,6 +218,6 @@ class Component:
 
 
     @staticmethod
-    def from_parchmint_v1_2(json, device_ref=None):
+    def from_parchmint_v1_2(json_data, device_ref=None):
         """Creates a new Component object from the json dict"""
-        return Component.from_parchmint_v1(json, device_ref)
+        return Component.from_parchmint_v1(json_data, device_ref)

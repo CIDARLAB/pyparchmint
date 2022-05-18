@@ -129,7 +129,7 @@ class ConnectionPath:
         """
         self.__waypoints.append((x, y))
 
-    def to_parchmint_v1(self):
+    def to_parchmint_v1_2(self):
         """Returns the json dict
 
         Returns:
@@ -146,17 +146,17 @@ class ConnectionPath:
 
     
     @staticmethod
-    def from_parchmint_v1_2(jsondata, device_ref: Device) -> ConnectionPath:
+    def from_parchmint_v1_2(json_data, device_ref: Device) -> ConnectionPath:
         features = []
-        if "features" in jsondata:
+        if "features" in json_data:
             features = [
-                device_ref.get_feature(feat_id) for feat_id in jsondata["features"]
+                device_ref.get_feature(feat_id) for feat_id in json_data["features"]
             ]
 
         ret = ConnectionPath(
-            source=Target(jsondata["source"]),
-            sink=Target(jsondata["sink"]),
-            waypoints=[(wp[0], wp[1]) for wp in jsondata["wayPoints"]],
+            source=Target(json_data["source"]),
+            sink=Target(json_data["sink"]),
+            waypoints=[(wp[0], wp[1]) for wp in json_data["wayPoints"]],
             features=features,
         )
 
@@ -172,7 +172,16 @@ class Connection:
 
     """
 
-    def __init__(self, json_data=None, device_ref=None):
+    def __init__(self,
+            name: str = "",
+            ID: str = "",
+            entity: str = "",
+            source: Optional[Target] = None,
+            sinks: List[Target] = [],
+            params: Params = Params(),
+            layer: Optional[Layer] = None,
+            paths: List[ConnectionPath] = [],
+        ):
         """[summary]
 
         Args:
@@ -182,88 +191,14 @@ class Connection:
         Raises:
             Exception: [description]
         """
-        self.name: Optional[str] = None
-        self.ID: str = ""
-        self.entity: Optional[str] = None
-        self.params: Params = Params()
-        self.source: Optional[Target] = None
-        self.sinks: List[Target] = []
-        self.layer: Optional[Layer] = None
-        self._paths: List[ConnectionPath] = []
-
-        if json_data:
-            if device_ref is None:
-                raise Exception(
-                    "Cannot Parse Connection from JSON with no Device Reference, check device_ref parameter in constructor "
-                )
-
-            self.parse_from_json_v1_x(json_data, device_ref)
-
-    def parse_from_json(self, json, device_ref=None):
-        """Parses from the json dict
-
-        Args:
-            json (dict): json dict after json.loads()
-        """
-        if device_ref is None:
-            raise Exception(
-                "Cannot Parse Connection from JSON with no Device Reference, check device_ref parameter in constructor "
-            )
-
-        self.name = json["name"]
-        self.ID = json["id"]
-        self.layer = device_ref.get_layer(json["layer"])
-
-        # Pull out the paths
-        if "paths" in json["params"].keys():
-            json_paths = json["params"]["paths"]
-            for json_path in json_paths:
-                path = ConnectionPath.from_parchmint_v1_2(json_path, device_ref=device_ref)
-                self.add_path(path)
-
-        self.params = Params(json["params"])
-
-        self.source = Target(json["source"])
-        if "sinks" in json.keys():
-            for target in json["sinks"]:
-                self.sinks.append(Target(target))
-
-    def parse_from_json_v1_x(self, json_data, device_ref=None):
-        """Parses from the json dict - v1_x
-
-        Args:
-            json (dict): json dict after json.loads()
-        """
-        if device_ref is None:
-            raise Exception(
-                "Cannot Parse Connection from JSON with no Device Reference, check device_ref parameter in constructor "
-            )
-        self.name = json_data["name"]
-        self.ID = json_data["id"]
-        self.layer = device_ref.get_layer(json_data["layer"])
-        self.entity = json_data["entity"]
-
-        # Pull out the paths
-        if "paths" in json_data.keys():
-            json_paths = json_data["paths"]
-            for json_path in json_paths:
-                path = ConnectionPath.from_parchmint_v1_2(json_path, device_ref=device_ref)
-                self.add_path(path)
-        else:
-            print("No path data found for connection {}".format(self.ID))
-
-        self.params = Params(json_data["params"])
-
-        self.source = Target(json_data["source"])
-
-        if "sinks" in json_data.keys():
-            if json_data["sinks"]:
-                for target in json_data["sinks"]:
-                    self.sinks.append(Target(target))
-            else:
-                print("connection", self.name, "does not have any sinks")
-        else:
-            print("connection", self.name, "does not have any sinks")
+        self.name: Optional[str] = name
+        self.ID: str = ID
+        self.entity: Optional[str] = entity
+        self.params: Params = params
+        self.source: Optional[Target] = source
+        self.sinks: List[Target] = sinks
+        self.layer: Optional[Layer] = layer
+        self._paths: List[ConnectionPath] = paths
 
     def __str__(self):
         return str(self.__dict__)
@@ -320,7 +255,7 @@ class Connection:
             "layer": self.layer.ID if self.layer is not None else None,
         }
 
-        ret["paths"] = [path.to_parchmint_v1() for path in self._paths]
+        ret["paths"] = [path.to_parchmint_v1_2() for path in self._paths]
 
         return ret
 
@@ -338,7 +273,7 @@ class Connection:
             "source": self.source.to_parchmint_v1() if self.source else None,
             "params": self.params.to_parchmint_v1(),
             "layer": self.layer.ID if self.layer else None,
-            "paths": [path.to_parchmint_v1() for path in self._paths],
+            "paths": [path.to_parchmint_v1_2() for path in self._paths],
             "entity": self.entity,
         }
 
@@ -348,7 +283,7 @@ class Connection:
         return hash(repr(self))
 
     @staticmethod
-    def from_parchmint_v1(json, device_ref: Device) -> Connection:
+    def from_parchmint_v1(json_data, device_ref: Device) -> Connection:
         """Parses from the json dict
 
         Args:
@@ -359,18 +294,18 @@ class Connection:
                 "Cannot Parse Connection from JSON with no Device Reference, check device_ref parameter in constructor "
             )
 
-        connection = Connection(device_ref=device_ref)
-        connection.name = json["name"]
-        connection.ID = json["id"]
-        connection.layer = device_ref.get_layer(json["layer"])
+        connection = Connection()
+        connection.name = json_data["name"]
+        connection.ID = json_data["id"]
+        connection.layer = device_ref.get_layer(json_data["layer"])
 
-        connection.params = Params(json["params"])
+        connection.params = Params(json_data["params"])
 
-        connection.source = Target(json["source"])
+        connection.source = Target(json_data["source"])
 
-        if "sinks" in json.keys():
-            if json["sinks"]:
-                for target in json["sinks"]:
+        if "sinks" in json_data.keys():
+            if json_data["sinks"]:
+                for target in json_data["sinks"]:
                     connection.sinks.append(Target(target))
             else:
                 print("connection", connection.name, "does not have any sinks")
@@ -378,8 +313,8 @@ class Connection:
             print("connection", connection.name, "does not have any sinks")
 
         # TODO - Change this in the v1.2 version
-        if "waypoints" in json.keys():
-            waypoints_raw = json["waypoints"]
+        if "waypoints" in json_data.keys():
+            waypoints_raw = json_data["waypoints"]
             waypoints = [(wp[0], wp[1]) for wp in waypoints_raw]
             connection.add_waypoints_path(None, None, waypoints)
 
@@ -387,7 +322,7 @@ class Connection:
 
     
     @staticmethod
-    def from_parchmint_v1_2(json, device_ref: Device) -> Connection:
+    def from_parchmint_v1_2(json_data, device_ref: Device) -> Connection:
         """Parses from the json dict
 
         Args:
@@ -398,18 +333,18 @@ class Connection:
                 "Cannot Parse Connection from JSON with no Device Reference, check device_ref parameter in constructor "
             )
 
-        connection = Connection(device_ref=device_ref)
-        connection.name = json["name"]
-        connection.ID = json["id"]
-        connection.layer = device_ref.get_layer(json["layer"])
+        connection = Connection()
+        connection.name = json_data["name"]
+        connection.ID = json_data["id"]
+        connection.layer = device_ref.get_layer(json_data["layer"])
 
-        connection.params = Params(json["params"])
+        connection.params = Params(json_data["params"])
 
-        connection.source = Target(json["source"])
+        connection.source = Target(json_data["source"])
 
-        if "sinks" in json.keys():
-            if json["sinks"]:
-                for target in json["sinks"]:
+        if "sinks" in json_data.keys():
+            if json_data["sinks"]:
+                for target in json_data["sinks"]:
                     connection.sinks.append(Target(target))
             else:
                 print("connection", connection.name, "does not have any sinks")
@@ -417,8 +352,8 @@ class Connection:
             print("connection", connection.name, "does not have any sinks")
 
         # Pull out the paths
-        if "paths" in json.keys():
-            json_paths = json["paths"]
+        if "paths" in json_data.keys():
+            json_paths = json_data["paths"]
             for json_path in json_paths:
                 path = ConnectionPath.from_parchmint_v1_2(json_path, device_ref)
                 connection.add_path(path)

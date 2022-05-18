@@ -13,10 +13,10 @@ def test_to_parchmint_v1(feature_dict, params_dict, device, layer):
         device_ref=device,
     )
 
-    assert feat.to_parchmint_v1_x() == feature_dict
+    assert feat.to_parchmint_v1_2() == feature_dict
 
 
-def test_from_parchmint_v1_x(feature_dict, device):
+def test_from_parchmint_v1_2(feature_dict, device):
 
     feat = Feature(json_data=feature_dict, device_ref=device)
-    assert feat.to_parchmint_v1_x() == feature_dict
+    assert feat.to_parchmint_v1_2() == feature_dict

@@ -1,7 +1,7 @@
 from parchmint import Component, Layer, Port, Params, Device
 
 
-def test_component_to_parchmint_v1_x_dict(
+def test_component_to_parchmint_v1_2(
     params_dict, layer_dict, port_dict, component_dict
 ):
     layer = Layer(layer_dict)
@@ -21,5 +21,5 @@ def test_component_to_parchmint_v1_x_dict(
     # Create dummy device to get the layer id from
     device = Device()
     device.layers.append(layer)
-    component = Component(json_data=component_dict, device_ref=device)
+    component = Component.from_parchmint_v1_2(component_dict, device)
     assert component.to_parchmint_v1() == component_dict

@@ -452,7 +452,7 @@ class Device:
 
         return ret
 
-    def to_parchmint_v1_x(self) -> Dict:
+    def to_parchmint_v1_2(self) -> Dict:
         """Generating the parchmint v1.2 of the device
 
         Returns:
@@ -463,11 +463,11 @@ class Device:
         ret = {}
         ret["name"] = self.name
         ret["components"] = [c.to_parchmint_v1() for c in self.components]
-        ret["connections"] = [c.to_parchmint_v1_x() for c in self.connections]
+        ret["connections"] = [c.to_parchmint_v1_2() for c in self.connections]
         ret["params"] = self.params.to_parchmint_v1()
         ret["layers"] = [layer.to_parchmint_v1() for layer in self.layers]
 
-        ret["features"] = [feature.to_parchmint_v1_x() for feature in self.features]
+        ret["features"] = [feature.to_parchmint_v1_2() for feature in self.features]
 
         # Modify the version of the parchmint
         ret["version"] = "1.2"
