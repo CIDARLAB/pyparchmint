@@ -1,8 +1,5 @@
-from os import truncate
-
-
 class Params:
-    def __init__(self, json=None):
+    def __init__(self, json_data=None):
         """Creates an instance of the params
 
         Args:
@@ -10,8 +7,8 @@ class Params:
         """
         self.data = {}
 
-        if json:
-            self.parse_from_json(json)
+        if json_data:
+            self.parse_from_json(json_data)
 
     def __ne__(self, other) -> bool:
         """operator overload to compare two params.
@@ -47,7 +44,10 @@ class Params:
         Returns:
             [type]: [description]
         """
-        return self.data[key]
+        if key in self.data:
+            return self.data[key]
+        else:
+            raise KeyError(f"{key} not found in params")
 
     def set_param(self, key: str, value):
         """Sets the value for a given key to the param

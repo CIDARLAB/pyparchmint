@@ -13,7 +13,9 @@ from parchmint.port import Port
 
 
 class Component:
-    def __init__(self, json=None, device_ref: Device = None):
+    """The component class describes all the components in the device."""
+
+    def __init__(self, json_data=None, device_ref: Device = None):
         """Creates a new Component object
 
         Args:
@@ -32,12 +34,12 @@ class Component:
         self.ports: List[Port] = []
         self.layers: List[Layer] = []
 
-        if json is not None:
+        if json_data is not None:
             if device_ref is None:
                 raise Exception(
                     "Cannot Parse Component from JSON with no Device Reference, check device_ref parameter in constructor "
                 )
-            self.parse_from_json(json, device_ref)
+            self.parse_from_json(json_data, device_ref)
 
     @property
     def xpos(self) -> int:
@@ -146,7 +148,6 @@ class Component:
         Returns:
             dict: dictionary that can be used in json.dumps()
         """
-
         ret = {
             "name": self.name,
             "id": self.ID,
@@ -196,3 +197,6 @@ class Component:
         x = self.xpos + port.x
         y = self.ypos + port.y
         return (x, y)
+
+    def __hash__(self) -> int:
+        return hash(repr(self))

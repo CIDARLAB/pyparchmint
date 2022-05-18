@@ -2,7 +2,7 @@ from typing import Optional
 
 
 class Target:
-    def __init__(self, json=None):
+    def __init__(self, json_data=None):
         """Creates a Target object that describes where the connection will connect to
 
         Args:
@@ -11,8 +11,8 @@ class Target:
         self._component = ""
         self._port: Optional[str] = None
 
-        if json:
-            self.parse_from_json(json)
+        if json_data:
+            self.parse_from_json(json_data)
 
     def parse_from_json(self, json):
         """Loads the instance data from the json dict
@@ -81,3 +81,6 @@ class Target:
             return obj.component == self.component and obj.port == self.port
         else:
             return False
+
+    def __hash__(self) -> int:
+        return hash(repr(self))

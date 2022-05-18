@@ -4,32 +4,55 @@ from parchmint.params import Params
 
 
 class Layer:
-    def __init__(self, json=None) -> None:
+    def __init__(self, json_data=None) -> None:
         """Creates a new instance Layer
 
         Args:
             json (dict, optional): json dict after json.loads(). Defaults to None.
         """
-        self.ID: Optional[str] = None
+        self._id: Optional[str] = None
         self.name: Optional[str] = None
         self.type: Optional[str] = None
         self.group: str = ""
         self.params: Params = Params()
 
-        if json:
-            self.parse_from_json(json)
+        if json_data:
+            self.parse_from_json(json_data)
 
-    def parse_from_json(self, json):
+    @property
+    def ID(self) -> str:
+        """Returns the ID of the layer
+
+        Raises:
+            ValueError: if ID is not set
+
+        Returns:
+            str: ID of the layer
+        """
+        if self._id is None:
+            raise ValueError("ID is not set")
+        return self._id
+
+    @ID.setter
+    def ID(self, value: str) -> None:
+        """Sets the id of the layer
+
+        Args:
+            value (str): id of the layer
+        """
+        self._id = value
+
+    def parse_from_json(self, json_data):
         """Loads instance data json dict from json.loads()
 
         Args:
             json ([type]): [description]
         """
-        self.name = json["name"]
-        self.ID = json["id"]
-        self.type = json["type"]
-        self.group = json["group"]
-        self.params = Params(json["params"])
+        self.name = json_data["name"]
+        self.ID = json_data["id"]
+        self.type = json_data["type"]
+        self.group = json_data["group"]
+        self.params = Params(json_data["params"])
 
     def to_parchmint_v1(self):
         """Returns the json dict
@@ -51,8 +74,8 @@ class Layer:
     def __repr__(self):
         return str(self.__dict__)
 
-    def __hash__(self):
-        return hash(str(self))
+    def __hash__(self) -> int:
+        return hash(repr(self))
 
     def __eq__(self, o: object) -> bool:
         if isinstance(o, Layer):

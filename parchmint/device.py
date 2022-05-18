@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from parchmint.feature import Feature
 import pathlib
 from enum import Enum
 from typing import Dict, List, Optional
@@ -21,6 +22,8 @@ PROJECT_DIR = pathlib.Path(parchmint.__file__).parent.parent.absolute()
 
 
 class ValveType(Enum):
+    """Types of the valves"""
+
     NORMALLY_OPEN = 0
     NORMALLY_CLOSED = 1
 
@@ -47,6 +50,10 @@ class ValveType(Enum):
 
 
 class Device:
+    """The device object is the top level object for describing a microfluidic device.
+    It contains the entire list of components, connections and all the relationships
+    between them"""
+
     def __init__(self, json_data=None):
         """Creates a new device object
 
@@ -58,9 +65,7 @@ class Device:
         self.connections: List[Connection] = []
         self.layers: List[Layer] = []
         self.params: Params = Params()
-        self.features = []  # Store Raw JSON Objects for now
-        self.xspan: Optional[int] = None
-        self.yspan: Optional[int] = None
+        self.features: List[Feature] = []  # Store Raw JSON Objects for now
         self.G = nx.MultiDiGraph()
 
         # Stores the valve / connection mappings
@@ -70,6 +75,61 @@ class Device:
         if json_data:
             self.parse_from_json(json_data)
             self.generate_network()
+
+    @property
+    def xspan(self) -> Optional[int]:
+        """Returns the x span of the device
+        Returns:
+            int: x span of the device
+        """
+        return self.params.get_param("x-span") if self.params.exists("x-span") else None
+
+    @xspan.setter
+    def xspan(self, xspan: int) -> None:
+        """Sets the x span of the device
+        Args:
+            xspan (int): x span of the device
+        """
+        self.params.set_param("x-span", xspan)
+
+    @property
+    def yspan(self) -> Optional[int]:
+        """Returns the y span of the device
+        Returns:
+            int: y span of the device
+        """
+        return self.params.get_param("y-span") if self.params.exists("y-span") else None
+
+    @yspan.setter
+    def yspan(self, yspan: int) -> None:
+        """Sets the y span of the device
+        Args:
+            yspan (int): y span of the device
+        """
+        self.params.set_param("y-span", yspan)
+
+    def get_feature(self, feature_id: str) -> Feature:
+        """Returns the feature object with the given name
+
+        Args:
+            name (str): name of the feature
+
+        Returns:
+            Feature: Feature object with the given name
+        """
+        for feature in self.features:
+            if feature.ID == feature_id:
+                return feature
+        raise Exception("Feature not found")
+
+    @property
+    def valves(self) -> List[Component]:
+        """Returns the valve components in the device
+
+        Returns:
+            List[Component]: List of valve components in the device
+        """
+        return list(self._valve_map.keys())
 
     def map_valve(
         self,
@@ -141,7 +201,6 @@ class Device:
         Returns:
             bool: If semntically feasible, return true. Else false.
         """
-
         self.generate_network()
 
         SM = SimilarityMatcher(self, device)
@@ -159,6 +218,13 @@ class Device:
             print("Not Match!")
 
         return is_same
+
+    def add_feature(self, feature: Feature) -> None:
+        """Adds a feature to the device
+        Args:
+            feature (Feature): Feature object to be added
+        """
+        self.features.append(feature)
 
     def add_component(self, component: Component) -> None:
         """Adds a component object to the device
@@ -271,18 +337,18 @@ class Device:
         # Loop through the components
         if "components" in json_data.keys():
             for component in json_data["components"]:
-                self.add_component(Component(component, self))
+                self.add_component(Component(json_data=component, device_ref=self))
         else:
             print("no components found")
 
         if "connections" in json_data.keys():
             for connection in json_data["connections"]:
-                self.add_connection(Connection(connection, self))
+                self.add_connection(Connection(json_data=connection, device_ref=self))
         else:
             print("no connections found")
 
         if "params" in json_data.keys():
-            self.params = Params(json_data["params"])
+            self.params = Params(json_data=json_data["params"])
 
             if self.params.exists("xspan"):
                 self.xspan = self.params.get_param("xspan")
@@ -341,6 +407,8 @@ class Device:
             self.G.add_node(component.ID, component_ref=component)
 
         for connection in self.connections:
+            if connection.source is None:
+                raise Exception("Source is None for connection {}".format(connection))
             sourceref = connection.source.component
             for sink in connection.sinks:
                 sinkref = sink.component
@@ -454,10 +522,24 @@ class Device:
         return ret
 
     def to_parchmint_v1_x(self) -> Dict:
-        ret = self.to_parchmint_v1()
+        """Generating the parchmint v1.2 of the device
+
+        Returns:
+            Dict: dictionary that can be used in json.dumps()
+        """
+        self.params.set_param("x-span", self.xspan)
+        self.params.set_param("y-span", self.yspan)
+        ret = {}
+        ret["name"] = self.name
+        ret["components"] = [c.to_parchmint_v1() for c in self.components]
+        ret["connections"] = [c.to_parchmint_v1_x() for c in self.connections]
+        ret["params"] = self.params.to_parchmint_v1()
+        ret["layers"] = [layer.to_parchmint_v1() for layer in self.layers]
+
+        ret["features"] = [feature.to_parchmint_v1_x() for feature in self.features]
 
         # Modify the version of the parchmint
-        ret["version"] = 1.2
+        ret["version"] = "1.2"
 
         # Add the valvemap information
         valve_map = {}
@@ -477,7 +559,7 @@ class Device:
         Args:
             json_str (str): json string
         """
-        schema_path = PROJECT_DIR.joinpath("schemas").joinpath("V1.json")
+        schema_path = PROJECT_DIR.joinpath("schemas").joinpath("parchmint_v1.json")
         with open(schema_path) as json_file:
             schema = json.load(json_file)
             json_data = json.loads(json_str)
@@ -488,3 +570,26 @@ class Device:
             for error in errors:
                 print(error)
                 print("------")
+            else:
+                print("No errors found")
+
+    @staticmethod
+    def validate_V1_2(json_str: str) -> None:
+        """Validates the json string against the schema
+
+        Args:
+            json_str (str): json string
+        """
+        schema_path = PROJECT_DIR.joinpath("schemas").joinpath("parchmint_v1_2.json")
+        with open(schema_path) as json_file:
+            schema = json.load(json_file)
+            json_data = json.loads(json_str)
+            validator = jsonschema.Draft7Validator(schema)
+
+            errors = validator.iter_errors(json_data)  # get all validation errors
+
+            for error in errors:
+                print(error)
+                print("------")
+            else:
+                print("No errors found")
