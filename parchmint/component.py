@@ -15,7 +15,18 @@ from parchmint.port import Port
 class Component:
     """The component class describes all the components in the device."""
 
-    def __init__(self, json_data=None, device_ref: Device = None):
+    def __init__(self, 
+        name: str = "", 
+        ID: str = "", 
+        layers: List[Layer] = [], 
+        params: Params = Params(),
+         ports: List[Port] = [], 
+        entity: str = "",  
+        xspan: int = -1, 
+        yspan: int = -1, 
+        xpos: float = -1, 
+        ypos: float = -1
+    ) -> None:
         """Creates a new Component object
 
         Args:
@@ -25,21 +36,14 @@ class Component:
         Raises:
             Exception: [description]
         """
-        self.name: str = ""
-        self.ID: str = ""
-        self.params = Params()
-        self.entity: str = ""
-        self.xspan: int = -1
-        self.yspan: int = -1
-        self.ports: List[Port] = []
-        self.layers: List[Layer] = []
-
-        if json_data is not None:
-            if device_ref is None:
-                raise Exception(
-                    "Cannot Parse Component from JSON with no Device Reference, check device_ref parameter in constructor "
-                )
-            self.parse_from_json(json_data, device_ref)
+        self.name: str = name
+        self.ID: str = ID
+        self.params = params
+        self.entity: str = entity
+        self.xspan: int = xspan
+        self.yspan: int = yspan
+        self.ports: List[Port] = ports
+        self.layers: List[Layer] = layers
 
     @property
     def xpos(self) -> int:
@@ -110,32 +114,6 @@ class Component:
         for port in ports:
             self.ports.append(port)
 
-    def parse_from_json(self, json, device_ref=None):
-        """Parses from the json dict
-
-        Args:
-            json (dict): json dict after json.loads()
-        """
-        if device_ref is None:
-            raise Exception(
-                "Cannot Parse Component from JSON with no Device Reference, check device_ref parameter in constructor "
-            )
-        self.name = json["name"]
-        self.ID = json["id"]
-        self.entity = json["entity"]
-        self.xspan = json["x-span"]
-        self.yspan = json["y-span"]
-        self.params = Params(json["params"])
-        self.layers = [device_ref.get_layer(layer_id) for layer_id in json["layers"]]
-
-        for port in json["ports"]:
-            self.ports.append(Port(port))
-
-        if self.params:
-            if self.params.exists("position"):
-                self.xpos = self.params.get_param("position")[0]
-                self.ypos = self.params.get_param("position")[1]
-
     def __str__(self):
         return str(self.__dict__)
 
@@ -200,3 +178,45 @@ class Component:
 
     def __hash__(self) -> int:
         return hash(repr(self))
+
+    @staticmethod
+    def from_parchmint_v1(json, device_ref=None):
+        """Creates a new Component object from the json dict
+
+        Args:
+            json (dict): json dict after json.loads()
+            device_ref (Device, optional): pointer for the Device object. Defaults to None.
+
+        Returns:
+            Component: component object
+        """
+        if device_ref is None:
+            raise Exception(
+                "Cannot Parse Component from JSON with no Device Reference, check device_ref parameter in constructor "
+            )
+
+        component = Component()
+        
+        component.name = json["name"]
+        component.ID = json["id"]
+        component.entity = json["entity"]
+        component.xspan = json["x-span"]
+        component.yspan = json["y-span"]
+        component.params = Params(json["params"])
+        component.layers = [device_ref.get_layer(layer_id) for layer_id in json["layers"]]
+
+        for port in json["ports"]:
+            component.ports.append(Port(port))
+
+        if component.params:
+            if component.params.exists("position"):
+                component.xpos = component.params.get_param("position")[0]
+                component.ypos = component.params.get_param("position")[1]
+
+        return component
+
+
+    @staticmethod
+    def from_parchmint_v1_2(json, device_ref=None):
+        """Creates a new Component object from the json dict"""
+        return Component.from_parchmint_v1(json, device_ref)
