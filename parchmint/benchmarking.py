@@ -1,8 +1,10 @@
 from typing import Any, List
-from parchmint import Device
+
 import numpy as np
 import numpy.typing as npt
 from tabulate import tabulate
+
+from parchmint import Device
 
 
 def characterize_devices(devices: List[Device]) -> npt.NDArray[Any]:

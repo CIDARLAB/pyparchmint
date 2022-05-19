@@ -1,16 +1,15 @@
 from __future__ import annotations
+
 from os import error
+from typing import TYPE_CHECKING, List, Optional, Tuple
 
 from pytest import param
+
 from parchmint import feature
 from parchmint.feature import Feature
-
-from typing import List, Optional, Tuple
-
 from parchmint.layer import Layer
 from parchmint.params import Params
 from parchmint.target import Target
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from parchmint.device import Device

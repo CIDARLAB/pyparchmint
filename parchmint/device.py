@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-from parchmint.feature import Feature
 import pathlib
 from enum import Enum
 from typing import Dict, List, Optional
@@ -12,6 +11,7 @@ import networkx as nx
 import parchmint
 from parchmint.component import Component
 from parchmint.connection import Connection
+from parchmint.feature import Feature
 from parchmint.layer import Layer
 from parchmint.params import Params
 from parchmint.similaritymatcher import SimilarityMatcher

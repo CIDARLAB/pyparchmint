@@ -1,4 +1,4 @@
-from parchmint import Component, Layer, Port, Params, Device
+from parchmint import Component, Device, Layer, Params, Port
 
 
 def test_to_parchmint_v1_2(params_dict, layer_dict, port_dict, component_dict):

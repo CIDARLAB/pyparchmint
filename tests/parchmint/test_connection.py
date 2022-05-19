@@ -1,9 +1,9 @@
-from parchmint.device import Device
-from parchmint.params import Params
-from parchmint.layer import Layer
-from parchmint.target import Target
 from parchmint import Connection, ConnectionPath
+from parchmint.device import Device
 from parchmint.feature import Feature
+from parchmint.layer import Layer
+from parchmint.params import Params
+from parchmint.target import Target
 
 
 def test_connectionPath_to_parchmint_v1(
@@ -16,7 +16,7 @@ def test_connectionPath_to_parchmint_v1(
         source=Target(json_data=connection_target_dict),
         sink=Target(json_data=connection_target_dict),
         waypoints=[(10, 10), (20, 20), (30, 30)],
-        features=[feat1]
+        features=[feat1],
     )
     assert cp.to_parchmint_v1_2() == connection_path_dict
 
@@ -49,8 +49,16 @@ def test_connection_to_parchmint_v1_2(
     c.source = Target(json_data=connection_target_dict)
     c.sinks.append(Target(json_data=connection_target_dict))
     c.sinks.append(Target(json_data=connection_target_dict))
-    c.paths.append(ConnectionPath.from_parchmint_v1_2(json_data=connection_path_dict, device_ref=device))
-    c.paths.append(ConnectionPath.from_parchmint_v1_2(json_data=connection_path_dict, device_ref=device))
+    c.paths.append(
+        ConnectionPath.from_parchmint_v1_2(
+            json_data=connection_path_dict, device_ref=device
+        )
+    )
+    c.paths.append(
+        ConnectionPath.from_parchmint_v1_2(
+            json_data=connection_path_dict, device_ref=device
+        )
+    )
     c.layer = layer
     c.entity = "CHANNEL"
     c.params = Params(json_data=params_dict)
