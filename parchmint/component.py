@@ -15,17 +15,18 @@ from parchmint.port import Port
 class Component:
     """The component class describes all the components in the device."""
 
-    def __init__(self, 
-        name: str = "", 
-        ID: str = "", 
-        layers: List[Layer] = [], 
+    def __init__(
+        self,
+        name: str = "",
+        ID: str = "",
+        layers: List[Layer] = [],
         params: Params = Params(),
-         ports: List[Port] = [], 
-        entity: str = "",  
-        xspan: int = -1, 
-        yspan: int = -1, 
-        xpos: float = -1, 
-        ypos: float = -1
+        ports_list: List[Port] = [],
+        entity: str = "",
+        xspan: int = -1,
+        yspan: int = -1,
+        xpos: float = -1,
+        ypos: float = -1,
     ) -> None:
         """Creates a new Component object
 
@@ -42,8 +43,10 @@ class Component:
         self.entity: str = entity
         self.xspan: int = xspan
         self.yspan: int = yspan
-        self.ports: List[Port] = ports
+        self.ports: List[Port] = ports_list
         self.layers: List[Layer] = layers
+        self.xpos = xpos
+        self.ypos = ypos
 
     @property
     def xpos(self) -> int:
@@ -196,18 +199,16 @@ class Component:
                 "Cannot Parse Component from JSON with no Device Reference, check device_ref parameter in constructor "
             )
 
-        component = Component()
-        
-        component.name = json_data["name"]
-        component.ID = json_data["id"]
-        component.entity = json_data["entity"]
-        component.xspan = json_data["x-span"]
-        component.yspan = json_data["y-span"]
-        component.params = Params(json_data["params"])
-        component.layers = [device_ref.get_layer(layer_id) for layer_id in json_data["layers"]]
-
-        for port in json_data["ports"]:
-            component.ports.append(Port(port))
+        component = Component(
+            name=json_data["name"],
+            ID=json_data["id"],
+            entity=json_data["entity"],
+            xspan=json_data["x-span"],
+            yspan=json_data["y-span"],
+            params=Params(json_data["params"]),
+            layers=[device_ref.get_layer(layer_id) for layer_id in json_data["layers"]],
+            ports_list=[Port(port) for port in json_data["ports"]],
+        )
 
         if component.params:
             if component.params.exists("position"):
@@ -215,7 +216,6 @@ class Component:
                 component.ypos = component.params.get_param("position")[1]
 
         return component
-
 
     @staticmethod
     def from_parchmint_v1_2(json_data, device_ref=None):

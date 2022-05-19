@@ -1,10 +1,11 @@
 from parchmint import Component, Layer, Port, Params, Device
 
 
-def test_component_to_parchmint_v1_2(
-    params_dict, layer_dict, port_dict, component_dict
-):
+def test_to_parchmint_v1_2(params_dict, layer_dict, port_dict, component_dict):
     layer = Layer(layer_dict)
+    device = Device()
+    device.layers.append(layer)
+
     component = Component()
     component.name = "c1"
     component.ID = "c1"
@@ -17,9 +18,12 @@ def test_component_to_parchmint_v1_2(
     # Test to see if the component dict is correct or not
     assert component.to_parchmint_v1() == component_dict
 
-    # Test to see if the loading from dictionary is working correctly
-    # Create dummy device to get the layer id from
+
+def test_from_parchmint_v1_2(layer_dict, component_dict):
+    layer = Layer(layer_dict)
     device = Device()
     device.layers.append(layer)
-    component = Component.from_parchmint_v1_2(component_dict, device)
-    assert component.to_parchmint_v1() == component_dict
+    # Test to see if the loading from dictionary is working correctly
+    # Create dummy device to get the layer id from
+    component2 = Component.from_parchmint_v1_2(component_dict, device)
+    assert component2.to_parchmint_v1() == component_dict
