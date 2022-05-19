@@ -525,7 +525,6 @@ class Device:
             else:
                 print("No errors found")
 
-
     @staticmethod
     def from_json(json_str: str) -> Device:
         """Creates a device from a json string
@@ -541,45 +540,47 @@ class Device:
         json_version = json_data["version"]
 
         if json_version == "1.0":
-            ret = Device.from_parchmint_v1(json_data, ret)
+            ret = Device.from_parchmint_v1(json_data)
         elif json_version == "1.1":
-            ret = Device.from_parchmint_v1_2(json_data, ret)
+            ret = Device.from_parchmint_v1_2(json_data)
 
         return ret
 
     @staticmethod
-    def from_parchmint_v1(json: Dict, device_ref: Device) -> Device:
-        """ Parses the json string and creates the device for Version = 1.0
+    def from_parchmint_v1(json_data: Dict) -> Device:
+        """Parses the json string and creates the device for Version = 1.0
 
         Returns:
             dict: JSON Dictionary
         """
-        device_ref.name = json["name"]
+        device_ref = Device("")
+
+        device_ref.name = json_data["name"]
 
         # First always add the layers
-        if "layers" in json.keys():
-            for layer in json["layers"]:
+        if "layers" in json_data.keys():
+            for layer in json_data["layers"]:
                 device_ref.add_layer(Layer(layer))
         else:
             print("no layers found")
 
         # Loop through the components
-        if "components" in json.keys():
-            for component_json in json["components"]:
+        if "components" in json_data.keys():
+            for component_json in json_data["components"]:
                 component = Component.from_parchmint_v1(component_json, device_ref)
                 device_ref.add_component(component)
         else:
             print("no components found")
 
-        if "connections" in json.keys():
-            for connection_json in json["connections"]:
+        if "connections" in json_data.keys():
+            for connection_json in json_data["connections"]:
                 connection = Connection.from_parchmint_v1(connection_json, device_ref)
                 device_ref.add_connection(connection)
         else:
             print("no connections found")
 
-        if "params" in json.keys():
-            device_ref.params = Params(json["params"])
+        if "params" in json_data.keys():
+            device_ref.params = Params(json_data["params"])
 
             if device_ref.params.exists("xspan"):
                 device_ref.xspan = device_ref.params.get_param("xspan")
@@ -596,8 +597,8 @@ class Device:
                 device_ref.yspan = device_ref.params.get_param("y-span")
         else:
             print("no params found")
-        
-        def get_valve_type(value:str):
+
+        def get_valve_type(value: str):
             if value is ValveType.NORMALLY_OPEN:
                 return ValveType.NORMALLY_OPEN
             elif value is ValveType.NORMALLY_CLOSED:
@@ -605,48 +606,53 @@ class Device:
             else:
                 raise Exception("Unknown valve type {}".format(value))
 
-        if "valveMap" in json.keys():
-            valve_map = json["valveMap"]
-            valve_type_map = json["valveTypeMap"]
+        if "valveMap" in json_data.keys():
+            valve_map = json_data["valveMap"]
+            valve_type_map = json_data["valveTypeMap"]
 
             for key, value in valve_map.items():
-                device_ref.map_valve(device_ref.get_component(key), device_ref.get_connection(value), get_valve_type(valve_type_map[key]))
+                device_ref.map_valve(
+                    device_ref.get_component(key),
+                    device_ref.get_connection(value),
+                    get_valve_type(valve_type_map[key]),
+                )
 
         return device_ref
 
     @staticmethod
-    def from_parchmint_v1_2(json: Dict, device_ref: Device) -> Device:
-        """ Parses the json string and creates the device for Version = 1.2
+    def from_parchmint_v1_2(json_data: Dict) -> Device:
+        """Parses the json string and creates the device for Version = 1.2
 
         Returns:
             dict: JSON Dictionary
         """
-        device_ref.name = json["name"]
+        device_ref = Device("")
+        device_ref.name = json_data["name"]
 
         # First always add the layers
-        if "layers" in json.keys():
-            for layer in json["layers"]:
+        if "layers" in json_data.keys():
+            for layer in json_data["layers"]:
                 device_ref.add_layer(Layer(layer))
         else:
             print("no layers found")
 
         # Loop through the components
-        if "components" in json.keys():
-            for component_json in json["components"]:
+        if "components" in json_data.keys():
+            for component_json in json_data["components"]:
                 component = Component.from_parchmint_v1_2(component_json, device_ref)
                 device_ref.add_component(component)
         else:
             print("no components found")
 
-        if "connections" in json.keys():
-            for connection_json in json["connections"]:
+        if "connections" in json_data.keys():
+            for connection_json in json_data["connections"]:
                 connection = Connection.from_parchmint_v1_2(connection_json, device_ref)
                 device_ref.add_connection(connection)
         else:
             print("no connections found")
 
-        if "params" in json.keys():
-            device_ref.params = Params(json["params"])
+        if "params" in json_data.keys():
+            device_ref.params = Params(json_data["params"])
 
             if device_ref.params.exists("xspan"):
                 device_ref.xspan = device_ref.params.get_param("xspan")
@@ -663,8 +669,8 @@ class Device:
                 device_ref.yspan = device_ref.params.get_param("y-span")
         else:
             print("no params found")
-        
-        def get_valve_type(value:str):
+
+        def get_valve_type(value: str):
             if value is ValveType.NORMALLY_OPEN:
                 return ValveType.NORMALLY_OPEN
             elif value is ValveType.NORMALLY_CLOSED:
@@ -672,12 +678,15 @@ class Device:
             else:
                 raise Exception("Unknown valve type {}".format(value))
 
-        if "valveMap" in json.keys():
-            valve_map = json["valveMap"]
-            valve_type_map = json["valveTypeMap"]
+        if "valveMap" in json_data.keys():
+            valve_map = json_data["valveMap"]
+            valve_type_map = json_data["valveTypeMap"]
 
             for key, value in valve_map.items():
-                device_ref.map_valve(device_ref.get_component(key), device_ref.get_connection(value), get_valve_type(valve_type_map[key]))
+                device_ref.map_valve(
+                    device_ref.get_component(key),
+                    device_ref.get_connection(value),
+                    get_valve_type(valve_type_map[key]),
+                )
 
         return device_ref
-
