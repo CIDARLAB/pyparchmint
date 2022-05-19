@@ -1,5 +1,7 @@
 from __future__ import annotations
 from os import error
+
+from pytest import param
 from parchmint import feature
 from parchmint.feature import Feature
 
@@ -144,7 +146,6 @@ class ConnectionPath:
             "features": [feat.ID for feat in self.__features],
         }
 
-    
     @staticmethod
     def from_parchmint_v1_2(json_data, device_ref: Device) -> ConnectionPath:
         features = []
@@ -163,7 +164,6 @@ class ConnectionPath:
         return ret
 
 
-
 class Connection:
     """Connection Object represented in parchmint
 
@@ -172,16 +172,17 @@ class Connection:
 
     """
 
-    def __init__(self,
-            name: str = "",
-            ID: str = "",
-            entity: str = "",
-            source: Optional[Target] = None,
-            sinks: List[Target] = [],
-            params: Params = Params(),
-            layer: Optional[Layer] = None,
-            paths: List[ConnectionPath] = [],
-        ):
+    def __init__(
+        self,
+        name: str = "",
+        ID: str = "",
+        entity: str = "",
+        source: Optional[Target] = None,
+        sinks: List[Target] = [],
+        params: Params = Params(),
+        layer: Optional[Layer] = None,
+        paths: List[ConnectionPath] = [],
+    ):
         """[summary]
 
         Args:
@@ -213,15 +214,15 @@ class Connection:
     @paths.setter
     def paths(self, value: List[ConnectionPath]):
         self._paths = value
-    
+
     def add_path(self, path: ConnectionPath) -> None:
         """Adds a path to the connection"""
-        
+
         targets = [self.source, *self.sinks]
         # Check if source and sink are in the connection
         if path.source not in targets:
             raise Exception("Source of path is not in connection")
-        
+
         if path.sink not in targets:
             raise Exception("Sink of path is not in connection")
 
@@ -250,7 +251,9 @@ class Connection:
             "sinks": [s.to_parchmint_v1() for s in self.sinks],
             "name": self.name,
             "id": self.ID,
-            "source": self.source.to_parchmint_v1() if self.source is not None else None,
+            "source": self.source.to_parchmint_v1()
+            if self.source is not None
+            else None,
             "params": self.params.to_parchmint_v1(),
             "layer": self.layer.ID if self.layer is not None else None,
         }
@@ -320,7 +323,6 @@ class Connection:
 
         return connection
 
-    
     @staticmethod
     def from_parchmint_v1_2(json_data, device_ref: Device) -> Connection:
         """Parses from the json dict
@@ -333,30 +335,20 @@ class Connection:
                 "Cannot Parse Connection from JSON with no Device Reference, check device_ref parameter in constructor "
             )
 
-        connection = Connection()
-        connection.name = json_data["name"]
-        connection.ID = json_data["id"]
-        connection.layer = device_ref.get_layer(json_data["layer"])
-
-        connection.params = Params(json_data["params"])
-
-        connection.source = Target(json_data["source"])
-
-        if "sinks" in json_data.keys():
-            if json_data["sinks"]:
-                for target in json_data["sinks"]:
-                    connection.sinks.append(Target(target))
-            else:
-                print("connection", connection.name, "does not have any sinks")
-        else:
-            print("connection", connection.name, "does not have any sinks")
-
-        # Pull out the paths
-        if "paths" in json_data.keys():
-            json_paths = json_data["paths"]
-            for json_path in json_paths:
-                path = ConnectionPath.from_parchmint_v1_2(json_path, device_ref)
-                connection.add_path(path)
-                pass
+        connection = Connection(
+            name=json_data["name"],
+            ID=json_data["id"],
+            layer=device_ref.get_layer(json_data["layer"]),
+            entity=json_data["entity"],
+            params=Params(json_data["params"]),
+            source=Target(json_data["source"]),
+            sinks=[Target(sink) for sink in json_data["sinks"]]
+            if "sinks" in json_data.keys()
+            else [],
+            paths=[
+                ConnectionPath.from_parchmint_v1_2(path, device_ref)
+                for path in json_data["paths"]
+            ],
+        )
 
         return connection
