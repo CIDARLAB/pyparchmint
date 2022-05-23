@@ -50,3 +50,6 @@ docs = ["sphinx"]
 
 [tool.isort]
 profile = "black"
+
+[flake8]
+max-line-length = 120

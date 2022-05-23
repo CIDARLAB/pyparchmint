@@ -43,8 +43,6 @@ class Component:
         self.yspan: int = yspan
         self.ports: List[Port] = ports_list if ports_list else []
         self.layers: List[Layer] = layers if layers else []
-        self.xpos: float = xpos
-        self.ypos: float = ypos
         self.xpos = xpos
         self.ypos = ypos
 
@@ -60,9 +58,9 @@ class Component:
         """
         try:
             return self.params.get_param("position")[0]
-        except Exception:
+        except Exception as error:
             print("Could not find xpos for component")
-            raise KeyError
+            raise KeyError from error
 
     @xpos.setter
     def xpos(self, value) -> None:
@@ -90,9 +88,9 @@ class Component:
         """
         try:
             return self.params.get_param("position")[1]
-        except Exception:
+        except Exception as error:
             print("Could not find xpos for component")
-            raise KeyError
+            raise KeyError from error
 
     @ypos.setter
     def ypos(self, value) -> None:

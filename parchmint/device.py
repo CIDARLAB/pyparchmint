@@ -492,17 +492,20 @@ class Device:
             json_str (str): json string
         """
         schema_path = PROJECT_DIR.joinpath("schemas").joinpath("parchmint_v1.json")
-        with open(schema_path) as json_file:
+        with open(schema_path, encoding="utf-8") as json_file:
             schema = json.load(json_file)
             json_data = json.loads(json_str)
             validator = jsonschema.Draft7Validator(schema)
 
             errors = validator.iter_errors(json_data)  # get all validation errors
 
+            is_empty = True
             for error in errors:
+                is_empty = False
                 print(error)
                 print("------")
-            else:
+
+            if is_empty:
                 print("No errors found")
 
     @staticmethod
@@ -513,17 +516,20 @@ class Device:
             json_str (str): json string
         """
         schema_path = PROJECT_DIR.joinpath("schemas").joinpath("parchmint_v1_2.json")
-        with open(schema_path) as json_file:
+        with open(schema_path, encoding="utf-8") as json_file:
             schema = json.load(json_file)
             json_data = json.loads(json_str)
             validator = jsonschema.Draft7Validator(schema)
 
             errors = validator.iter_errors(json_data)  # get all validation errors
 
+            is_empty = True
             for error in errors:
+                is_empty = False
                 print(error)
                 print("------")
-            else:
+
+            if is_empty:
                 print("No errors found")
 
     @staticmethod

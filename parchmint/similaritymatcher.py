@@ -15,21 +15,21 @@ class SimilarityMatcher(DiGraphMatcher):
 
     def __init__(
         self,
-        G1: Device,
-        G2: Device,
+        device1: Device,
+        device2: Device,
         # semantic_information: Dict[str, NodeFilter],
         compare_params=False,
         check_connection_target=False,
     ):
         # self._semantic_information = semantic_information
-        self._graph1_device = G1
-        self._graph2_device = G2
+        self._graph1_device = device1
+        self._graph2_device = device2
         self._param_flag = compare_params
         self._connection_flag = check_connection_target
-        self._graph1_in_edges = G1.graph.in_edges
-        self._graph1_out_edges = G1.graph.out_edges
-        self._graph2_in_edges = G2.graph.in_edges
-        self._graph2_out_edges = G2.graph.out_edges
+        self._graph1_in_edges = device1.graph.in_edges
+        self._graph1_out_edges = device1.graph.out_edges
+        self._graph2_in_edges = device2.graph.in_edges
+        self._graph2_out_edges = device2.graph.out_edges
         self._graph1_in_edges_diff_list = []
         self._graph1_out_edges_diff_list = []
         self._graph2_in_edges_diff_list = []
@@ -41,9 +41,9 @@ class SimilarityMatcher(DiGraphMatcher):
         self._graph1_port_diff_list = []
         self._graph2_port_diff_list = []
 
-        super(SimilarityMatcher, self).__init__(G1.graph, G2.graph)
+        super().__init__(device1.graph, device2.graph)
 
-    def semantic_feasibility(self, G1_node, G2_node) -> bool:
+    def semantic_feasibility(self, G1_node: str, G2_node: str) -> bool:
         """Overriding semantic_feasibility to compare the layers, params, ports, and connections
 
         Args:
@@ -55,8 +55,8 @@ class SimilarityMatcher(DiGraphMatcher):
         """
         feasible = True
 
-        G1_component = self._graph1_device.get_component(G1_node)
-        G2_component = self._graph2_device.get_component(G2_node)
+        graph1_component = self._graph1_device.get_component(G1_node)
+        graph2_component = self._graph2_device.get_component(G2_node)
 
         # compare connectivities
         for item in self._graph1_in_edges:
@@ -92,17 +92,17 @@ class SimilarityMatcher(DiGraphMatcher):
                     feasible = False
 
         # compare layers
-        if G1_component.layers != G2_component.layers:
+        if graph1_component.layers != graph2_component.layers:
             print("layer wrong")
-            self._graph1_layer_diff_list.append(G1_component.layers)
-            self._graph2_layer_diff_list.append(G2_component.layers)
+            self._graph1_layer_diff_list.append(graph1_component.layers)
+            self._graph2_layer_diff_list.append(graph2_component.layers)
             feasible = False
 
         # compare params
-        if G1_component.params != G2_component.params:
+        if graph1_component.params != graph2_component.params:
             print("params wrong")
-            self._graph1_param_diff_list.append(G1_component.params)
-            self._graph2_param_diff_list.append(G2_component.params)
+            self._graph1_param_diff_list.append(graph1_component.params)
+            self._graph2_param_diff_list.append(graph2_component.params)
 
             if self._param_flag is True:
                 feasible = False
@@ -110,10 +110,10 @@ class SimilarityMatcher(DiGraphMatcher):
                 feasible = True
 
         # compare ports
-        if G1_component.ports != G2_component.ports:
+        if graph1_component.ports != graph2_component.ports:
             print("ports wrong")
-            self._graph1_port_diff_list.append(G1_component.ports)
-            self._graph2_port_diff_list.append(G2_component.ports)
+            self._graph1_port_diff_list.append(graph1_component.ports)
+            self._graph2_port_diff_list.append(graph2_component.ports)
             feasible = False
 
         return feasible
@@ -165,7 +165,11 @@ class SimilarityMatcher(DiGraphMatcher):
 
         for i in range(0, len(self._graph1_in_edges_diff_list), 2):
             print(
-                f"G1: {self._graph1_in_edges_diff_list[i]} -port: {self._graph1_in_edges_diff_list[i+1]}, G2: {self._graph2_in_edges_diff_list[i]} -port: {self._graph2_in_edges_diff_list[i+1]}"
+                f"G1: {self._graph1_in_edges_diff_list[i]} -port: {self._graph1_in_edges_diff_list[i+1]}"
+            )
+
+            print(
+                f"G2: {self._graph2_in_edges_diff_list[i]} -port: {self._graph2_in_edges_diff_list[i+1]}"
             )
 
         print("----End----")
@@ -178,7 +182,11 @@ class SimilarityMatcher(DiGraphMatcher):
 
         for i in range(0, len(self._graph1_out_edges_diff_list), 2):
             print(
-                f"G1: {self._graph1_out_edges_diff_list[i]} -port: {self._graph1_out_edges_diff_list[i+1]}, G2: {self._graph2_out_edges_diff_list[i]} -port: {self._graph2_out_edges_diff_list[i+1]}"
+                f"G1: {self._graph1_out_edges_diff_list[i]} -port: {self._graph1_out_edges_diff_list[i+1]}"
+            )
+
+            print(
+                f"G2: {self._graph2_out_edges_diff_list[i]} -port: {self._graph2_out_edges_diff_list[i+1]}",
             )
 
         print("----End----")

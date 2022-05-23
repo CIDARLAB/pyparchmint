@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from os import error
-from typing import TYPE_CHECKING, List, Optional, Tuple
+from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 
 from parchmint.feature import Feature
 from parchmint.layer import Layer
@@ -21,8 +21,8 @@ class ConnectionPath:
         self,
         source: Target,
         sink: Target,
-        waypoints: Optional[List[Tuple[int, int]]] = [],
-        features: Optional[List[Feature]] = [],
+        waypoints: Optional[List[Tuple[int, int]]] = None,
+        features: Optional[List[Feature]] = None,
     ) -> None:
         """Creates a new connection path object
 
@@ -36,8 +36,10 @@ class ConnectionPath:
         super().__init__()
         self.__source: Optional[Target] = source
         self.__sink: Optional[Target] = sink
-        self.__waypoints: List[Tuple[int, int]] = waypoints if waypoints else []
-        self.__features: List[Feature] = features if features else []
+        self.__waypoints: List[Tuple[int, int]] = (
+            waypoints if waypoints is not None else []
+        )
+        self.__features: List[Feature] = features if features is not None else []
 
     @property
     def features(self) -> List[Feature]:
@@ -143,7 +145,16 @@ class ConnectionPath:
         }
 
     @staticmethod
-    def from_parchmint_v1_2(json_data, device_ref: Device) -> ConnectionPath:
+    def from_parchmint_v1_2(json_data: Dict, device_ref: Device) -> ConnectionPath:
+        """Generates the connection path from the json dict for parchmint v1.2
+
+        Args:
+            json_data (Dict): JSON data dictionary
+            device_ref (Device): Reference for parchmint device
+
+        Returns:
+            ConnectionPath: Connection path object
+        """
         features = []
         if "features" in json_data:
             features = [
@@ -174,10 +185,10 @@ class Connection:
         ID: str = "",
         entity: str = "",
         source: Optional[Target] = None,
-        sinks: List[Target] = [],
+        sinks: Optional[List[Target]] = None,
         params: Params = Params(),
         layer: Optional[Layer] = None,
-        paths: List[ConnectionPath] = [],
+        paths: Optional[List[ConnectionPath]] = None,
     ):
         """[summary]
 
@@ -193,9 +204,9 @@ class Connection:
         self.entity: Optional[str] = entity
         self.params: Params = params
         self.source: Optional[Target] = source
-        self.sinks: List[Target] = sinks
-        self.layer: Optional[Layer] = layer
-        self._paths: List[ConnectionPath] = paths
+        self.sinks: List[Target] = sinks if sinks is not None else []
+        self.layer: Optional[Layer] = layer if layer is not None else None
+        self._paths: List[ConnectionPath] = paths if paths is not None else []
 
     def __str__(self):
         return str(self.__dict__)
