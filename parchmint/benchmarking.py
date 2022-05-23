@@ -110,7 +110,8 @@ def characterize_devices(devices: List[Device]) -> npt.NDArray[Any]:
         file_info,
         delimiter="\t",
         fmt="%s",
-        header="Name\tComponents\tConnections\tValves\tLayers\tControl\tMaxConnectivity\tStdDevArea\tMeanArea\tMax(Xspan,Yspan)\tMin(Xspan,Yspan)",
+        header="Name\tComponents\tConnections\tValves\tLayers\tControl\tMaxConnectivity"
+        + "\tStdDevArea\tMeanArea\tMax(Xspan,Yspan)\tMin(Xspan,Yspan)",
     )
 
     # Generate Header list to be used in tabulate

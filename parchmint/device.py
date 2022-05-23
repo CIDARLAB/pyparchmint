@@ -8,7 +8,6 @@ from typing import Dict, List, Optional
 import jsonschema
 import networkx as nx
 
-import parchmint
 from parchmint.component import Component
 from parchmint.connection import Connection
 from parchmint.feature import Feature
@@ -16,7 +15,7 @@ from parchmint.layer import Layer
 from parchmint.params import Params
 from parchmint.similaritymatcher import SimilarityMatcher
 
-PROJECT_DIR = pathlib.Path(parchmint.__file__).parent.parent.absolute()
+PROJECT_DIR = pathlib.Path(__file__).parent.parent.absolute()
 
 
 class ValveType(Enum):
