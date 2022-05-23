@@ -2,7 +2,7 @@ from typing import Optional
 
 
 class Target:
-    """ Target for Connection Object """
+    """Target for Connection Object"""
 
     def __init__(self, json_data=None):
         """Creates a Target object that describes where the connection will connect to
