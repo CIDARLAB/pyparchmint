@@ -1,9 +1,9 @@
 from __future__ import annotations
-from parchmint.layer import Layer
 
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
+
+from parchmint.layer import Layer
 from parchmint.params import Params
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from parchmint.device import Device
@@ -14,7 +14,7 @@ class Feature:
 
     def __init__(
         self,
-        id: Optional[str] = None,
+        feature_id: Optional[str] = None,
         feature_type: Optional[str] = None,
         macro: Optional[str] = None,
         params: Optional[Params] = None,
@@ -36,7 +36,7 @@ class Feature:
         Raises:
             ValueError: Raises an error if the device pointer isn't there during the json loading process
         """
-        self._id = id
+        self._id = feature_id
         self._type = feature_type
         self._macro = macro
         self._params = params

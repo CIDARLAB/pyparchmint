@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-from parchmint.feature import Feature
 import pathlib
 from enum import Enum
 from typing import Dict, List, Optional
@@ -12,13 +11,12 @@ import networkx as nx
 import parchmint
 from parchmint.component import Component
 from parchmint.connection import Connection
+from parchmint.feature import Feature
 from parchmint.layer import Layer
 from parchmint.params import Params
 from parchmint.similaritymatcher import SimilarityMatcher
 
 PROJECT_DIR = pathlib.Path(parchmint.__file__).parent.parent.absolute()
-
-# GM = nx.algorithms.isomorphism.GraphMatcher(device1, device2)
 
 
 class ValveType(Enum):
@@ -35,13 +33,16 @@ class ValveType(Enum):
         else:
             raise Exception("Could not generate Valve Type string")
 
-    def __eq__(self, o: object) -> bool:
-        if o.__class__ is ValveType:
-            return super().__eq__(o)
-        elif o.__class__ is str:
-            if self is ValveType.NORMALLY_OPEN and o == "NORMALLY_OPEN":
+    def __eq__(self, object_to_compare: object) -> bool:
+        if object_to_compare.__class__ is ValveType:
+            return super().__eq__(object_to_compare)
+        elif object_to_compare.__class__ is str:
+            if self is ValveType.NORMALLY_OPEN and object_to_compare == "NORMALLY_OPEN":
                 return True
-            elif self is ValveType.NORMALLY_CLOSED and o == "NORMALLY_CLOSED":
+            elif (
+                self is ValveType.NORMALLY_CLOSED
+                and object_to_compare == "NORMALLY_CLOSED"
+            ):
                 return True
             else:
                 return False
@@ -69,7 +70,7 @@ class Device:
         self.params.set_param("x-span", 0)
         self.params.set_param("y-span", 0)
         self.features = []  # Store Raw JSON Objects for now
-        self.G = nx.MultiDiGraph()
+        self.graph = nx.MultiDiGraph()
 
         # Stores the valve / connection mappings
         self._valve_map: Dict[Component, Connection] = {}
@@ -177,7 +178,7 @@ class Device:
         Raises:
             KeyError: Raises the error if the valve object is not mapped as a valve in the device
         """
-        if valve in list(self._valve_map.keys()):
+        if valve in self._valve_map:
             self._valve_type_map[valve] = type_info
         else:
             raise KeyError(
@@ -200,14 +201,14 @@ class Device:
         Returns:
             bool: If semntically feasible, return true. Else false.
         """
-        SM = SimilarityMatcher(self, device)
+        matcher = SimilarityMatcher(self, device)
 
-        is_same = SM.is_isomorphic()
-        SM.print_params_diff()
-        SM.print_layers_diff()
-        SM.print_port_diff()
-        SM.print_in_edges_diff()
-        SM.print_out_edges_diff()
+        is_same = matcher.is_isomorphic()
+        matcher.print_params_diff()
+        matcher.print_layers_diff()
+        matcher.print_port_diff()
+        matcher.print_in_edges_diff()
+        matcher.print_out_edges_diff()
 
         if is_same:
             print("Match!")
@@ -270,11 +271,11 @@ class Device:
         if isinstance(layer, Layer):
             self.layers.append(layer)
 
-    def get_layer(self, id: str) -> Layer:
+    def get_layer(self, layer_id: str) -> Layer:
         """Returns the layer with the corresponding id
 
         Args:
-            id (str): id of the layer
+            layer_id (str): id of the layer
 
         Raises:
             Exception: if a layer with the corresponding id is not present
@@ -283,9 +284,9 @@ class Device:
             Layer: layer with the corresponding id
         """
         for layer in self.layers:
-            if layer.ID == id:
+            if layer.ID == layer_id:
                 return layer
-        raise Exception("Could not find the layer {}".format(id))
+        raise Exception("Could not find the layer {}".format(layer_id))
 
     def merge_netlist(self, netlist: Device) -> None:
         """Merges two netlists together. Currently assumes that both
@@ -335,7 +336,7 @@ class Device:
     def generate_network(self) -> None:
         """Generates the underlying graph"""
         for component in self.components:
-            self.G.add_node(component.ID, component_ref=component)
+            self.graph.add_node(component.ID, component_ref=component)
 
         for connection in self.connections:
             if connection.source is None:
@@ -343,7 +344,7 @@ class Device:
             sourceref = connection.source.component
             for sink in connection.sinks:
                 sinkref = sink.component
-                self.G.add_edge(
+                self.graph.add_edge(
                     sourceref,
                     sinkref,
                     source_port=connection.source,
@@ -351,7 +352,7 @@ class Device:
                     connection_ref=connection,
                 )
 
-    def get_name_from_id(self, id: str) -> str:
+    def get_name_from_id(self, component_id: str) -> str:
         """Returns the name of the component with the corresponding id
 
         Args:
@@ -361,10 +362,10 @@ class Device:
             Optional[str]: name of the corresponding object
         """
         for component in self.components:
-            if component.ID == id:
+            if component.ID == component_id:
                 return component.name
 
-        raise Exception("Could not find component with ID: {}".format(id))
+        raise Exception("Could not find component with ID: {}".format(component_id))
 
     def component_exists(self, component_id: str) -> bool:
         """checks if component exists in the device
@@ -396,7 +397,7 @@ class Device:
 
         return False
 
-    def get_component(self, id: str) -> Component:
+    def get_component(self, component_id: str) -> Component:
         """Returns the component with the corresponding ID
 
         Args:
@@ -409,11 +410,11 @@ class Device:
             Component: component with the corresponding id
         """
         for component in self.components:
-            if component.ID == id:
+            if component.ID == component_id:
                 return component
-        raise Exception("Could not find component with id {}".format(id))
+        raise Exception("Could not find component with id {}".format(component_id))
 
-    def get_connection(self, id: str) -> Connection:
+    def get_connection(self, component_id: str) -> Connection:
         """Returns the connection with the corresponding id
 
         Args:
@@ -426,9 +427,9 @@ class Device:
             Connection: connection with the corresponding id
         """
         for connection in self.connections:
-            if connection.ID == id:
+            if connection.ID == component_id:
                 return connection
-        raise Exception("Could not find connection with id {}".format(id))
+        raise Exception("Could not find connection with id {}".format(component_id))
 
     def __str__(self):
         return str(self.__dict__)
@@ -484,7 +485,7 @@ class Device:
         return ret
 
     @staticmethod
-    def validate_V1(json_str: str) -> None:
+    def validate_v1(json_str: str) -> None:
         """Validates the json string against the schema
 
         Args:
@@ -505,7 +506,7 @@ class Device:
                 print("No errors found")
 
     @staticmethod
-    def validate_V1_2(json_str: str) -> None:
+    def validate_v1_2(json_str: str) -> None:
         """Validates the json string against the schema
 
         Args:
@@ -654,18 +655,10 @@ class Device:
         if "params" in json_data.keys():
             device_ref.params = Params(json_data["params"])
 
-            if device_ref.params.exists("xspan"):
-                device_ref.xspan = device_ref.params.get_param("xspan")
-            elif device_ref.params.exists("width"):
-                device_ref.xspan = device_ref.params.get_param("width")
-            elif device_ref.params.exists("x-span"):
+            if device_ref.params.exists("x-span"):
                 device_ref.xspan = device_ref.params.get_param("x-span")
 
-            if device_ref.params.exists("yspan"):
-                device_ref.yspan = device_ref.params.get_param("yspan")
-            elif device_ref.params.exists("length"):
-                device_ref.yspan = device_ref.params.get_param("length")
-            elif device_ref.params.exists("y-span"):
+            if device_ref.params.exists("y-span"):
                 device_ref.yspan = device_ref.params.get_param("y-span")
         else:
             print("no params found")

@@ -29,6 +29,7 @@ sphinx-rtd-theme = "^0.5.1"
 sphinxcontrib-napoleon = "^0.7"
 isort = "^5.9.3"
 pytest = "^6.2.4"
+pylint = "^2.13.9"
 
 
 [build-system]
@@ -46,3 +47,6 @@ validate_dir = "scripts:validate_dir_V1_2"
 
 [tool.poetry.extras]
 docs = ["sphinx"]
+
+[tool.isort]
+profile = "black"

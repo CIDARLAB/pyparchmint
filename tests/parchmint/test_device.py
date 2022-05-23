@@ -1,9 +1,9 @@
+from parchmint import Device
+from parchmint.component import Component
+from parchmint.connection import Connection
 from parchmint.device import ValveType
 from parchmint.feature import Feature
 from parchmint.layer import Layer
-from parchmint.component import Component
-from parchmint.connection import Connection
-from parchmint import Device
 
 
 def test_to_parchmint_v1_2(
@@ -24,7 +24,9 @@ def test_to_parchmint_v1_2(
 
     con1 = Connection.from_parchmint_v1_2(json_data=connection_dict, device_ref=device)
     device.add_connection(con1)
-    device.add_component(Component.from_parchmint_v1_2(json_data=component_dict, device_ref=device))
+    device.add_component(
+        Component.from_parchmint_v1_2(json_data=component_dict, device_ref=device)
+    )
     valve1 = Component.from_parchmint_v1_2(json_data=valve1_dict, device_ref=device)
     valve2 = Component.from_parchmint_v1_2(json_data=valve2_dict, device_ref=device)
     device.add_component(valve1)

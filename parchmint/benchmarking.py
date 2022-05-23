@@ -1,11 +1,16 @@
-from typing import Any, List
-from parchmint import Device
+from typing import TYPE_CHECKING, Any, List
+
 import numpy as np
 import numpy.typing as npt
 from tabulate import tabulate
 
+if TYPE_CHECKING:
+    from parchmint.device import Device
+
 
 def characterize_devices(devices: List[Device]) -> npt.NDArray[Any]:
+    """Characterizes the devices in the list"""
+
     # Create 2d numpy array for storing the file info
     file_info = np.empty((len(devices), 11), dtype=object)
 

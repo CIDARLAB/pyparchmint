@@ -1,15 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from parchmint.device import Device
-
-from typing import List, Tuple
+from typing import TYPE_CHECKING, List, Optional, Tuple
 
 from parchmint.layer import Layer
 from parchmint.params import Params
 from parchmint.port import Port
+
+if TYPE_CHECKING:
+    from parchmint.device import Device
 
 
 class Component:
@@ -19,9 +17,9 @@ class Component:
         self,
         name: str = "",
         ID: str = "",
-        layers: List[Layer] = [],
+        layers: Optional[List[Layer]] = None,
         params: Params = Params(),
-        ports_list: List[Port] = [],
+        ports_list: Optional[List[Port]] = None,
         entity: str = "",
         xspan: int = -1,
         yspan: int = -1,
@@ -43,8 +41,10 @@ class Component:
         self.entity: str = entity
         self.xspan: int = xspan
         self.yspan: int = yspan
-        self.ports: List[Port] = ports_list
-        self.layers: List[Layer] = layers
+        self.ports: List[Port] = ports_list if ports_list else []
+        self.layers: List[Layer] = layers if layers else []
+        self.xpos: float = xpos
+        self.ypos: float = ypos
         self.xpos = xpos
         self.ypos = ypos
 
@@ -136,7 +136,6 @@ class Component:
             "layers": [layer.ID for layer in self.layers],
             "params": self.params.to_parchmint_v1(),
             "ports": [p.to_parchmint_v1() for p in self.ports],
-            "entity": self.entity,
             "x-span": int(self.xspan),
             "y-span": int(self.yspan),
         }
@@ -184,7 +183,7 @@ class Component:
         return hash(repr(self))
 
     @staticmethod
-    def from_parchmint_v1(json_data, device_ref=None):
+    def from_parchmint_v1(json_data, device_ref: Optional[Device] = None):
         """Creates a new Component object from the json dict
 
         Args:

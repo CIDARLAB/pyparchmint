@@ -1,16 +1,12 @@
 from __future__ import annotations
+
 from os import error
+from typing import TYPE_CHECKING, List, Optional, Tuple
 
-from pytest import param
-from parchmint import feature
 from parchmint.feature import Feature
-
-from typing import List, Optional, Tuple
-
 from parchmint.layer import Layer
 from parchmint.params import Params
 from parchmint.target import Target
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from parchmint.device import Device
@@ -25,8 +21,8 @@ class ConnectionPath:
         self,
         source: Target,
         sink: Target,
-        waypoints: List[Tuple[int, int]] = [],
-        features: List[Feature] = [],
+        waypoints: Optional[List[Tuple[int, int]]] = [],
+        features: Optional[List[Feature]] = [],
     ) -> None:
         """Creates a new connection path object
 
@@ -40,8 +36,8 @@ class ConnectionPath:
         super().__init__()
         self.__source: Optional[Target] = source
         self.__sink: Optional[Target] = sink
-        self.__waypoints: List[Tuple[int, int]] = waypoints
-        self.__features: List[Feature] = features
+        self.__waypoints: List[Tuple[int, int]] = waypoints if waypoints else []
+        self.__features: List[Feature] = features if features else []
 
     @property
     def features(self) -> List[Feature]:
@@ -209,10 +205,20 @@ class Connection:
 
     @property
     def paths(self) -> List[ConnectionPath]:
+        """Returns the path in the connection
+
+        Returns:
+            List[ConnectionPath]: List of paths in the connection
+        """
         return self._paths
 
     @paths.setter
     def paths(self, value: List[ConnectionPath]):
+        """Sets the connection paths
+
+        Args:
+            value (List[ConnectionPath]): a list of connection paths.
+        """
         self._paths = value
 
     def add_path(self, path: ConnectionPath) -> None:

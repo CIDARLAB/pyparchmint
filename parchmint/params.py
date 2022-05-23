@@ -67,7 +67,7 @@ class Params:
         Returns:
             bool: true if key is present in the params
         """
-        return key in self.data.keys()
+        return key in self.data
 
     def parse_from_json(self, json):
         """Parses from the json dict
