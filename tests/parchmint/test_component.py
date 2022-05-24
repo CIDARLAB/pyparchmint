@@ -1,5 +1,6 @@
-from parchmint import Component, Device, Layer, Params, Port
 import pytest
+
+from parchmint import Component, Device, Layer, Params, Port
 
 
 @pytest.fixture

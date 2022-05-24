@@ -1,10 +1,11 @@
+import pytest
+
 from parchmint import Device
 from parchmint.component import Component
 from parchmint.connection import Connection
 from parchmint.device import ValveType
 from parchmint.feature import Feature
 from parchmint.layer import Layer
-import pytest
 from parchmint.target import Target
 
 

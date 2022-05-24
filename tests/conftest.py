@@ -1,9 +1,9 @@
 import pytest
 
-from parchmint.layer import Layer
 from parchmint.component import Component
 from parchmint.device import Device
 from parchmint.feature import Feature
+from parchmint.layer import Layer
 
 
 @pytest.fixture
