@@ -1,22 +1,32 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from parchmint.device import Device
-
-from typing import List, Tuple
+from typing import TYPE_CHECKING, List, Optional, Tuple
 
 from parchmint.layer import Layer
 from parchmint.params import Params
 from parchmint.port import Port
 import numpy as np
 
+if TYPE_CHECKING:
+    from parchmint.device import Device
+
 
 class Component:
     """The component class describes all the components in the device."""
 
-    def __init__(self, json_data=None, device_ref: Device = None):
+    def __init__(
+        self,
+        name: str = "",
+        ID: str = "",
+        layers: Optional[List[Layer]] = None,
+        params: Params = Params(),
+        ports_list: Optional[List[Port]] = None,
+        entity: str = "",
+        xspan: int = -1,
+        yspan: int = -1,
+        xpos: float = -1,
+        ypos: float = -1,
+    ) -> None:
         """Creates a new Component object
 
         Args:
@@ -26,21 +36,16 @@ class Component:
         Raises:
             Exception: [description]
         """
-        self.name: str = ""
-        self.ID: str = ""
-        self.params = Params()
-        self.entity: str = ""
-        self.xspan: int = -1
-        self.yspan: int = -1
-        self._ports: List[Port] = []
-        self.layers: List[Layer] = []
-
-        if json_data is not None:
-            if device_ref is None:
-                raise Exception(
-                    "Cannot Parse Component from JSON with no Device Reference, check device_ref parameter in constructor "
-                )
-            self.parse_from_json(json_data, device_ref)
+        self.name: str = name
+        self.ID: str = ID
+        self.params = params
+        self.entity: str = entity
+        self.xspan: int = xspan
+        self.yspan: int = yspan
+        self._ports: List[Port] = ports_list if ports_list else []
+        self.layers: List[Layer] = layers if layers else []
+        self.xpos = xpos
+        self.ypos = ypos
 
     @property
     def ports(self) -> List[Port]:
@@ -81,9 +86,9 @@ class Component:
         """
         try:
             return self.params.get_param("position")[0]
-        except Exception:
+        except Exception as error:
             print("Could not find xpos for component")
-            raise KeyError
+            raise KeyError from error
 
     @xpos.setter
     def xpos(self, value) -> None:
@@ -111,9 +116,9 @@ class Component:
         """
         try:
             return self.params.get_param("position")[1]
-        except Exception:
+        except Exception as error:
             print("Could not find xpos for component")
-            raise KeyError
+            raise KeyError from error
 
     @ypos.setter
     def ypos(self, value) -> None:
@@ -171,32 +176,6 @@ class Component:
         """
         self._ports.append(port)
 
-    def parse_from_json(self, json, device_ref=None):
-        """Parses from the json dict
-
-        Args:
-            json (dict): json dict after json.loads()
-        """
-        if device_ref is None:
-            raise Exception(
-                "Cannot Parse Component from JSON with no Device Reference, check device_ref parameter in constructor "
-            )
-        self.name = json["name"]
-        self.ID = json["id"]
-        self.entity = json["entity"]
-        self.xspan = json["x-span"]
-        self.yspan = json["y-span"]
-        self.params = Params(json["params"])
-        self.layers = [device_ref.get_layer(layer_id) for layer_id in json["layers"]]
-
-        for port in json["ports"]:
-            self.add_component_port(Port(port))
-
-        if self.params:
-            if self.params.exists("position"):
-                self.xpos = self.params.get_param("position")[0]
-                self.ypos = self.params.get_param("position")[1]
-
     def __str__(self):
         return str(self.__dict__)
 
@@ -215,10 +194,10 @@ class Component:
         ret = {
             "name": self.name,
             "id": self.ID,
+            "entity": self.entity,
             "layers": [layer.ID for layer in self.layers],
             "params": self.params.to_parchmint_v1(),
-            "ports": [p.to_parchmint_v1() for p in self._ports],
-            "entity": self.entity,
+            "ports": [p.to_parchmint_v1() for p in self.ports],
             "x-span": int(self.xspan),
             "y-span": int(self.yspan),
         }
@@ -464,3 +443,42 @@ class Component:
         # Create a new component with the rotated coordinates
         self.xpos = xmin
         self.ypos = ymin
+
+    @staticmethod
+    def from_parchmint_v1(json_data, device_ref: Optional[Device] = None):
+        """Creates a new Component object from the json dict
+
+        Args:
+            json (dict): json dict after json.loads()
+            device_ref (Device, optional): pointer for the Device object. Defaults to None.
+
+        Returns:
+            Component: component object
+        """
+        if device_ref is None:
+            raise Exception(
+                "Cannot Parse Component from JSON with no Device Reference, check device_ref parameter in constructor "
+            )
+
+        component = Component(
+            name=json_data["name"],
+            ID=json_data["id"],
+            entity=json_data["entity"],
+            xspan=json_data["x-span"],
+            yspan=json_data["y-span"],
+            params=Params(json_data["params"]),
+            layers=[device_ref.get_layer(layer_id) for layer_id in json_data["layers"]],
+            ports_list=[Port(port) for port in json_data["ports"]],
+        )
+
+        if component.params:
+            if component.params.exists("position"):
+                component.xpos = component.params.get_param("position")[0]
+                component.ypos = component.params.get_param("position")[1]
+
+        return component
+
+    @staticmethod
+    def from_parchmint_v1_2(json_data, device_ref=None):
+        """Creates a new Component object from the json dict"""
+        return Component.from_parchmint_v1(json_data, device_ref)

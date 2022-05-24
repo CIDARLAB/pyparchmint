@@ -1,4 +1,8 @@
 class Params:
+    """
+    Describes the Params object that is used to store the parameters of the component/connection/features/layers
+    """
+
     def __init__(self, json_data=None):
         """Creates an instance of the params
 
@@ -26,7 +30,7 @@ class Params:
         if len1 != len2:
             return True
         else:
-            for item in self.data:
+            for item in self.data.items():
                 if item not in other.data:
                     return True
                 else:
@@ -67,7 +71,7 @@ class Params:
         Returns:
             bool: true if key is present in the params
         """
-        return key in self.data.keys()
+        return key in self.data
 
     def parse_from_json(self, json):
         """Parses from the json dict

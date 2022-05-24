@@ -8,7 +8,6 @@ from typing import Dict, List, Optional
 import jsonschema
 import networkx as nx
 
-import parchmint
 from parchmint.component import Component
 from parchmint.connection import Connection
 from parchmint.feature import Feature
@@ -17,9 +16,7 @@ from parchmint.params import Params
 from parchmint.similaritymatcher import SimilarityMatcher
 from warnings import warn
 
-PROJECT_DIR = pathlib.Path(parchmint.__file__).parent.parent.absolute()
-
-# GM = nx.algorithms.isomorphism.GraphMatcher(device1, device2)
+PROJECT_DIR = pathlib.Path(__file__).parent.parent.absolute()
 
 
 class ValveType(Enum):
@@ -36,13 +33,16 @@ class ValveType(Enum):
         else:
             raise Exception("Could not generate Valve Type string")
 
-    def __eq__(self, o: object) -> bool:
-        if o.__class__ is ValveType:
-            return super().__eq__(o)
-        elif o.__class__ is str:
-            if self is ValveType.NORMALLY_OPEN and o == "NORMALLY_OPEN":
+    def __eq__(self, object_to_compare: object) -> bool:
+        if object_to_compare.__class__ is ValveType:
+            return super().__eq__(object_to_compare)
+        elif object_to_compare.__class__ is str:
+            if self is ValveType.NORMALLY_OPEN and object_to_compare == "NORMALLY_OPEN":
                 return True
-            elif self is ValveType.NORMALLY_CLOSED and o == "NORMALLY_CLOSED":
+            elif (
+                self is ValveType.NORMALLY_CLOSED
+                and object_to_compare == "NORMALLY_CLOSED"
+            ):
                 return True
             else:
                 return False
@@ -55,26 +55,26 @@ class Device:
     It contains the entire list of components, connections and all the relationships
     between them"""
 
-    def __init__(self, json_data=None):
+    def __init__(self, name: str = ""):
         """Creates a new device object
 
         Args:
             json (dict, optional): json dict after json.loads(). Defaults to None.
         """
-        self.name: str = ""
+        self.name: str = name
         self.components: List[Component] = []
         self.connections: List[Connection] = []
         self.layers: List[Layer] = []
         self.params: Params = Params()
         self.features: List[Feature] = []  # Store Raw JSON Objects for now
-        self.G = nx.MultiDiGraph()
+        self.params.set_param("x-span", 0)
+        self.params.set_param("y-span", 0)
+        self.features = []  # Store Raw JSON Objects for now
+        self.graph = nx.MultiDiGraph()
 
         # Stores the valve / connection mappings
         self._valve_map: Dict[Component, Connection] = {}
         self._valve_type_map: Dict[Component, ValveType] = {}
-
-        if json_data:
-            self.parse_from_json(json_data)
 
     @property
     def xspan(self) -> Optional[int]:
@@ -178,7 +178,7 @@ class Device:
         Raises:
             KeyError: Raises the error if the valve object is not mapped as a valve in the device
         """
-        if valve in list(self._valve_map.keys()):
+        if valve in self._valve_map:
             self._valve_type_map[valve] = type_info
         else:
             raise KeyError(
@@ -211,15 +211,14 @@ class Device:
         Returns:
             bool: If semntically feasible, return true. Else false.
         """
+        matcher = SimilarityMatcher(self, device)
 
-        SM = SimilarityMatcher(self, device)
-
-        is_same = SM.is_isomorphic()
-        SM.print_params_diff()
-        SM.print_layers_diff()
-        SM.print_port_diff()
-        SM.print_in_edges_diff()
-        SM.print_out_edges_diff()
+        is_same = matcher.is_isomorphic()
+        matcher.print_params_diff()
+        matcher.print_layers_diff()
+        matcher.print_port_diff()
+        matcher.print_in_edges_diff()
+        matcher.print_out_edges_diff()
 
         if is_same:
             print("Match!")
@@ -265,7 +264,7 @@ class Device:
                     "hence skipping the component".format(component.name)
                 )
             self.components.append(component)
-            self.G.add_node(component.ID)
+            self.graph.add_node(component.ID)
         else:
             raise Exception(
                 "Could not add component since its not an instance of parchmint:Component"
@@ -283,7 +282,7 @@ class Device:
         for component in self.components:
             if component.ID == component_id:
                 self.components.remove(component)
-                self.G.remove_node(component_id)
+                self.graph.remove_node(component_id)
                 return
         raise Exception("Component not found")
 
@@ -327,7 +326,7 @@ class Device:
             self.connections.append(connection)
             # Connect the components associated here on the nx graph
             for sink in connection.sinks:
-                self.G.add_edge(
+                self.graph.add_edge(
                     connection.source.component,
                     sink.component,
                     source_port=connection.source,
@@ -354,7 +353,9 @@ class Device:
                 self.connections.remove(connection)
                 if connection.source is not None:
                     for sink in connection.sinks:
-                        self.G.remove_edge(connection.source.component, sink.component)
+                        self.graph.remove_edge(
+                            connection.source.component, sink.component
+                        )
                 return
         raise Exception("Connection not found")
 
@@ -396,11 +397,11 @@ class Device:
             if layer_to_delete.ID == connection.layer.ID:
                 self.remove_connection(connection.ID)
 
-    def get_layer(self, id: str) -> Layer:
+    def get_layer(self, layer_id: str) -> Layer:
         """Returns the layer with the corresponding id
 
         Args:
-            id (str): id of the layer
+            layer_id (str): id of the layer
 
         Raises:
             Exception: if a layer with the corresponding id is not present
@@ -409,9 +410,9 @@ class Device:
             Layer: layer with the corresponding id
         """
         for layer in self.layers:
-            if layer.ID == id:
+            if layer.ID == layer_id:
                 return layer
-        raise Exception("Could not find the layer {}".format(id))
+        raise Exception("Could not find the layer {}".format(layer_id))
 
     def merge_netlist(self, netlist: Device) -> None:
         """Merges two netlists together. Currently assumes that both
@@ -442,72 +443,6 @@ class Device:
             connection.layer = layer_mapping[connection.layer]
             self.add_connection(connection)
 
-    def parse_from_json(self, json_data) -> None:
-        """Returns the json dict
-
-        Returns:
-            dict: dictionary that can be used in json.dumps()
-        """
-        self.name = json_data["name"]
-
-        # First always add the layers
-        if "layers" in json_data.keys():
-            for layer in json_data["layers"]:
-                self.add_layer(Layer(layer))
-        else:
-            print("no layers found")
-
-        # Loop through the components
-        if "components" in json_data.keys():
-            for component in json_data["components"]:
-                self.add_component(Component(json_data=component, device_ref=self))
-        else:
-            print("no components found")
-
-        if "connections" in json_data.keys():
-            for connection in json_data["connections"]:
-                self.add_connection(Connection(json_data=connection, device_ref=self))
-        else:
-            print("no connections found")
-
-        if "params" in json_data.keys():
-            self.params = Params(json_data=json_data["params"])
-
-            if self.params.exists("xspan"):
-                self.xspan = self.params.get_param("xspan")
-            elif self.params.exists("width"):
-                self.xspan = self.params.get_param("width")
-            elif self.params.exists("x-span"):
-                self.xspan = self.params.get_param("x-span")
-
-            if self.params.exists("yspan"):
-                self.yspan = self.params.get_param("yspan")
-            elif self.params.exists("length"):
-                self.yspan = self.params.get_param("length")
-            elif self.params.exists("y-span"):
-                self.yspan = self.params.get_param("y-span")
-        else:
-            print("no params found")
-
-        if "valveMap" in json_data.keys():
-            valve_map = json_data["valveMap"]
-
-            for key, value in valve_map.items():
-                self._valve_map[self.get_component(key)] = self.get_connection(value)
-
-        if "valveTypeMap" in json_data.keys():
-            valve_type_map = json_data["valveTypeMap"]
-
-            for key, value in valve_type_map.items():
-                if value is ValveType.NORMALLY_OPEN:
-                    self._valve_type_map[
-                        self.get_component(key)
-                    ] = ValveType.NORMALLY_OPEN
-                else:
-                    self._valve_type_map[
-                        self.get_component(key)
-                    ] = ValveType.NORMALLY_CLOSED
-
     def get_components(self) -> List[Component]:
         """Returns the components in the device
 
@@ -534,9 +469,9 @@ class Device:
         Returns:
             Connection: connection between the two components
         """
-        return self.G.get_edge_data(source, sink)["connection_ref"]
+        return self.graph.get_edge_data(source, sink)["connection_ref"]
 
-    def get_name_from_id(self, id: str) -> str:
+    def get_name_from_id(self, component_id: str) -> str:
         """Returns the name of the component with the corresponding id
 
         Args:
@@ -546,10 +481,10 @@ class Device:
             Optional[str]: name of the corresponding object
         """
         for component in self.components:
-            if component.ID == id:
+            if component.ID == component_id:
                 return component.name
 
-        raise Exception("Could not find component with ID: {}".format(id))
+        raise Exception("Could not find component with ID: {}".format(component_id))
 
     def component_exists(self, component_id: str) -> bool:
         """checks if component exists in the device
@@ -581,7 +516,7 @@ class Device:
 
         return False
 
-    def get_component(self, id: str) -> Component:
+    def get_component(self, component_id: str) -> Component:
         """Returns the component with the corresponding ID
 
         Args:
@@ -594,11 +529,11 @@ class Device:
             Component: component with the corresponding id
         """
         for component in self.components:
-            if component.ID == id:
+            if component.ID == component_id:
                 return component
-        raise Exception("Could not find component with id {}".format(id))
+        raise Exception("Could not find component with id {}".format(component_id))
 
-    def get_connection(self, id: str) -> Connection:
+    def get_connection(self, component_id: str) -> Connection:
         """Returns the connection with the corresponding id
 
         Args:
@@ -611,9 +546,9 @@ class Device:
             Connection: connection with the corresponding id
         """
         for connection in self.connections:
-            if connection.ID == id:
+            if connection.ID == component_id:
                 return connection
-        raise Exception("Could not find connection with id {}".format(id))
+        raise Exception("Could not find connection with id {}".format(component_id))
 
     def get_connections_for_edge(
         self, source: Component, sink: Component
@@ -630,7 +565,7 @@ class Device:
         try:
             return [
                 edge["connection_ref"]
-                for edge in list((self.G[source.ID][sink.ID]).values())
+                for edge in list((self.graph[source.ID][sink.ID]).values())
             ]
         except KeyError:
             print(
@@ -649,9 +584,11 @@ class Device:
         Returns:
             List[Connection]: list of connections for the given component
         """
-        edge_list = list(self.G.in_edges(component.ID))
-        edge_list.extend(list(self.G.out_edges(component.ID)))
-        connections = [self.G.get_edge_data(*e)[0]["connection_ref"] for e in edge_list]
+        edge_list = list(self.graph.in_edges(component.ID))
+        edge_list.extend(list(self.graph.out_edges(component.ID)))
+        connections = [
+            self.graph.get_edge_data(*e)[0]["connection_ref"] for e in edge_list
+        ]
         return connections
 
     def __str__(self):
@@ -676,7 +613,7 @@ class Device:
 
         return ret
 
-    def to_parchmint_v1_x(self) -> Dict:
+    def to_parchmint_v1_2(self) -> Dict:
         """Generating the parchmint v1.2 of the device
 
         Returns:
@@ -687,11 +624,11 @@ class Device:
         ret = {}
         ret["name"] = self.name
         ret["components"] = [c.to_parchmint_v1() for c in self.components]
-        ret["connections"] = [c.to_parchmint_v1_x() for c in self.connections]
+        ret["connections"] = [c.to_parchmint_v1_2() for c in self.connections]
         ret["params"] = self.params.to_parchmint_v1()
         ret["layers"] = [layer.to_parchmint_v1() for layer in self.layers]
 
-        ret["features"] = [feature.to_parchmint_v1_x() for feature in self.features]
+        ret["features"] = [feature.to_parchmint_v1_2() for feature in self.features]
 
         # Modify the version of the parchmint
         ret["version"] = "1.2"
@@ -708,43 +645,207 @@ class Device:
         return ret
 
     @staticmethod
-    def validate_V1(json_str: str) -> None:
+    def validate_v1(json_str: str) -> None:
         """Validates the json string against the schema
 
         Args:
             json_str (str): json string
         """
         schema_path = PROJECT_DIR.joinpath("schemas").joinpath("parchmint_v1.json")
-        with open(schema_path) as json_file:
+        with open(schema_path, encoding="utf-8") as json_file:
             schema = json.load(json_file)
             json_data = json.loads(json_str)
             validator = jsonschema.Draft7Validator(schema)
 
             errors = validator.iter_errors(json_data)  # get all validation errors
 
+            is_empty = True
             for error in errors:
+                is_empty = False
                 print(error)
                 print("------")
-            else:
+
+            if is_empty:
                 print("No errors found")
 
     @staticmethod
-    def validate_V1_2(json_str: str) -> None:
+    def validate_v1_2(json_str: str) -> None:
         """Validates the json string against the schema
 
         Args:
             json_str (str): json string
         """
         schema_path = PROJECT_DIR.joinpath("schemas").joinpath("parchmint_v1_2.json")
-        with open(schema_path) as json_file:
+        with open(schema_path, encoding="utf-8") as json_file:
             schema = json.load(json_file)
             json_data = json.loads(json_str)
             validator = jsonschema.Draft7Validator(schema)
 
             errors = validator.iter_errors(json_data)  # get all validation errors
 
+            is_empty = True
             for error in errors:
+                is_empty = False
                 print(error)
                 print("------")
-            else:
+
+            if is_empty:
                 print("No errors found")
+
+    @staticmethod
+    def from_json(json_str: str) -> Device:
+        """Creates a device from a json string
+
+        Args:
+            json_str (str): json string
+
+        Returns:
+            Device: device created from the json string
+        """
+        ret = Device("")
+        json_data = json.loads(json_str)
+        json_version = json_data["version"]
+
+        if json_version == "1.0":
+            ret = Device.from_parchmint_v1(json_data)
+        elif json_version == "1.1":
+            ret = Device.from_parchmint_v1_2(json_data)
+
+        return ret
+
+    @staticmethod
+    def from_parchmint_v1(json_data: Dict) -> Device:
+        """Parses the json string and creates the device for Version = 1.0
+
+        Returns:
+            dict: JSON Dictionary
+        """
+        device_ref = Device("")
+
+        device_ref.name = json_data["name"]
+
+        # First always add the layers
+        if "layers" in json_data.keys():
+            for layer in json_data["layers"]:
+                device_ref.add_layer(Layer(layer))
+        else:
+            print("no layers found")
+
+        # Loop through the components
+        if "components" in json_data.keys():
+            for component_json in json_data["components"]:
+                component = Component.from_parchmint_v1(component_json, device_ref)
+                device_ref.add_component(component)
+        else:
+            print("no components found")
+
+        if "connections" in json_data.keys():
+            for connection_json in json_data["connections"]:
+                connection = Connection.from_parchmint_v1(connection_json, device_ref)
+                device_ref.add_connection(connection)
+        else:
+            print("no connections found")
+
+        if "params" in json_data.keys():
+            device_ref.params = Params(json_data["params"])
+
+            if device_ref.params.exists("xspan"):
+                device_ref.xspan = device_ref.params.get_param("xspan")
+            elif device_ref.params.exists("width"):
+                device_ref.xspan = device_ref.params.get_param("width")
+            elif device_ref.params.exists("x-span"):
+                device_ref.xspan = device_ref.params.get_param("x-span")
+
+            if device_ref.params.exists("yspan"):
+                device_ref.yspan = device_ref.params.get_param("yspan")
+            elif device_ref.params.exists("length"):
+                device_ref.yspan = device_ref.params.get_param("length")
+            elif device_ref.params.exists("y-span"):
+                device_ref.yspan = device_ref.params.get_param("y-span")
+        else:
+            print("no params found")
+
+        def get_valve_type(value: str):
+            if value is ValveType.NORMALLY_OPEN:
+                return ValveType.NORMALLY_OPEN
+            elif value is ValveType.NORMALLY_CLOSED:
+                return ValveType.NORMALLY_CLOSED
+            else:
+                raise Exception("Unknown valve type {}".format(value))
+
+        if "valveMap" in json_data.keys():
+            valve_map = json_data["valveMap"]
+            valve_type_map = json_data["valveTypeMap"]
+
+            for key, value in valve_map.items():
+                device_ref.map_valve(
+                    device_ref.get_component(key),
+                    device_ref.get_connection(value),
+                    get_valve_type(valve_type_map[key]),
+                )
+
+        return device_ref
+
+    @staticmethod
+    def from_parchmint_v1_2(json_data: Dict) -> Device:
+        """Parses the json string and creates the device for Version = 1.2
+
+        Returns:
+            dict: JSON Dictionary
+        """
+        device_ref = Device("")
+        device_ref.name = json_data["name"]
+
+        # First always add the layers
+        if "layers" in json_data.keys():
+            for layer in json_data["layers"]:
+                device_ref.add_layer(Layer(layer))
+        else:
+            print("no layers found")
+
+        # Loop through the components
+        if "components" in json_data.keys():
+            for component_json in json_data["components"]:
+                component = Component.from_parchmint_v1_2(component_json, device_ref)
+                device_ref.add_component(component)
+        else:
+            print("no components found")
+
+        if "connections" in json_data.keys():
+            for connection_json in json_data["connections"]:
+                connection = Connection.from_parchmint_v1_2(connection_json, device_ref)
+                device_ref.add_connection(connection)
+        else:
+            print("no connections found")
+
+        if "params" in json_data.keys():
+            device_ref.params = Params(json_data["params"])
+
+            if device_ref.params.exists("x-span"):
+                device_ref.xspan = device_ref.params.get_param("x-span")
+
+            if device_ref.params.exists("y-span"):
+                device_ref.yspan = device_ref.params.get_param("y-span")
+        else:
+            print("no params found")
+
+        def get_valve_type(value: str):
+            if value is ValveType.NORMALLY_OPEN:
+                return ValveType.NORMALLY_OPEN
+            elif value is ValveType.NORMALLY_CLOSED:
+                return ValveType.NORMALLY_CLOSED
+            else:
+                raise Exception("Unknown valve type {}".format(value))
+
+        if "valveMap" in json_data.keys():
+            valve_map = json_data["valveMap"]
+            valve_type_map = json_data["valveTypeMap"]
+
+            for key, value in valve_map.items():
+                device_ref.map_valve(
+                    device_ref.get_component(key),
+                    device_ref.get_connection(value),
+                    get_valve_type(valve_type_map[key]),
+                )
+
+        return device_ref

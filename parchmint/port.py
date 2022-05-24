@@ -1,4 +1,6 @@
 class Port:
+    """Describes the port on a component"""
+
     def __init__(self, json=None):
         """Creates a ComponentPort which is used to represent the points
         where a connection connects on the component
@@ -14,14 +16,42 @@ class Port:
         if json:
             self.parse_from_json(json)
 
+    @property
+    def x(self) -> int:
+        """Returns the x coordinate of the port"""
+        return self._xpos
+
+    @x.setter
+    def x(self, value: int) -> None:
+        """Sets the x coordinate of the port
+
+        Args:
+            value (int): x coordinate
+        """
+        self._xpos = value
+
+    @property
+    def y(self) -> int:
+        """Returns the y coordinate of the port"""
+        return self._ypos
+
+    @y.setter
+    def y(self, value: int) -> None:
+        """Sets the y coordinate of the port
+
+        Args:
+            value (int): y coordinate
+        """
+        self._ypos = value
+
     def parse_from_json(self, json):
         """Parses the json dict from json.loads()
 
         Args:
             json ([dict): dictionary
         """
-        self.x = json["x"]
-        self.y = json["y"]
+        self._xpos = json["x"]
+        self._ypos = json["y"]
         self.label = json["label"]
         self.layer = json["layer"]
 
@@ -38,8 +68,8 @@ class Port:
             dict: dictionary that can be used in json.dumps()
         """
         return {
-            "x": self.x,
-            "y": self.y,
+            "x": self._xpos,
+            "y": self._ypos,
             "label": self.label,
             "layer": self.layer,
         }

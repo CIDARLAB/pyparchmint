@@ -65,10 +65,11 @@ def test_set_component_spacing(component_for_rotation):
     assert component_for_rotation.component_spacing == 4000
 
 
-def test_component_to_parchmint_v1_x_dict(
-    params_dict, layer_dict, port_dict, component_dict
-):
+def test_to_parchmint_v1_2(params_dict, layer_dict, port_dict, component_dict):
     layer = Layer(layer_dict)
+    device = Device()
+    device.layers.append(layer)
+
     component = Component()
     component.name = "c1"
     component.ID = "c1"
@@ -81,12 +82,15 @@ def test_component_to_parchmint_v1_x_dict(
     # Test to see if the component dict is correct or not
     assert component.to_parchmint_v1() == component_dict
 
-    # Test to see if the loading from dictionary is working correctly
-    # Create dummy device to get the layer id from
+
+def test_from_parchmint_v1_2(layer_dict, component_dict):
+    layer = Layer(layer_dict)
     device = Device()
     device.layers.append(layer)
-    component = Component(json_data=component_dict, device_ref=device)
-    assert component.to_parchmint_v1() == component_dict
+    # Test to see if the loading from dictionary is working correctly
+    # Create dummy device to get the layer id from
+    component2 = Component.from_parchmint_v1_2(component_dict, device)
+    assert component2.to_parchmint_v1() == component_dict
 
 
 def test_rotate_point(component_for_rotation):
@@ -203,7 +207,7 @@ def test_rotate_component(component_for_rotation, component2_for_rotation):
     assert component2_for_rotation.ypos + component2_for_rotation.yspan / 2 == old_ypos
     assert component2_for_rotation.xspan == 15000
     assert component2_for_rotation.yspan == 1000
-    assert component2_for_rotation.xpos == -5000
-    assert component2_for_rotation.ypos == 9000
+    assert component2_for_rotation.xpos == -14000
+    assert component2_for_rotation.ypos == 14000
     port = component2_for_rotation.get_port("top")
     assert (port.x, port.y) == (15000, 500)

@@ -84,7 +84,7 @@ def feature_dict(params_dict, layer_dict):
 
 @pytest.fixture
 def connection_path_dict(connection_target_dict, feature_dict, layer, device):
-    feature = Feature(json_data=feature_dict, device_ref=device)
+    feature = Feature.from_parchmint_v1_2(json_data=feature_dict, device_ref=device)
     device.add_feature(feature)
     ret = {
         "source": connection_target_dict,
@@ -114,7 +114,9 @@ def connection_dict(
 
 
 @pytest.fixture
-def pathless_connection_dict(params_dict, connection_path_dict, connection_target_dict, layer):
+def pathless_connection_dict(
+    params_dict, connection_path_dict, connection_target_dict, layer
+):
 
     ret = {
         "source": connection_target_dict,

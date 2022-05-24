@@ -18,7 +18,8 @@ python = ">=3.8,<3.11"
 networkx = "^2.5"
 jsonschema = "^3.2.0"
 argparse = "^1.4.0"
-numpy = "^1.21.4"
+numpy = "^1.22.4"
+tabulate = "^0.8.9"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.8.4"
@@ -30,6 +31,7 @@ sphinx-rtd-theme = "^0.5.1"
 sphinxcontrib-napoleon = "^0.7"
 isort = "^5.9.3"
 pytest = "^6.2.4"
+pylint = "^2.13.9"
 
 
 [build-system]
@@ -47,3 +49,9 @@ validate_dir = "scripts:validate_dir_V1_2"
 
 [tool.poetry.extras]
 docs = ["sphinx"]
+
+[tool.isort]
+profile = "black"
+
+[flake8]
+max-line-length = 120

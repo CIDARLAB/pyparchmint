@@ -21,7 +21,7 @@ def validate_dir_V1():
         print(file)
         file_path = Path(file).resolve()
         with open(file_path) as data_file:
-            Device.validate_V1(data_file.read())
+            Device.validate_v1(data_file.read())
 
 
 def validate_dir_V1_2():
@@ -31,4 +31,4 @@ def validate_dir_V1_2():
         print(file)
         file_path = Path(file).resolve()
         with open(file_path) as data_file:
-            Device.validate_V1(data_file.read())
+            Device.validate_v1(data_file.read())

@@ -4,6 +4,11 @@ from parchmint.params import Params
 
 
 class Layer:
+    """Layer Object
+
+    Used to define a layer object that can be used in the device model.
+    """
+
     def __init__(self, json_data=None) -> None:
         """Creates a new instance Layer
 
@@ -75,8 +80,8 @@ class Layer:
     def __hash__(self) -> int:
         return hash(repr(self))
 
-    def __eq__(self, o: object) -> bool:
-        if isinstance(o, Layer):
-            return o.ID == self.ID
+    def __eq__(self, object_to_compare: object) -> bool:
+        if isinstance(object_to_compare, Layer):
+            return object_to_compare.ID == self.ID
         else:
             return False

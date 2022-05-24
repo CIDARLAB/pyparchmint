@@ -20,35 +20,43 @@ def temp_device():
 
 def test_add_feature(temp_device, feature_dict, layer_dict):
     temp_device.add_layer(Layer(json_data=layer_dict))
-    feature = Feature(json_data=feature_dict, device_ref=temp_device)
+    feature = Feature.from_parchmint_v1_2(
+        json_data=feature_dict, device_ref=temp_device
+    )
     temp_device.add_feature(feature)
     assert feature in temp_device.features
 
 
 def test_remove_feature(temp_device, feature_dict, layer_dict):
     temp_device.add_layer(Layer(json_data=layer_dict))
-    feature = Feature(json_data=feature_dict, device_ref=temp_device)
+    feature = Feature.from_parchmint_v1_2(
+        json_data=feature_dict, device_ref=temp_device
+    )
     temp_device.add_feature(feature)
     temp_device.remove_feature(feature.ID)
     assert feature not in temp_device.features
-    assert temp_device.G.has_node(feature.ID) is False
+    assert temp_device.graph.has_node(feature.ID) is False
 
 
 def test_add_compoent(temp_device, component_dict, layer_dict):
     temp_device.add_layer(Layer(json_data=layer_dict))
-    component = Component(json_data=component_dict, device_ref=temp_device)
+    component = Component.from_parchmint_v1_2(
+        json_data=component_dict, device_ref=temp_device
+    )
     temp_device.add_component(component)
     assert component in temp_device.components
-    assert temp_device.G.has_node(component.ID)
+    assert temp_device.graph.has_node(component.ID)
 
 
 def test_remove_component(temp_device, component_dict, layer_dict):
     temp_device.add_layer(Layer(json_data=layer_dict))
-    component = Component(json_data=component_dict, device_ref=temp_device)
+    component = Component.from_parchmint_v1_2(
+        json_data=component_dict, device_ref=temp_device
+    )
     temp_device.add_component(component)
     temp_device.remove_component(component.ID)
     assert component not in temp_device.components
-    assert temp_device.G.has_node(component.ID) is False
+    assert temp_device.graph.has_node(component.ID) is False
 
 
 def test_add_connection(
@@ -56,12 +64,18 @@ def test_add_connection(
 ):
     # Ideal scenario for this test, has all the components already present in the graph before inserting the connection
     temp_device.add_layer(Layer(json_data=layer_dict))
-    component1 = Component(json_data=component_dict, device_ref=temp_device)
-    component2 = Component(json_data=component_dict, device_ref=temp_device)
+    component1 = Component.from_parchmint_v1_2(
+        json_data=component_dict, device_ref=temp_device
+    )
+    component2 = Component.from_parchmint_v1_2(
+        json_data=component_dict, device_ref=temp_device
+    )
     component2.ID = "c2"
     component2.name = "c2"
 
-    connection1 = Connection(json_data=pathless_connection_dict, device_ref=temp_device)
+    connection1 = Connection.from_parchmint_v1_2(
+        json_data=pathless_connection_dict, device_ref=temp_device
+    )
     connection1.ID = "connection1"
     source_target = Target()
     source_target.component = component1.ID
@@ -87,19 +101,23 @@ def test_add_connection(
     temp_device.add_connection(connection1)
 
     assert connection1 in temp_device.connections
-    assert temp_device.G.has_edge(component1.ID, component2.ID)
+    assert temp_device.graph.has_edge(component1.ID, component2.ID)
 
 
 def test_remove_connection(temp_device, layer_dict, component_dict):
     temp_device.add_layer(Layer(json_data=layer_dict))
-    component1 = Component(json_data=component_dict, device_ref=temp_device)
+    component1 = Component.from_parchmint_v1_2(
+        json_data=component_dict, device_ref=temp_device
+    )
     temp_device.add_component(component1)
-    component2 = Component(json_data=component_dict, device_ref=temp_device)
+    component2 = Component.from_parchmint_v1_2(
+        json_data=component_dict, device_ref=temp_device
+    )
     component2.ID = "c2"
     component2.name = "c2"
     temp_device.add_component(component2)
 
-    connection1 = Connection(device_ref=temp_device)
+    connection1 = Connection()
     connection1.ID = "connection1"
     source_target = Target()
     source_target.component = component1.ID
@@ -116,19 +134,23 @@ def test_remove_connection(temp_device, layer_dict, component_dict):
     temp_device.remove_connection(connection1.ID)
 
     assert connection1 not in temp_device.connections
-    assert temp_device.G.has_edge(component1.ID, component2.ID) is False
+    assert temp_device.graph.has_edge(component1.ID, component2.ID) is False
 
 
 def test_get_connections_for_edge(temp_device, layer_dict, component_dict):
     temp_device.add_layer(Layer(json_data=layer_dict))
-    component1 = Component(json_data=component_dict, device_ref=temp_device)
+    component1 = Component.from_parchmint_v1_2(
+        json_data=component_dict, device_ref=temp_device
+    )
     temp_device.add_component(component1)
-    component2 = Component(json_data=component_dict, device_ref=temp_device)
+    component2 = Component.from_parchmint_v1_2(
+        json_data=component_dict, device_ref=temp_device
+    )
     component2.ID = "c2"
     component2.name = "c2"
     temp_device.add_component(component2)
 
-    connection1 = Connection(device_ref=temp_device)
+    connection1 = Connection()
     connection1.ID = "connection1"
     source_target = Target()
     source_target.component = component1.ID
@@ -142,7 +164,7 @@ def test_get_connections_for_edge(temp_device, layer_dict, component_dict):
 
     temp_device.add_connection(connection1)
 
-    connection2 = Connection(device_ref=temp_device)
+    connection2 = Connection()
     connection2.ID = "connection2"
     source_target = Target()
     source_target.component = component1.ID
@@ -164,7 +186,7 @@ def test_get_connections_for_edge(temp_device, layer_dict, component_dict):
     assert temp_device.get_connections_for_edge(component2, component1) == []
 
 
-def test_to_parchmint_v1_x(
+def test_to_parchmint_v1_2(
     device_dict,
     connection_dict,
     component_dict,
@@ -178,14 +200,19 @@ def test_to_parchmint_v1_x(
     device.xspan = 100000
     device.yspan = 50000
     device.add_layer(Layer(json_data=layer_dict))
-    device.add_feature(Feature(json_data=feature_dict, device_ref=device))
-    device.add_component(Component(json_data=component_dict, device_ref=device))
-    valve1 = Component(json_data=valve1_dict, device_ref=device)
-    valve2 = Component(json_data=valve2_dict, device_ref=device)
+    device.add_feature(
+        Feature.from_parchmint_v1_2(json_data=feature_dict, device_ref=device)
+    )
+
+    device.add_component(
+        Component.from_parchmint_v1_2(json_data=component_dict, device_ref=device)
+    )
+    con1 = Connection.from_parchmint_v1_2(json_data=connection_dict, device_ref=device)
+    device.add_connection(con1)
+    valve1 = Component.from_parchmint_v1_2(json_data=valve1_dict, device_ref=device)
+    valve2 = Component.from_parchmint_v1_2(json_data=valve2_dict, device_ref=device)
     device.add_component(valve1)
     device.add_component(valve2)
-    con1 = Connection(json_data=connection_dict, device_ref=device)
-    device.add_connection(con1)
     device.map_valve(valve1, con1, ValveType.NORMALLY_OPEN)
     device.map_valve(valve2, con1, ValveType.NORMALLY_CLOSED)
-    assert device.to_parchmint_v1_x() == device_dict
+    assert device.to_parchmint_v1_2() == device_dict
