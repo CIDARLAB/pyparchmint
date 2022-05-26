@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "parchmint"
-version = "0.3.0"
+version = "0.3.1"
 description = "Parchmint is data interchange standard for representing microfluidic designs. Check out https://parchmint.org for more information."
 authors = ["Radhakrishna Sanka"]
 license = "BSD-3-Clause"
