@@ -4,6 +4,7 @@ import json
 import pathlib
 from enum import Enum
 from typing import Dict, List, Optional
+from warnings import warn
 
 import jsonschema
 import networkx as nx
@@ -14,7 +15,6 @@ from parchmint.feature import Feature
 from parchmint.layer import Layer
 from parchmint.params import Params
 from parchmint.similaritymatcher import SimilarityMatcher
-from warnings import warn
 
 PROJECT_DIR = pathlib.Path(__file__).parent.parent.absolute()
 
