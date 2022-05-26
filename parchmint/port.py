@@ -1,28 +1,38 @@
+from typing import Dict, Optional
+
+
 class Port:
     """Describes the port on a component"""
 
-    def __init__(self, json=None):
+    def __init__(
+        self,
+        label: Optional[str] = None,
+        layer: Optional[str] = None,
+        x: float = -1,
+        y: float = -1,
+        json_data: Dict = {},
+    ):
         """Creates a ComponentPort which is used to represent the points
         where a connection connects on the component
 
         Args:
             json (dict, optional): json dict. Defaults to None.
         """
-        self.x: float = -1
-        self.y: float = -1
-        self.label: str = ""
-        self.layer: str = ""
+        self._xpos: float = x
+        self._ypos: float = y
+        self.label: str = label if label else ""
+        self.layer: str = layer if layer else ""
 
-        if json:
-            self.parse_from_json(json)
+        if json_data:
+            self.parse_from_json(json_data)
 
     @property
-    def x(self) -> int:
+    def x(self) -> float:
         """Returns the x coordinate of the port"""
         return self._xpos
 
     @x.setter
-    def x(self, value: int) -> None:
+    def x(self, value: float) -> None:
         """Sets the x coordinate of the port
 
         Args:
@@ -31,12 +41,12 @@ class Port:
         self._xpos = value
 
     @property
-    def y(self) -> int:
+    def y(self) -> float:
         """Returns the y coordinate of the port"""
         return self._ypos
 
     @y.setter
-    def y(self, value: int) -> None:
+    def y(self, value: float) -> None:
         """Sets the y coordinate of the port
 
         Args:

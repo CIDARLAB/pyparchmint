@@ -76,7 +76,7 @@ def test_to_parchmint_v1_2(params_dict, layer_dict, port_dict, component_dict):
     component.params = Params(params_dict)
     component.entity = "MIXER"
     component.layers.append(layer)
-    component.add_component_port(Port(port_dict))
+    component.add_component_port(Port(json_data=port_dict))
     component.xspan = 1000
     component.yspan = 5000
     # Test to see if the component dict is correct or not

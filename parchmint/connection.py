@@ -162,8 +162,8 @@ class ConnectionPath:
             ]
 
         ret = ConnectionPath(
-            source=Target(json_data["source"]),
-            sink=Target(json_data["sink"]),
+            source=Target(json_data=json_data["source"]),
+            sink=Target(json_data=json_data["sink"]),
             waypoints=[(wp[0], wp[1]) for wp in json_data["wayPoints"]],
             features=features,
         )
@@ -319,14 +319,14 @@ class Connection:
         connection.ID = json_data["id"]
         connection.layer = device_ref.get_layer(json_data["layer"])
 
-        connection.params = Params(json_data["params"])
+        connection.params = Params(json_data=json_data["params"])
 
-        connection.source = Target(json_data["source"])
+        connection.source = Target(json_data=json_data["source"])
 
         if "sinks" in json_data.keys():
             if json_data["sinks"]:
                 for target in json_data["sinks"]:
-                    connection.sinks.append(Target(target))
+                    connection.sinks.append(Target(json_data=target))
             else:
                 print("connection", connection.name, "does not have any sinks")
         else:
@@ -358,8 +358,8 @@ class Connection:
             layer=device_ref.get_layer(json_data["layer"]),
             entity=json_data["entity"],
             params=Params(json_data["params"]),
-            source=Target(json_data["source"]),
-            sinks=[Target(sink) for sink in json_data["sinks"]]
+            source=Target(json_data=json_data["source"]),
+            sinks=[Target(json_data=sink) for sink in json_data["sinks"]]
             if "sinks" in json_data.keys()
             else [],
             paths=[

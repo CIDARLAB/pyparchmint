@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List, Optional, Tuple
+from typing import TYPE_CHECKING, List, Optional, Tuple, Dict
 
 from parchmint.layer import Layer
 from parchmint.params import Params
@@ -468,7 +468,7 @@ class Component:
             yspan=json_data["y-span"],
             params=Params(json_data["params"]),
             layers=[device_ref.get_layer(layer_id) for layer_id in json_data["layers"]],
-            ports_list=[Port(port) for port in json_data["ports"]],
+            ports_list=[Port(json_data=port) for port in json_data["ports"]],
         )
 
         if component.params:
@@ -479,6 +479,6 @@ class Component:
         return component
 
     @staticmethod
-    def from_parchmint_v1_2(json_data, device_ref=None):
+    def from_parchmint_v1_2(json_data: Dict, device_ref: Optional[Device]=None):
         """Creates a new Component object from the json dict"""
         return Component.from_parchmint_v1(json_data, device_ref)

@@ -1,17 +1,22 @@
-from typing import Optional
+from typing import Dict, Optional
 
 
 class Target:
     """Target for Connection Object"""
 
-    def __init__(self, json_data=None):
+    def __init__(
+        self,
+        component_id: Optional[str] = None,
+        port: Optional[str] = None,
+        json_data: Dict = {},
+    ):
         """Creates a Target object that describes where the connection will connect to
 
         Args:
             json (dict, optional): json dict from json.loads(). Defaults to None.
         """
-        self._component = ""
-        self._port: Optional[str] = None
+        self._component = component_id
+        self._port: Optional[str] = port
 
         if json_data:
             self.parse_from_json(json_data)
