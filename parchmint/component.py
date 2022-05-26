@@ -479,6 +479,6 @@ class Component:
         return component
 
     @staticmethod
-    def from_parchmint_v1_2(json_data: Dict, device_ref: Optional[Device]=None):
+    def from_parchmint_v1_2(json_data: Dict, device_ref: Optional[Device] = None):
         """Creates a new Component object from the json dict"""
         return Component.from_parchmint_v1(json_data, device_ref)
