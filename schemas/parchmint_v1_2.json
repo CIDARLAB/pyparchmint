@@ -220,6 +220,12 @@
         "type": "string"
       }
     },
+    "valveTypeMap": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
     "version": {
       "type": "string",
       "pattern": "1.2"
