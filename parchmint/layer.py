@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Dict, Optional
 
 from parchmint.params import Params
 
@@ -9,17 +9,25 @@ class Layer:
     Used to define a layer object that can be used in the device model.
     """
 
-    def __init__(self, json_data=None) -> None:
+    def __init__(
+        self,
+        layer_id: Optional[str] = None,
+        name: Optional[str] = None,
+        layer_type: Optional[str] = None,
+        group: Optional[str] = None,
+        params: Optional[Params] = None,
+        json_data: Optional[Dict] = None,
+    ) -> None:
         """Creates a new instance Layer
 
         Args:
             json (dict, optional): json dict after json.loads(). Defaults to None.
         """
-        self._id: str = ""
-        self.name: str = ""
-        self.type: str = ""
-        self.group: str = ""
-        self.params: Params = Params()
+        self._id: str = "" if layer_id is None else layer_id
+        self.name: str = "" if name is None else name
+        self.layertype: str = "" if layer_type is None else layer_type
+        self.group: str = "" if group is None else group
+        self.params: Params = Params() if params is None else params
 
         if json_data:
             self.parse_from_json(json_data)
@@ -45,6 +53,24 @@ class Layer:
         """
         self._id = value
 
+    @property
+    def layer_type(self) -> str:
+        """Returns the layer type
+
+        Returns:
+            str: layer type
+        """
+        return self.layertype
+
+    @layer_type.setter
+    def layer_type(self, value: str) -> None:
+        """Sets the layer type
+
+        Args:
+            value (str): layer type
+        """
+        self.layertype = value
+
     def parse_from_json(self, json_data):
         """Loads instance data json dict from json.loads()
 
@@ -53,7 +79,7 @@ class Layer:
         """
         self.name = json_data["name"]
         self.ID = json_data["id"]
-        self.type = json_data["type"]
+        self.layertype = json_data["type"]
         self.group = json_data["group"]
         self.params = Params(json_data["params"])
 
@@ -66,7 +92,7 @@ class Layer:
         return {
             "name": self.name,
             "id": self.ID,
-            "type": self.type,
+            "type": self.layertype,
             "params": self.params.to_parchmint_v1(),
             "group": self.group,
         }

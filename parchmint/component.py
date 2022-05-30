@@ -147,9 +147,9 @@ class Component:
         """
         try:
             return self.params.get_param("rotation")
-        except Exception:
-            print("Could not find rotation for component")
-            raise KeyError
+        except Exception as error:
+            print("Could not find rotation for component", error)
+            raise Exception("Could not find rotation for component") from error
 
     @rotation.setter
     def rotation(self, value):
@@ -258,15 +258,16 @@ class Component:
         Returns:
             Tuple[float, float]: A tuple containing the rotated coordinates
         """
+        # pylint: disable=invalid-name, too-many-locals
         # Setup the center to be used the translation matrices
         center_x = self.xspan / 2
         center_y = self.yspan / 2
 
         # Setup all the corner points
-        old_topLeft = np.array((0, 0, 1)).transpose()
-        old_topRight = np.array((self.xspan, 0, 1)).transpose()
-        old_bottomLeft = np.array((0, self.yspan, 1)).transpose()
-        old_bottomRight = np.array((self.xspan, self.yspan, 1)).transpose()
+        old_topleft = np.array((0, 0, 1)).transpose()
+        old_topright = np.array((self.xspan, 0, 1)).transpose()
+        old_bottomleft = np.array((0, self.yspan, 1)).transpose()
+        old_bottomright = np.array((self.xspan, self.yspan, 1)).transpose()
 
         pos = np.array(((xpos), (ypos), (1)))
 
@@ -278,23 +279,23 @@ class Component:
         T2 = np.array(((1, 0, center_x), (0, 1, center_y), (0, 0, 1)))
 
         # Rotate the topRight corner and the bottomLeft corner about the center
-        rotated_topLeft = T2.dot(R.dot(T1.dot(old_bottomLeft)))
-        rotated_topRight = T2.dot(R.dot(T1.dot(old_topLeft)))
-        rotated_bottomRight = T2.dot(R.dot(T1.dot(old_topRight)))
-        rotated_bottomLeft = T2.dot(R.dot(T1.dot(old_bottomRight)))
+        rotated_topleft = T2.dot(R.dot(T1.dot(old_bottomleft)))
+        rotated_topright = T2.dot(R.dot(T1.dot(old_topleft)))
+        rotated_bottomright = T2.dot(R.dot(T1.dot(old_topright)))
+        rotated_bottomleft = T2.dot(R.dot(T1.dot(old_bottomright)))
 
         # Find the new position of the topleft corner by finding the min of all the corner points
         xmin = min(
-            rotated_topLeft[0],
-            rotated_topRight[0],
-            rotated_bottomLeft[0],
-            rotated_bottomRight[0],
+            rotated_topleft[0],
+            rotated_topright[0],
+            rotated_bottomleft[0],
+            rotated_bottomright[0],
         )
         ymin = min(
-            rotated_topLeft[1],
-            rotated_topRight[1],
-            rotated_bottomLeft[1],
-            rotated_bottomRight[1],
+            rotated_topleft[1],
+            rotated_topright[1],
+            rotated_bottomleft[1],
+            rotated_bottomright[1],
         )
 
         T3 = np.array(((1, 0, -xmin), (0, 1, -ymin), (0, 0, 1)))
@@ -315,6 +316,8 @@ class Component:
         Returns:
             Tuple[float, float]: A tuple containing the rotated coordinates
         """
+        # pylint: disable=invalid-name,too-many-locals
+
         # Setup the center to be used the translation matrices
         center_x = self.xpos + self.xspan / 2
         center_y = self.ypos + self.yspan / 2
@@ -340,23 +343,23 @@ class Component:
         Returns:
             Component: [description]
         """
-        new_topLeft = self.rotate_point(0, 0, angle)
-        new_topRight = self.rotate_point(self.xspan, 0, angle)
-        new_bottomLeft = self.rotate_point(0, self.yspan, angle)
-        new_bottomRight = self.rotate_point(self.xspan, self.yspan, angle)
+        new_topleft = self.rotate_point(0, 0, angle)
+        new_topright = self.rotate_point(self.xspan, 0, angle)
+        new_bottomleft = self.rotate_point(0, self.yspan, angle)
+        new_bottomright = self.rotate_point(self.xspan, self.yspan, angle)
 
         # Find xmin, ymin, xmax, ymax for all the corner points
         xmin = min(
-            new_topLeft[0], new_topRight[0], new_bottomLeft[0], new_bottomRight[0]
+            new_topleft[0], new_topright[0], new_bottomleft[0], new_bottomright[0]
         )
         ymin = min(
-            new_topLeft[1], new_topRight[1], new_bottomLeft[1], new_bottomRight[1]
+            new_topleft[1], new_topright[1], new_bottomleft[1], new_bottomright[1]
         )
         xmax = max(
-            new_topLeft[0], new_topRight[0], new_bottomLeft[0], new_bottomRight[0]
+            new_topleft[0], new_topright[0], new_bottomleft[0], new_bottomright[0]
         )
         ymax = max(
-            new_topLeft[1], new_topRight[1], new_bottomLeft[1], new_bottomRight[1]
+            new_topleft[1], new_topright[1], new_bottomleft[1], new_bottomright[1]
         )
 
         # Find the new xspan and yspan
@@ -408,31 +411,31 @@ class Component:
             port.x = new_location[0]
             port.y = new_location[1]
 
-        new_topLeft = self.rotate_point_around_center(
+        new_topleft = self.rotate_point_around_center(
             self.xpos + 0, self.ypos + 0, self.rotation
         )
-        new_topRight = self.rotate_point_around_center(
+        new_topright = self.rotate_point_around_center(
             self.xpos + self.xspan, self.ypos + 0, self.rotation
         )
-        new_bottomLeft = self.rotate_point_around_center(
+        new_bottomleft = self.rotate_point_around_center(
             self.xpos + 0, self.ypos + self.yspan, self.rotation
         )
-        new_bottomRight = self.rotate_point_around_center(
+        new_bottomright = self.rotate_point_around_center(
             self.xpos + self.xspan, self.ypos + self.yspan, self.rotation
         )
 
         # Find xmin, ymin, xmax, ymax for all the corner points
         xmin = min(
-            new_topLeft[0], new_topRight[0], new_bottomLeft[0], new_bottomRight[0]
+            new_topleft[0], new_topright[0], new_bottomleft[0], new_bottomright[0]
         )
         ymin = min(
-            new_topLeft[1], new_topRight[1], new_bottomLeft[1], new_bottomRight[1]
+            new_topleft[1], new_topright[1], new_bottomleft[1], new_bottomright[1]
         )
         xmax = max(
-            new_topLeft[0], new_topRight[0], new_bottomLeft[0], new_bottomRight[0]
+            new_topleft[0], new_topright[0], new_bottomleft[0], new_bottomright[0]
         )
         ymax = max(
-            new_topLeft[1], new_topRight[1], new_bottomLeft[1], new_bottomRight[1]
+            new_topleft[1], new_topright[1], new_bottomleft[1], new_bottomright[1]
         )
 
         # Find the new xspan and yspan

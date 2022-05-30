@@ -1,11 +1,6 @@
 {
-  "$schema": "http://json-schema.org/schema#",
-  "$id": "https://parchmint.org/schema/parchmint_v1_2.json",
   "type": "object",
   "properties": {
-    "name": {
-      "type": "string"
-    },
     "layers": {
       "type": "array",
       "items": {
@@ -29,12 +24,6 @@
       "items": {
         "type": "object",
         "properties": {
-          "name": {
-            "type": "string"
-          },
-          "id": {
-            "type": "string"
-          },
           "layer": {
             "type": "string"
           },
@@ -72,55 +61,16 @@
             }
           },
           "paths": {
+            "type": "array",
             "items": {
-              "type": "object",
-              "source": {
-                "type": "object",
-                "properties": {
-                  "component": {
-                    "type": "string"
-                  },
-                  "port": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "component",
-                  "port"
-                ]
-              },
-              "sink": {
-                "type": "object",
-                "properties": {
-                  "component": {
-                    "type": "string"
-                  },
-                  "port": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "component",
-                  "port"
-                ]
-              },
-              "wayPoints": {
-                "type": "\"array\""
-              }
-            },
-            "required": [
-              "source",
-              "sink",
-              "wayPoints"
-            ]
+              "type": "object"
+            }
           }
         },
         "required": [
-          "id",
           "layer",
-          "name",
-          "sinks",
-          "source"
+          "source",
+          "sinks"
         ]
       }
     },
@@ -215,24 +165,46 @@
       }
     },
     "valveMap": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "string"
-      }
+      "type": "object"
     },
     "valveTypeMap": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "string"
-      }
+      "type": "object"
     },
     "version": {
       "type": "string",
       "pattern": "1.2"
+    },
+    "valves": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "componentid": {
+            "type": "string"
+          },
+          "connectionid": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "NORMALLY_OPEN",
+              "NORMALLY_CLOSED"
+            ]
+          }
+        },
+        "required": [
+          "componentid",
+          "connectionid",
+          "type"
+        ]
+      }
     }
   },
   "required": [
-    "name",
-    "layers"
+    "layers",
+    "connections",
+    "components",
+    "valves"
   ]
 }
