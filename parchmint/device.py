@@ -429,7 +429,8 @@ class Device:
                 self.add_layer(layer)
                 layer_mapping[layer] = layer
             else:
-                assert layer.ID is not None
+                if layer.ID is None:
+                    raise Exception("Layer ID is None, cannot merge the layers")
                 layer_mapping[layer] = self.get_layer(layer.ID)
 
         for component in netlist.components:
