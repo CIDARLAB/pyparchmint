@@ -1,6 +1,5 @@
 import pytest
 
-from parchmint.component import Component
 from parchmint.device import Device
 from parchmint.feature import Feature
 from parchmint.layer import Layer
@@ -177,14 +176,14 @@ def device_dict(
         "connections": [connection_dict],
         "features": [feature_dict],
         "layers": [layer_dict],
-        "valveMap": {
-            "valve1": "con1",
-            "valve2": "con1",
-        },
-        "valveTypeMap": {
-            "valve1": "NORMALLY_OPEN",
-            "valve2": "NORMALLY_CLOSED",
-        },
+        "valves": [
+            {"componentid": "valve1", "connectionid": "con1", "type": "NORMALLY_OPEN"},
+            {
+                "componentid": "valve2",
+                "connectionid": "con1",
+                "type": "NORMALLY_CLOSED",
+            },
+        ],
         "version": "1.2",
     }
     return ret

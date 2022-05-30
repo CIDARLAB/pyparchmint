@@ -212,3 +212,10 @@ def test_rotate_component(component_for_rotation, component2_for_rotation):
     assert component2_for_rotation.ypos == 14000
     port = component2_for_rotation.get_port("top")
     assert (port.x, port.y) == (15000, 500)
+
+
+def test_set_xpos_ypos(component_for_rotation):
+    component_for_rotation.xpos = 1000
+    component_for_rotation.ypos = 1000
+    assert component_for_rotation.xpos == 1000
+    assert component_for_rotation.ypos == 1000

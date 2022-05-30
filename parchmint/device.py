@@ -634,14 +634,15 @@ class Device:
         ret["version"] = "1.2"
 
         # Add the valvemap information
-        valve_map = {}
-        valve_type_map = {}
+        valve_objects = []
         for valve, connection in self._valve_map.items():
-            valve_map[valve.ID] = connection.ID
-        ret["valveMap"] = valve_map
-        for valve, valve_type in self._valve_type_map.items():
-            valve_type_map[valve.ID] = str(valve_type)
-        ret["valveTypeMap"] = valve_type_map
+            valve_object = {}
+            valve_object["componentid"] = valve.ID
+            valve_object["connectionid"] = connection.ID
+            valve_object["type"] = str(self._valve_type_map[valve])
+            valve_objects.append(valve_object)
+        ret["valves"] = valve_objects
+
         return ret
 
     @staticmethod
@@ -803,6 +804,12 @@ class Device:
         else:
             print("no layers found")
 
+        # Second add all the features
+        if "features" in json_data.keys():
+            for feature_json in json_data["features"]:
+                feature = Feature.from_parchmint_v1_2(feature_json, device_ref)
+                device_ref.add_feature(feature)
+
         # Loop through the components
         if "components" in json_data.keys():
             for component_json in json_data["components"]:
@@ -829,23 +836,28 @@ class Device:
         else:
             print("no params found")
 
-        def get_valve_type(value: str):
-            if value is ValveType.NORMALLY_OPEN:
+        def get_valve_type(value: str) -> ValveType:
+            if value == ValveType.NORMALLY_OPEN:
                 return ValveType.NORMALLY_OPEN
-            elif value is ValveType.NORMALLY_CLOSED:
+            elif value == ValveType.NORMALLY_CLOSED:
                 return ValveType.NORMALLY_CLOSED
             else:
                 raise Exception("Unknown valve type {}".format(value))
 
-        if "valveMap" in json_data.keys():
-            valve_map = json_data["valveMap"]
-            valve_type_map = json_data["valveTypeMap"]
+        if "valves" in json_data.keys():
+            valve_objects = json_data["valves"]
 
-            for key, value in valve_map.items():
+            for valve_object in valve_objects:
+                componentid = valve_object["componentid"]
+                connectionid = valve_object["connectionid"]
+                # Note - Sets it to default normally open if nothign is specified
+                valve_type = valve_object["type"] if "type" in valve_object else None
                 device_ref.map_valve(
-                    device_ref.get_component(key),
-                    device_ref.get_connection(value),
-                    get_valve_type(valve_type_map[key]),
+                    device_ref.get_component(componentid),
+                    device_ref.get_connection(connectionid),
+                    get_valve_type(valve_type)
+                    if valve_type is not None
+                    else ValveType.NORMALLY_OPEN,
                 )
 
         return device_ref
