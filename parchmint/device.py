@@ -637,7 +637,11 @@ class Device:
         # Add the valvemap information
         valve_objects = []
         for valve, connection in self._valve_map.items():
-            valve_object = {"componentid": valve.ID, "connectionid": connection.ID, "type": str(self._valve_type_map[valve])}
+            valve_object = {
+                "componentid": valve.ID,
+                "connectionid": connection.ID,
+                "type": str(self._valve_type_map[valve]),
+            }
             valve_objects.append(valve_object)
         ret["valves"] = valve_objects
 
