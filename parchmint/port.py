@@ -10,7 +10,7 @@ class Port:
         layer: Optional[str] = None,
         x: float = -1,
         y: float = -1,
-        json_data: Dict = {},
+        json_data: Optional[Dict] = None,
     ):
         """Creates a ComponentPort which is used to represent the points
         where a connection connects on the component

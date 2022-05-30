@@ -217,3 +217,8 @@ def test_to_parchmint_v1_2(
     device.map_valve(valve1, con1, ValveType.NORMALLY_OPEN)
     device.map_valve(valve2, con1, ValveType.NORMALLY_CLOSED)
     assert device.to_parchmint_v1_2() == device_dict
+
+
+def test_from_parchmint_v1_2(device_dict):
+    device = Device.from_parchmint_v1_2(json_data=device_dict)
+    assert device.to_parchmint_v1_2() == device_dict
