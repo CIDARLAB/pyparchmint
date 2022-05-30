@@ -201,17 +201,17 @@ class Device:
 
         self.remove_component(valve_id)
 
-    def compare(self, device: Device, ignore_parameter_diffs: bool = True) -> bool:
+    def compare(self, device: Device, compare_params: bool = False) -> bool:
         """compare against the input device. Return true if they are semnatcally feasible.
 
         Args:
             device (Device): expected device
-            ignore_parameter_diffs (bool): ignore parameter differences. Defaults to True.
+            compare_params (bool): comparision includes parameter differences. Defaults to False.
 
         Returns:
             bool: If semntically feasible, return true. Else false.
         """
-        matcher = SimilarityMatcher(self, device)
+        matcher = SimilarityMatcher(self, device, compare_params=compare_params)
 
         is_same = matcher.is_isomorphic()
         matcher.print_params_diff()
@@ -384,7 +384,7 @@ class Device:
 
         # Remove all the components and connections associated with the layer
         for component in self.components:
-            if set([layer.ID for layer in component.layers]) == set(layer_to_delete.ID):
+            if {[layer.ID for layer in component.layers]} == set(layer_to_delete.ID):
                 self.remove_component(component.ID)
             else:
                 warn(
@@ -728,7 +728,7 @@ class Device:
         # First always add the layers
         if "layers" in json_data.keys():
             for layer in json_data["layers"]:
-                device_ref.add_layer(Layer(layer))
+                device_ref.add_layer(Layer(json_data=layer))
         else:
             print("no layers found")
 
@@ -800,7 +800,7 @@ class Device:
         # First always add the layers
         if "layers" in json_data.keys():
             for layer in json_data["layers"]:
-                device_ref.add_layer(Layer(layer))
+                device_ref.add_layer(Layer(json_data=layer))
         else:
             print("no layers found")
 

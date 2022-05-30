@@ -8,7 +8,7 @@ class Target:
         self,
         component_id: Optional[str] = None,
         port: Optional[str] = None,
-        json_data: Dict = {},
+        json_data: Optional[Dict] = None,
     ):
         """Creates a Target object that describes where the connection will connect to
 

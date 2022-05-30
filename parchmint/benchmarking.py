@@ -34,7 +34,9 @@ def characterize_devices(devices: List[Device]) -> npt.NDArray[Any]:
 
         # Save yes if the device has a layer of type CONTROL
         file_info[index, 5] = (
-            "YES" if "CONTROL" in [layer.type for layer in device.layers] else "NO"
+            "YES"
+            if "CONTROL" in [layer.layer_type for layer in device.layers]
+            else "NO"
         )
 
         # Save the max connectiveity of the connection in the device

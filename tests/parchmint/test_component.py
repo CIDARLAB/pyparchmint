@@ -67,7 +67,7 @@ def test_set_component_spacing(component_for_rotation):
 
 
 def test_to_parchmint_v1_2(params_dict, layer_dict, port_dict, component_dict):
-    layer = Layer(layer_dict)
+    layer = Layer(json_data=layer_dict)
     device = Device()
     device.layers.append(layer)
 
@@ -85,7 +85,7 @@ def test_to_parchmint_v1_2(params_dict, layer_dict, port_dict, component_dict):
 
 
 def test_from_parchmint_v1_2(layer_dict, component_dict):
-    layer = Layer(layer_dict)
+    layer = Layer(json_data=layer_dict)
     device = Device()
     device.layers.append(layer)
     # Test to see if the loading from dictionary is working correctly
