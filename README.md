@@ -1,4 +1,4 @@
-[![Documentation Status](https://readthedocs.org/projects/parchmint/badge/?version=latest)](https://parchmint.readthedocs.io/en/latest/?badge=latest) [API Docs](http://parchmint.readthedocs.io/)
+[![Documentation Status](https://readthedocs.org/projects/parchmint/badge/?version=latest)](https://parchmint.readthedocs.io/en/latest/?badge=latest)
 
 # ParchMINT object library in Python
 
