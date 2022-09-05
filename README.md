@@ -1,4 +1,4 @@
-![Docs Status](https://readthedocs.org/projects/pyparchmint/badge/)
+[![Documentation Status](https://readthedocs.org/projects/parchmint/badge/?version=latest)](https://parchmint.readthedocs.io/en/latest/?badge=latest) [API Docs](http://parchmint.readthedocs.io/)
 
 # ParchMINT object library in Python
 
@@ -9,7 +9,7 @@ Microfluidics based laboratory-on-a-chip (LoC) devices have been gaining tractio
 Check [ParchMINT](https://parchmint.org) (https://parchmint.org) for more information on ParchMINT.
 
 
-### Submitting RCF
+### Submitting Parchmint RFC (Request for Changes)
 
 Any changes to the parchmint standard need to done by submitting RFC proposals. Proposals will need to be submitted via [Github Issues](https://github.com/CIDARLAB/parchmint/issues) on the ParchMINT Github repository.
 
@@ -111,7 +111,7 @@ Add the following line into the `pyproject.toml` -> `[tool.poetry.dev-dependenci
 
 ...
 
-parchmint = {path = "/home/krishna/CIDAR/pyparchmint", develop=true}
+parchmint = {path = "/path/to/directory/pyparchmint", develop=true}
 
 ```
 
