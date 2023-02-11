@@ -125,9 +125,7 @@ class SimilarityMatcher(DiGraphMatcher):
         print("----Param differences----")
 
         for i, item in enumerate(self._graph1_param_diff_list):
-            print(
-                f"G1: {item}, G2: {self._graph2_param_diff_list[i]}"
-            )
+            print(f"G1: {item}, G2: {self._graph2_param_diff_list[i]}")
 
         print("----End----")
 
@@ -138,9 +136,7 @@ class SimilarityMatcher(DiGraphMatcher):
         print("----Layer differences----")
 
         for i, item in enumerate(self._graph1_layer_diff_list):
-            print(
-                f"G1: {item}, G2: {self._graph2_layer_diff_list[i]}"
-            )
+            print(f"G1: {item}, G2: {self._graph2_layer_diff_list[i]}")
 
         print("----End----")
 
@@ -151,9 +147,7 @@ class SimilarityMatcher(DiGraphMatcher):
         print("----Port differences----")
 
         for i, item in enumerate(self._graph1_port_diff_list):
-            print(
-                f"G1: {item}, G2: {self._graph2_port_diff_list[i]}"
-            )
+            print(f"G1: {item}, G2: {self._graph2_port_diff_list[i]}")
 
         print("----End----")
 
