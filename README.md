@@ -42,8 +42,7 @@ print("File Name: " + file_path)
 device = None
 with open(file_path) as data_file:
     text = data_file.read()
-    device_json = json.loads(text)
-    device = Device(device_json)
+    device = Device(text)
 print("Checking for components with no dimensions:")
 for component in device.components:
     if component.xspan < 0 or component.yspan < 0:
