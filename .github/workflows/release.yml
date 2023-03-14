@@ -3,6 +3,10 @@ on:
   release:
     types:
       - created
+  workflows_run:
+    workflows: [Push]
+    types:
+      - completed
 
 jobs:
   docs:
