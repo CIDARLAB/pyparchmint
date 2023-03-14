@@ -98,7 +98,6 @@ def connection_path_dict(connection_target_dict, feature_dict, layer, device):
 def connection_dict(
     params_dict, connection_path_dict, connection_target_dict, layer, feature_dict
 ):
-
     ret = {
         "source": connection_target_dict,
         "sinks": [connection_target_dict, connection_target_dict],
@@ -116,7 +115,6 @@ def connection_dict(
 def pathless_connection_dict(
     params_dict, connection_path_dict, connection_target_dict, layer
 ):
-
     ret = {
         "source": connection_target_dict,
         "sinks": [connection_target_dict, connection_target_dict],

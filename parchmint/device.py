@@ -31,7 +31,7 @@ class ValveType(Enum):
         elif self == ValveType.NORMALLY_CLOSED:
             return "NORMALLY_CLOSED"
         else:
-            raise Exception("Could not generate Valve Type string")
+            raise KeyError(f"Could not generate Valve Type string: {self}")
 
     def __eq__(self, object_to_compare: object) -> bool:
         if object_to_compare.__class__ is ValveType:
@@ -59,7 +59,7 @@ class Device:
         """Creates a new device object
 
         Args:
-            json (dict, optional): json dict after json.loads(). Defaults to None.
+            name (str): Name of the device. Defaults to "".
         """
         self.name: str = name
         self.components: List[Component] = []
@@ -120,7 +120,7 @@ class Device:
         for feature in self.features:
             if feature.ID == feature_id:
                 return feature
-        raise Exception("Feature not found")
+        raise KeyError(f"Feature not found: {feature_id}")
 
     @property
     def valves(self) -> List[Component]:
@@ -245,7 +245,7 @@ class Device:
             if feature.ID == feature_id:
                 self.features.remove(feature)
                 return
-        raise Exception("Feature not found")
+        raise KeyError(f"Feature not found: {feature_id}")
 
     def add_component(self, component: Component) -> None:
         """Adds a component object to the device
@@ -266,7 +266,7 @@ class Device:
             self.components.append(component)
             self.graph.add_node(component.ID)
         else:
-            raise Exception(
+            raise ValueError(
                 "Could not add component since its not an instance of parchmint:Component"
             )
 
@@ -284,7 +284,7 @@ class Device:
                 self.components.remove(component)
                 self.graph.remove_node(component_id)
                 return
-        raise Exception("Component not found")
+        raise KeyError(f"Component not found:{component_id}")
 
     def add_connection(self, connection: Connection) -> None:
         """Adds a connection object to the device
@@ -298,13 +298,11 @@ class Device:
         if isinstance(connection, Connection):
             # Check if the source component is present in the device
             if connection.source is None:
-                raise Exception("Connection source is not defined")
+                raise ValueError("Connection source is not defined")
 
             if self.component_exists(connection.source.component) is False:
-                raise Exception(
-                    "Source component {} not found in the device while adding connection: {}".format(
-                        connection.source, connection.ID
-                    )
+                raise KeyError(
+                    f"Source component {connection.source} not found in the device while adding connection: {connection.ID}"
                 )
 
             # Check if the connection sinks are defined / exist in the device
@@ -317,10 +315,8 @@ class Device:
 
             for sink in connection.sinks:
                 if self.component_exists(sink.component) is False:
-                    raise Exception(
-                        "Sink component {} not found in the device while adding connection: {}".format(
-                            sink, connection.name
-                        )
+                    raise KeyError(
+                        f"Sink component {sink} not found in the device while adding connection: {connection.name}"
                     )
 
             self.connections.append(connection)
@@ -335,7 +331,7 @@ class Device:
                     connection_id=connection.ID,
                 )
         else:
-            raise Exception(
+            raise ValueError(
                 "Could not add component since its not an instance of parchmint:Connection"
             )
 
@@ -357,7 +353,7 @@ class Device:
                             connection.source.component, sink.component
                         )
                 return
-        raise Exception("Connection not found")
+        raise KeyError(f"Connection not found: {connection_id}")
 
     def add_layer(self, layer: Layer) -> None:
         """Adds a layer to the device
@@ -380,11 +376,13 @@ class Device:
                 layer_to_delete = layer
 
         if layer_to_delete is None:
-            raise Exception("Layer not found")
+            raise KeyError(f"Layer not found{layer_id}")
 
         # Remove all the components and connections associated with the layer
         for component in self.components:
-            if {[layer.ID for layer in component.layers]} == set(layer_to_delete.ID):
+            if frozenset([layer.ID for layer in component.layers]) == frozenset(
+                layer_to_delete.ID
+            ):
                 self.remove_component(component.ID)
             else:
                 warn(
@@ -412,7 +410,7 @@ class Device:
         for layer in self.layers:
             if layer.ID == layer_id:
                 return layer
-        raise Exception("Could not find the layer {}".format(layer_id))
+        raise KeyError(f"Could not find the layer {layer_id}")
 
     def merge_netlist(self, netlist: Device) -> None:
         """Merges two netlists together. Currently assumes that both
@@ -430,7 +428,7 @@ class Device:
                 layer_mapping[layer] = layer
             else:
                 if layer.ID is None:
-                    raise Exception("Layer ID is None, cannot merge the layers")
+                    raise ValueError("Layer ID is None, cannot merge the layers")
                 layer_mapping[layer] = self.get_layer(layer.ID)
 
         for component in netlist.components:
@@ -470,7 +468,10 @@ class Device:
         Returns:
             Connection: connection between the two components
         """
-        return self.graph.get_edge_data(source, sink)["connection_ref"]
+        ret = self.graph.get_edge_data(source, sink)["connection_ref"]
+        if ret is None:
+            raise ValueError(f"Could not find connection between {source} and {sink}")
+        return ret
 
     def get_name_from_id(self, component_id: str) -> str:
         """Returns the name of the component with the corresponding id
@@ -485,7 +486,7 @@ class Device:
             if component.ID == component_id:
                 return component.name
 
-        raise Exception("Could not find component with ID: {}".format(component_id))
+        raise KeyError(f"Could not find component with ID: {component_id}")
 
     def component_exists(self, component_id: str) -> bool:
         """checks if component exists in the device
@@ -532,7 +533,7 @@ class Device:
         for component in self.components:
             if component.ID == component_id:
                 return component
-        raise Exception("Could not find component with id {}".format(component_id))
+        raise KeyError(f"Could not find component with id: {component_id}")
 
     def get_connection(self, component_id: str) -> Connection:
         """Returns the connection with the corresponding id
@@ -549,7 +550,7 @@ class Device:
         for connection in self.connections:
             if connection.ID == component_id:
                 return connection
-        raise Exception("Could not find connection with id {}".format(component_id))
+        raise KeyError(f"Could not find connection with id: {component_id}")
 
     def get_connections_for_edge(
         self, source: Component, sink: Component
@@ -713,6 +714,10 @@ class Device:
             ret = Device.from_parchmint_v1(json_data)
         elif json_version == "1.1":
             ret = Device.from_parchmint_v1_2(json_data)
+        elif json_version == "1.2":
+            ret = Device.from_parchmint_v1_2(json_data)
+        else:
+            raise ValueError(f"Unsupported ParchMint version: {json_version}")
 
         return ret
 
@@ -774,7 +779,7 @@ class Device:
             elif value is ValveType.NORMALLY_CLOSED:
                 return ValveType.NORMALLY_CLOSED
             else:
-                raise Exception("Unknown valve type {}".format(value))
+                raise KeyError(f"Unknown valve type: {value}")
 
         if "valveMap" in json_data.keys():
             valve_map = json_data["valveMap"]
@@ -844,7 +849,7 @@ class Device:
             elif value == ValveType.NORMALLY_CLOSED:
                 return ValveType.NORMALLY_CLOSED
             else:
-                raise Exception("Unknown valve type {}".format(value))
+                raise ValueError(f"Unknown valve type: {value}")
 
         if "valves" in json_data.keys():
             valve_objects = json_data["valves"]

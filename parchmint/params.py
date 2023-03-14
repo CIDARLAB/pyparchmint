@@ -25,19 +25,31 @@ class Params:
             bool: Return true if NOT equal. Otherwise false
         """
         len1 = len(self.data)
-        len2 = len(self.data)
+        len2 = len(other.data)
 
         if len1 != len2:
             return True
         else:
-            for item in self.data.items():
-                if item not in other.data:
+            for key, _ in self.data.items():
+                if key not in other.data:
                     return True
                 else:
-                    if self.data[item] != other.data[item]:
+                    if self.data[key] != other.data[key]:
                         return True
 
         return False
+
+    def __eq__(self, other) -> bool:
+        """operator overload to compare two params.
+        ex. P1 == P2
+
+        Args:
+            other (Params): P2 part
+
+        Returns:
+            bool: Return true if equal. Otherwise false
+        """
+        return not self.__ne__(other)
 
     def get_param(self, key: str):
         """Returns the value stored against the key
