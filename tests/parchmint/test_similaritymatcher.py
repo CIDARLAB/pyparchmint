@@ -11,14 +11,14 @@ def test_similarity_dx1_dx1():
     # Load the dx1_ref test file
     device1 = None
     device2 = None
-    with open("tests/data/dx1_ref.json", "r", encoding="utf-8") as f:
-        text = f.read()
+    with open("tests/data/dx1_ref.json", "r", encoding="utf-8") as file:
+        text = file.read()
         device1 = Device.from_json(text)
         print(device1.name)
 
     # Load the dx1_ref test file again
-    with open("tests/data/dx1_ref.json", "r", encoding="utf-8") as f:
-        text = f.read()
+    with open("tests/data/dx1_ref.json", "r", encoding="utf-8") as file:
+        text = file.read()
         device2 = Device.from_json(text)
         print(device2.name)
 
@@ -35,14 +35,14 @@ def test_similarity_dx1_dx2():
     # Load the dx1_ref test file
     device1 = None
     device2 = None
-    with open("tests/data/dx1_ref.json", "r", encoding="utf-8") as f:
-        text = f.read()
+    with open("tests/data/dx1_ref.json", "r", encoding="utf-8") as file:
+        text = file.read()
         device1 = Device.from_json(text)
         print(device1.name)
 
     # Load the dx1_ref test file again
-    with open("tests/data/dx2_ref.json", "r", encoding="utf-8") as f:
-        text = f.read()
+    with open("tests/data/dx2_ref.json", "r", encoding="utf-8") as file:
+        text = file.read()
         device2 = Device.from_json(text)
         print(device2.name)
 
@@ -59,14 +59,14 @@ def test_dx1_dx1_diff_entities():
     # Load the dx1_ref test file
     device1 = None
     device2 = None
-    with open("tests/data/dx1_ref.json", "r", encoding="utf-8") as f:
-        text = f.read()
+    with open("tests/data/dx1_ref.json", "r", encoding="utf-8") as file:
+        text = file.read()
         device1 = Device.from_json(text)
         print(device1.name)
 
     # Load the dx1_ref test file again
-    with open("tests/data/dx1__diff_entity_ref.json", "r", encoding="utf-8") as f:
-        text = f.read()
+    with open("tests/data/dx1__diff_entity_ref.json", "r", encoding="utf-8") as file:
+        text = file.read()
         device2 = Device.from_json(text)
         print(device2.name)
 
@@ -83,14 +83,14 @@ def test_dx1_dx1_diff_params():
     # Load the dx1_ref test file
     device1 = None
     device2 = None
-    with open("tests/data/dx1_ref.json", "r", encoding="utf-8") as f:
-        text = f.read()
+    with open("tests/data/dx1_ref.json", "r", encoding="utf-8") as file:
+        text = file.read()
         device1 = Device.from_json(text)
         print(device1.name)
 
     # Load the dx1_ref test file again
-    with open("tests/data/dx1__diff_params_ref.json", "r", encoding="utf-8") as f:
-        text = f.read()
+    with open("tests/data/dx1__diff_params_ref.json", "r", encoding="utf-8") as file:
+        text = file.read()
         device2 = Device.from_json(text)
         print(device2.name)
 
@@ -107,14 +107,14 @@ def test_dx1_dx1_diff_ports():
     # Load the dx1_ref test file
     device1 = None
     device2 = None
-    with open("tests/data/dx1_ref.json", "r", encoding="utf-8") as f:
-        text = f.read()
+    with open("tests/data/dx1_ref.json", "r", encoding="utf-8") as file:
+        text = file.read()
         device1 = Device.from_json(text)
         print(device1.name)
 
     # Load the dx1_ref test file again
-    with open("tests/data/dx1__diff_ports_ref.json", "r", encoding="utf-8") as f:
-        text = f.read()
+    with open("tests/data/dx1__diff_ports_ref.json", "r", encoding="utf-8") as file:
+        text = file.read()
         device2 = Device.from_json(text)
         print(device2.name)
 
@@ -134,16 +134,16 @@ def test_dx1_dx1_diff_ports():
 #     # Load the dx1_ref test file
 #     device1 = None
 #     device2 = None
-#     with open("tests/data/dx1_ref.json", "r", encoding="utf-8") as f:
-#         text = f.read()
+#     with open("tests/data/dx1_ref.json", "r", encoding="utf-8") as file:
+#         text = file.read()
 #         device1 = Device.from_json(text)
 #         print(device1.name)
 
 #     # Load the dx1_ref test file again
 #     with open(
 #         "tests/data/dx1__diff_port_connections_ref.json", "r", encoding="utf-8"
-#     ) as f:
-#         text = f.read()
+#     ) as file:
+#         text = file.read()
 #         device2 = Device.from_json(text)
 #         print(device2.name)
 

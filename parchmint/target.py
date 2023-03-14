@@ -37,6 +37,8 @@ class Target:
         Returns:
             str: Target component ID
         """
+        if self._component is None:
+            raise ValueError("Target component is None")
         return self._component
 
     @component.setter
