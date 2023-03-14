@@ -149,7 +149,9 @@ class Component:
             return self.params.get_param("rotation")
         except Exception as error:
             print("Could not find rotation for component", error)
-            raise KeyError(f"Could not find rotation for component: {self.ID}") from error
+            raise KeyError(
+                f"Could not find rotation for component: {self.ID}"
+            ) from error
 
     @rotation.setter
     def rotation(self, value):
