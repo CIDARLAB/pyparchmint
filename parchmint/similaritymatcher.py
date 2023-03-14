@@ -58,6 +58,9 @@ class SimilarityMatcher(DiGraphMatcher):
         graph1_component = self._graph1_device.get_component(G1_node)
         graph2_component = self._graph2_device.get_component(G2_node)
 
+        # Compare the components
+        feasible = graph1_component.entity == graph2_component.entity
+
         # compare connectivities
         for item in self._graph1_in_edges:
             conn_g1 = self._graph1_in_edges[item]
