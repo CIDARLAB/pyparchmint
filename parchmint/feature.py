@@ -71,7 +71,7 @@ class Feature:
         if self._macro is not None:
             return self._macro
         else:
-            raise Exception("Macro is not set")
+            raise ValueError("Macro is not set")
 
     @macro.setter
     def macro(self, value: str) -> None:
@@ -84,7 +84,7 @@ class Feature:
         if self._params is not None:
             return self._params
         else:
-            raise Exception("No params set")
+            raise ValueError("No params set")
 
     @params.setter
     def params(self, value: Params) -> None:

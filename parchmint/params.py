@@ -30,11 +30,11 @@ class Params:
         if len1 != len2:
             return True
         else:
-            for key, _ in self.data.items():
+            for key, value in self.data.items():
                 if key not in other.data:
                     return True
                 else:
-                    if self.data[key] != other.data[key]:
+                    if value != other.data[key]:
                         return True
 
         return False

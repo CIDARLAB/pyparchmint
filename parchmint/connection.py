@@ -238,10 +238,10 @@ class Connection:
         targets = [self.source, *self.sinks]
         # Check if source and sink are in the connection
         if path.source not in targets:
-            raise Exception("Source of path is not in connection")
+            raise KeyError(f"Source of path is not in connection: {path.source}")
 
         if path.sink not in targets:
-            raise Exception("Sink of path is not in connection")
+            raise KeyError(f"Sink of path is not in connection: {path.sink}")
 
         self._paths.append(path)
 
@@ -310,7 +310,7 @@ class Connection:
             json (dict): json dict after json.loads()
         """
         if device_ref is None:
-            raise Exception(
+            raise ValueError(
                 "Cannot Parse Connection from JSON with no Device Reference, check device_ref parameter in constructor "
             )
 
@@ -348,7 +348,7 @@ class Connection:
             json (dict): json dict after json.loads()
         """
         if device_ref is None:
-            raise Exception(
+            raise ValueError(
                 "Cannot Parse Connection from JSON with no Device Reference, check device_ref parameter in constructor "
             )
 

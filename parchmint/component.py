@@ -149,7 +149,7 @@ class Component:
             return self.params.get_param("rotation")
         except Exception as error:
             print("Could not find rotation for component", error)
-            raise Exception("Could not find rotation for component") from error
+            raise KeyError(f"Could not find rotation for component: {self.ID}") from error
 
     @rotation.setter
     def rotation(self, value):
@@ -226,7 +226,7 @@ class Component:
         for port in self._ports:
             if label == port.label:
                 return port
-        raise Exception("Could not find port with the label: {}".format(label))
+        raise KeyError(f"Could not find port with the label: {label}")
 
     def get_absolute_port_coordinates(self, port_label: str) -> Tuple[float, float]:
         """Gets the absolute coordinates of the component port identified by the label
@@ -460,7 +460,7 @@ class Component:
             Component: component object
         """
         if device_ref is None:
-            raise Exception(
+            raise ValueError(
                 "Cannot Parse Component from JSON with no Device Reference, check device_ref parameter in constructor "
             )
 
