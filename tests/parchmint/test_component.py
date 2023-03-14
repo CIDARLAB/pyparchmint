@@ -50,7 +50,6 @@ def component2_for_rotation():
 
 
 def test_get_component_spacing(component_for_rotation):
-
     # Should raise the exception since no component spacing is defined
     with pytest.raises(Exception) as e_info:
         component_spacing = component_for_rotation.component_spacing
