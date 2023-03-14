@@ -59,7 +59,7 @@ class Device:
         """Creates a new device object
 
         Args:
-            json (dict, optional): json dict after json.loads(). Defaults to None.
+            name (str): Name of the device. Defaults to "".
         """
         self.name: str = name
         self.components: List[Component] = []
@@ -713,6 +713,10 @@ class Device:
             ret = Device.from_parchmint_v1(json_data)
         elif json_version == "1.1":
             ret = Device.from_parchmint_v1_2(json_data)
+        elif json_version == "1.2":
+            ret = Device.from_parchmint_v1_2(json_data)
+        else:
+            raise ValueError(f"Unsupported ParchMint version: {json_version}")
 
         return ret
 
@@ -774,7 +778,7 @@ class Device:
             elif value is ValveType.NORMALLY_CLOSED:
                 return ValveType.NORMALLY_CLOSED
             else:
-                raise Exception("Unknown valve type {}".format(value))
+                raise KeyError(f"Unknown valve type: {value}")
 
         if "valveMap" in json_data.keys():
             valve_map = json_data["valveMap"]
