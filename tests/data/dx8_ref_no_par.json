@@ -1,0 +1,910 @@
+{
+    "name": "dx8_ref",
+    "components": [
+        {
+            "name": "port_oil1",
+            "id": "port_oil1",
+            "layers": [
+                "0"
+            ],
+            "params": {
+                "portRadius": 2000,
+                "componentSpacing": 1000.0,
+                "height": 1100.0
+            },
+            "ports": [
+                {
+                    "x": 2000,
+                    "y": 2000,
+                    "label": "1",
+                    "layer": "FLOW"
+                }
+            ],
+            "entity": "PORT",
+            "x-span": 4000,
+            "y-span": 4000
+        },
+        {
+            "name": "port_oil2",
+            "id": "port_oil2",
+            "layers": [
+                "0"
+            ],
+            "params": {
+                "portRadius": 2000,
+                "componentSpacing": 1000.0,
+                "height": 1100.0
+            },
+            "ports": [
+                {
+                    "x": 2000,
+                    "y": 2000,
+                    "label": "1",
+                    "layer": "FLOW"
+                }
+            ],
+            "entity": "PORT",
+            "x-span": 4000,
+            "y-span": 4000
+        },
+        {
+            "name": "port_in1",
+            "id": "port_in1",
+            "layers": [
+                "0"
+            ],
+            "params": {
+                "portRadius": 2000,
+                "componentSpacing": 1000.0,
+                "height": 1100.0
+            },
+            "ports": [
+                {
+                    "x": 2000,
+                    "y": 2000,
+                    "label": "1",
+                    "layer": "FLOW"
+                }
+            ],
+            "entity": "PORT",
+            "x-span": 4000,
+            "y-span": 4000
+        },
+        {
+            "name": "port_in2",
+            "id": "port_in2",
+            "layers": [
+                "0"
+            ],
+            "params": {
+                "portRadius": 2000,
+                "componentSpacing": 1000.0,
+                "height": 1100.0
+            },
+            "ports": [
+                {
+                    "x": 2000,
+                    "y": 2000,
+                    "label": "1",
+                    "layer": "FLOW"
+                }
+            ],
+            "entity": "PORT",
+            "x-span": 4000,
+            "y-span": 4000
+        },
+        {
+            "name": "port_in3",
+            "id": "port_in3",
+            "layers": [
+                "0"
+            ],
+            "params": {
+                "portRadius": 2000,
+                "componentSpacing": 1000.0,
+                "height": 1100.0
+            },
+            "ports": [
+                {
+                    "x": 2000,
+                    "y": 2000,
+                    "label": "1",
+                    "layer": "FLOW"
+                }
+            ],
+            "entity": "PORT",
+            "x-span": 4000,
+            "y-span": 4000
+        },
+        {
+            "name": "nozzle_droplet_generator_1",
+            "id": "nozzle_droplet_generator_1",
+            "layers": [
+                "0"
+            ],
+            "params": {
+                "orificeSize": 150,
+                "orificeLength": 375,
+                "oilInputWidth": 600,
+                "waterInputWidth": 375,
+                "outputWidth": 300,
+                "outputLength": 5000,
+                "height": 300,
+                "componentSpacing": 1000.0,
+                "rotation": 0.0
+            },
+            "ports": [
+                {
+                    "x": 300,
+                    "y": 0,
+                    "label": "1",
+                    "layer": "FLOW"
+                },
+                {
+                    "x": 5975,
+                    "y": 188,
+                    "label": "2",
+                    "layer": "FLOW"
+                },
+                {
+                    "x": 300,
+                    "y": 375,
+                    "label": "3",
+                    "layer": "FLOW"
+                },
+                {
+                    "x": 0,
+                    "y": 188,
+                    "label": "4",
+                    "layer": "FLOW"
+                }
+            ],
+            "entity": "NOZZLE DROPLET GENERATOR",
+            "x-span": 5975,
+            "y-span": 375
+        },
+        {
+            "name": "pico_injector_1",
+            "id": "pico_injector_1",
+            "layers": [
+                "0"
+            ],
+            "params": {
+                "height": 300,
+                "injectorWidth": 1000,
+                "width": 10000,
+                "injectorLength": 5000,
+                "dropletWidth": 100,
+                "nozzleWidth": 50,
+                "nozzleLength": 500,
+                "electrodeDistance": 500,
+                "electrodeWidth": 800,
+                "electrodeLength": 3000,
+                "componentSpacing": 1000.0,
+                "rotation": 0.0
+            },
+            "ports": [
+                {
+                    "x": 0,
+                    "y": 5550,
+                    "label": "1",
+                    "layer": "FLOW"
+                },
+                {
+                    "x": 10000,
+                    "y": 5550,
+                    "label": "2",
+                    "layer": "FLOW"
+                },
+                {
+                    "x": 5000,
+                    "y": 0,
+                    "label": "3",
+                    "layer": "FLOW"
+                }
+            ],
+            "entity": "PICOINJECTOR",
+            "x-span": 10000,
+            "y-span": 9050
+        },
+        {
+            "name": "pico_injector_2",
+            "id": "pico_injector_2",
+            "layers": [
+                "0"
+            ],
+            "params": {
+                "height": 300,
+                "injectorWidth": 1000,
+                "width": 10000,
+                "injectorLength": 5000,
+                "dropletWidth": 100,
+                "nozzleWidth": 50,
+                "nozzleLength": 500,
+                "electrodeDistance": 500,
+                "electrodeWidth": 800,
+                "electrodeLength": 3000,
+                "componentSpacing": 1000.0,
+                "rotation": 0.0
+            },
+            "ports": [
+                {
+                    "x": 0,
+                    "y": 5550,
+                    "label": "1",
+                    "layer": "FLOW"
+                },
+                {
+                    "x": 10000,
+                    "y": 5550,
+                    "label": "2",
+                    "layer": "FLOW"
+                },
+                {
+                    "x": 5000,
+                    "y": 0,
+                    "label": "3",
+                    "layer": "FLOW"
+                }
+            ],
+            "entity": "PICOINJECTOR",
+            "x-span": 10000,
+            "y-span": 9050
+        },
+        {
+            "name": "pico_injector_3",
+            "id": "pico_injector_3",
+            "layers": [
+                "0"
+            ],
+            "params": {
+                "height": 300,
+                "injectorWidth": 1000,
+                "width": 10000,
+                "injectorLength": 5000,
+                "dropletWidth": 100,
+                "nozzleWidth": 50,
+                "nozzleLength": 500,
+                "electrodeDistance": 500,
+                "electrodeWidth": 800,
+                "electrodeLength": 3000,
+                "componentSpacing": 1000.0,
+                "rotation": 0.0
+            },
+            "ports": [
+                {
+                    "x": 0,
+                    "y": 5550,
+                    "label": "1",
+                    "layer": "FLOW"
+                },
+                {
+                    "x": 10000,
+                    "y": 5550,
+                    "label": "2",
+                    "layer": "FLOW"
+                },
+                {
+                    "x": 5000,
+                    "y": 0,
+                    "label": "3",
+                    "layer": "FLOW"
+                }
+            ],
+            "entity": "PICOINJECTOR",
+            "x-span": 10000,
+            "y-span": 9050
+        },
+        {
+            "name": "port_injector1",
+            "id": "port_injector1",
+            "layers": [
+                "0"
+            ],
+            "params": {
+                "portRadius": 2000,
+                "componentSpacing": 1000.0,
+                "height": 1100.0
+            },
+            "ports": [
+                {
+                    "x": 2000,
+                    "y": 2000,
+                    "label": "1",
+                    "layer": "FLOW"
+                }
+            ],
+            "entity": "PORT",
+            "x-span": 4000,
+            "y-span": 4000
+        },
+        {
+            "name": "port_injector2",
+            "id": "port_injector2",
+            "layers": [
+                "0"
+            ],
+            "params": {
+                "portRadius": 2000,
+                "componentSpacing": 1000.0,
+                "height": 1100.0
+            },
+            "ports": [
+                {
+                    "x": 2000,
+                    "y": 2000,
+                    "label": "1",
+                    "layer": "FLOW"
+                }
+            ],
+            "entity": "PORT",
+            "x-span": 4000,
+            "y-span": 4000
+        },
+        {
+            "name": "port_injector3",
+            "id": "port_injector3",
+            "layers": [
+                "0"
+            ],
+            "params": {
+                "portRadius": 2000,
+                "componentSpacing": 1000.0,
+                "height": 1100.0
+            },
+            "ports": [
+                {
+                    "x": 2000,
+                    "y": 2000,
+                    "label": "1",
+                    "layer": "FLOW"
+                }
+            ],
+            "entity": "PORT",
+            "x-span": 4000,
+            "y-span": 4000
+        },
+        {
+            "name": "mixer_1",
+            "id": "mixer_1",
+            "layers": [
+                "0"
+            ],
+            "params": {
+                "bendSpacing": 600,
+                "numberOfBends": 5,
+                "channelWidth": 300,
+                "bendLength": 2000,
+                "height": 300,
+                "componentSpacing": 1000.0,
+                "rotation": 0.0
+            },
+            "ports": [
+                {
+                    "x": 1300,
+                    "y": 0,
+                    "label": "1",
+                    "layer": "FLOW"
+                },
+                {
+                    "x": 1300,
+                    "y": 9300,
+                    "label": "2",
+                    "layer": "FLOW"
+                }
+            ],
+            "entity": "MIXER",
+            "x-span": 2600,
+            "y-span": 9300
+        },
+        {
+            "name": "droplet_sorter_1",
+            "id": "droplet_sorter_1",
+            "layers": [
+                "0"
+            ],
+            "params": {
+                "height": 300,
+                "inletWidth": 300,
+                "inletLength": 4000,
+                "electrodeDistance": 1000,
+                "electrodeWidth": 700,
+                "electrodeLength": 5000,
+                "outletWidth": 300,
+                "angle": 45,
+                "wasteWidth": 600,
+                "outputLength": 4000,
+                "keepWidth": 600,
+                "pressureWidth": 1000,
+                "numberofDistributors": 5,
+                "channelDepth": 300,
+                "electrodeDepth": 300,
+                "pressureDepth": 200,
+                "componentSpacing": 1000.0,
+                "rotation": 0.0,
+                "pressureSpacing": 1500.0
+            },
+            "ports": [
+                {
+                    "x": 0,
+                    "y": 5834,
+                    "label": "1",
+                    "layer": "FLOW"
+                },
+                {
+                    "x": 21750,
+                    "y": 346,
+                    "label": "2",
+                    "layer": "FLOW"
+                },
+                {
+                    "x": 21750,
+                    "y": 11322,
+                    "label": "3",
+                    "layer": "FLOW"
+                }
+            ],
+            "entity": "DROPLET SORTER",
+            "x-span": 21750,
+            "y-span": 12413
+        },
+        {
+            "name": "droplet_sorter_2",
+            "id": "droplet_sorter_2",
+            "layers": [
+                "0"
+            ],
+            "params": {
+                "height": 300,
+                "inletWidth": 300,
+                "inletLength": 4000,
+                "electrodeDistance": 1000,
+                "electrodeWidth": 700,
+                "electrodeLength": 5000,
+                "outletWidth": 300,
+                "angle": 45,
+                "wasteWidth": 600,
+                "outputLength": 4000,
+                "keepWidth": 600,
+                "pressureWidth": 1000,
+                "numberofDistributors": 5,
+                "channelDepth": 300,
+                "electrodeDepth": 300,
+                "pressureDepth": 200,
+                "componentSpacing": 1000.0,
+                "rotation": 0.0,
+                "pressureSpacing": 1500.0
+            },
+            "ports": [
+                {
+                    "x": 0,
+                    "y": 5834,
+                    "label": "1",
+                    "layer": "FLOW"
+                },
+                {
+                    "x": 21750,
+                    "y": 346,
+                    "label": "2",
+                    "layer": "FLOW"
+                },
+                {
+                    "x": 21750,
+                    "y": 11322,
+                    "label": "3",
+                    "layer": "FLOW"
+                }
+            ],
+            "entity": "DROPLET SORTER",
+            "x-span": 21750,
+            "y-span": 12413
+        },
+        {
+            "name": "port_out1",
+            "id": "port_out1",
+            "layers": [
+                "0"
+            ],
+            "params": {
+                "portRadius": 2000,
+                "componentSpacing": 1000.0,
+                "height": 1100.0
+            },
+            "ports": [
+                {
+                    "x": 2000,
+                    "y": 2000,
+                    "label": "1",
+                    "layer": "FLOW"
+                }
+            ],
+            "entity": "PORT",
+            "x-span": 4000,
+            "y-span": 4000
+        },
+        {
+            "name": "port_out2",
+            "id": "port_out2",
+            "layers": [
+                "0"
+            ],
+            "params": {
+                "portRadius": 2000,
+                "componentSpacing": 1000.0,
+                "height": 1100.0
+            },
+            "ports": [
+                {
+                    "x": 2000,
+                    "y": 2000,
+                    "label": "1",
+                    "layer": "FLOW"
+                }
+            ],
+            "entity": "PORT",
+            "x-span": 4000,
+            "y-span": 4000
+        },
+        {
+            "name": "port_out3",
+            "id": "port_out3",
+            "layers": [
+                "0"
+            ],
+            "params": {
+                "portRadius": 2000,
+                "componentSpacing": 1000.0,
+                "height": 1100.0
+            },
+            "ports": [
+                {
+                    "x": 2000,
+                    "y": 2000,
+                    "label": "1",
+                    "layer": "FLOW"
+                }
+            ],
+            "entity": "PORT",
+            "x-span": 4000,
+            "y-span": 4000
+        }
+    ],
+    "connections": [
+        {
+            "sinks": [
+                {
+                    "component": "nozzle_droplet_generator_1",
+                    "port": "1"
+                }
+            ],
+            "name": "connection_1",
+            "id": "connection_1",
+            "source": {
+                "component": "port_in1",
+                "port": "1"
+            },
+            "params": {
+                "channelWidth": 300,
+                "connectionSpacing": 1000
+            },
+            "layer": "0",
+            "paths": []
+        },
+        {
+            "sinks": [
+                {
+                    "component": "nozzle_droplet_generator_1",
+                    "port": "1"
+                }
+            ],
+            "name": "connection_2",
+            "id": "connection_2",
+            "source": {
+                "component": "port_in2",
+                "port": "1"
+            },
+            "params": {
+                "channelWidth": 300,
+                "connectionSpacing": 1000
+            },
+            "layer": "0",
+            "paths": []
+        },
+        {
+            "sinks": [
+                {
+                    "component": "nozzle_droplet_generator_1",
+                    "port": "1"
+                }
+            ],
+            "name": "connection_3",
+            "id": "connection_3",
+            "source": {
+                "component": "port_in3",
+                "port": "1"
+            },
+            "params": {
+                "channelWidth": 300,
+                "connectionSpacing": 1000
+            },
+            "layer": "0",
+            "paths": []
+        },
+        {
+            "sinks": [
+                {
+                    "component": "nozzle_droplet_generator_1",
+                    "port": "2"
+                }
+            ],
+            "name": "connection_4",
+            "id": "connection_4",
+            "source": {
+                "component": "port_oil1",
+                "port": "1"
+            },
+            "params": {
+                "channelWidth": 300,
+                "connectionSpacing": 1000
+            },
+            "layer": "0",
+            "paths": []
+        },
+        {
+            "sinks": [
+                {
+                    "component": "nozzle_droplet_generator_1",
+                    "port": "4"
+                }
+            ],
+            "name": "connection_5",
+            "id": "connection_5",
+            "source": {
+                "component": "port_oil2",
+                "port": "1"
+            },
+            "params": {
+                "channelWidth": 300,
+                "connectionSpacing": 1000
+            },
+            "layer": "0",
+            "paths": []
+        },
+        {
+            "sinks": [
+                {
+                    "component": "pico_injector_1",
+                    "port": "1"
+                }
+            ],
+            "name": "connection_6",
+            "id": "connection_6",
+            "source": {
+                "component": "nozzle_droplet_generator_1",
+                "port": "3"
+            },
+            "params": {
+                "channelWidth": 300,
+                "connectionSpacing": 1000
+            },
+            "layer": "0",
+            "paths": []
+        },
+        {
+            "sinks": [
+                {
+                    "component": "pico_injector_2",
+                    "port": "1"
+                }
+            ],
+            "name": "connection_7",
+            "id": "connection_7",
+            "source": {
+                "component": "pico_injector_1",
+                "port": "3"
+            },
+            "params": {
+                "channelWidth": 300,
+                "connectionSpacing": 1000
+            },
+            "layer": "0",
+            "paths": []
+        },
+        {
+            "sinks": [
+                {
+                    "component": "pico_injector_3",
+                    "port": "1"
+                }
+            ],
+            "name": "connection_8",
+            "id": "connection_8",
+            "source": {
+                "component": "pico_injector_2",
+                "port": "3"
+            },
+            "params": {
+                "channelWidth": 300,
+                "connectionSpacing": 1000
+            },
+            "layer": "0",
+            "paths": []
+        },
+        {
+            "sinks": [
+                {
+                    "component": "pico_injector_1",
+                    "port": "2"
+                }
+            ],
+            "name": "connection_9",
+            "id": "connection_9",
+            "source": {
+                "component": "port_injector1",
+                "port": "1"
+            },
+            "params": {
+                "channelWidth": 300,
+                "connectionSpacing": 1000
+            },
+            "layer": "0",
+            "paths": []
+        },
+        {
+            "sinks": [
+                {
+                    "component": "pico_injector_2",
+                    "port": "2"
+                }
+            ],
+            "name": "connection_10",
+            "id": "connection_10",
+            "source": {
+                "component": "port_injector2",
+                "port": "1"
+            },
+            "params": {
+                "channelWidth": 300,
+                "connectionSpacing": 1000
+            },
+            "layer": "0",
+            "paths": []
+        },
+        {
+            "sinks": [
+                {
+                    "component": "pico_injector_3",
+                    "port": "2"
+                }
+            ],
+            "name": "connection_11",
+            "id": "connection_11",
+            "source": {
+                "component": "port_injector3",
+                "port": "1"
+            },
+            "params": {
+                "channelWidth": 300,
+                "connectionSpacing": 1000
+            },
+            "layer": "0",
+            "paths": []
+        },
+        {
+            "sinks": [
+                {
+                    "component": "mixer_1",
+                    "port": "1"
+                }
+            ],
+            "name": "connection_12",
+            "id": "connection_12",
+            "source": {
+                "component": "pico_injector_3",
+                "port": "3"
+            },
+            "params": {
+                "channelWidth": 300,
+                "connectionSpacing": 1000
+            },
+            "layer": "0",
+            "paths": []
+        },
+        {
+            "sinks": [
+                {
+                    "component": "droplet_sorter_1",
+                    "port": "1"
+                }
+            ],
+            "name": "connection_13",
+            "id": "connection_13",
+            "source": {
+                "component": "mixer_1",
+                "port": "3"
+            },
+            "params": {
+                "channelWidth": 300,
+                "connectionSpacing": 1000
+            },
+            "layer": "0",
+            "paths": []
+        },
+        {
+            "sinks": [
+                {
+                    "component": "port_out1",
+                    "port": "1"
+                }
+            ],
+            "name": "connection_14",
+            "id": "connection_14",
+            "source": {
+                "component": "droplet_sorter_1",
+                "port": "3"
+            },
+            "params": {
+                "channelWidth": 300,
+                "connectionSpacing": 1000
+            },
+            "layer": "0",
+            "paths": []
+        },
+        {
+            "sinks": [
+                {
+                    "component": "port_out2",
+                    "port": "1"
+                }
+            ],
+            "name": "connection_15",
+            "id": "connection_15",
+            "source": {
+                "component": "droplet_sorter_2",
+                "port": "3"
+            },
+            "params": {
+                "channelWidth": 300,
+                "connectionSpacing": 1000
+            },
+            "layer": "0",
+            "paths": []
+        },
+        {
+            "sinks": [
+                {
+                    "component": "droplet_sorter_2",
+                    "port": "1"
+                }
+            ],
+            "name": "connection_16",
+            "id": "connection_16",
+            "source": {
+                "component": "droplet_sorter_1",
+                "port": "2"
+            },
+            "params": {
+                "channelWidth": 300,
+                "connectionSpacing": 1000
+            },
+            "layer": "0",
+            "paths": []
+        }
+    ],
+    "params": {
+        "xspan": 76200,
+        "yspan": 76200
+    },
+    "layers": [
+        {
+            "name": "FLOW_0",
+            "id": "0",
+            "type": "FLOW",
+            "params": {},
+            "group": "0"
+        }
+    ],
+    "version": "1.2",
+    "valveMap": {},
+    "valveTypeMap": {}
+}
