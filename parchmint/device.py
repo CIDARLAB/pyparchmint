@@ -59,7 +59,7 @@ class Device:
         """Creates a new device object
 
         Args:
-            json (dict, optional): json dict after json.loads(). Defaults to None.
+            name (str): Name of the device. Defaults to "".
         """
         self.name: str = name
         self.components: List[Component] = []
