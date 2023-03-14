@@ -3,14 +3,9 @@ on:
   release:
     types:
       - created
-  workflows_run:
-    workflows: [Push]
-    types:
-      - completed
 
 jobs:
   docs:
-    needs: [test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
