@@ -37,6 +37,7 @@ class Component:
         Raises:
             Exception: [description]
         """
+
         self.name: str = name
         self.ID: str = ID
         self.params = params
@@ -45,8 +46,8 @@ class Component:
         self.yspan: int = yspan
         self._ports: List[Port] = ports_list if ports_list else []
         self.layers: List[Layer] = layers if layers else []
-        self.xpos = xpos
-        self.ypos = ypos
+        self.xpos = params.data["position"][0]
+        self.ypos = params.data["position"][1]
 
     @property
     def ports(self) -> List[Port]:
@@ -98,7 +99,9 @@ class Component:
         Args:
             value (int): x coordianate of the object
         """
+
         if self.params.exists("position"):
+
             pos = self.params.get_param("position")
             pos[0] = value
             self.params.set_param("position", pos)
