@@ -136,9 +136,9 @@ class ConnectionPath:
             dict: dictionary that can be used in json.dumps()
         """
         return {
-            "source": None
-            if self.__source is None
-            else self.__source.to_parchmint_v1(),
+            "source": (
+                None if self.__source is None else self.__source.to_parchmint_v1()
+            ),
             "sink": None if self.__sink is None else self.__sink.to_parchmint_v1(),
             "wayPoints": [list(wp) for wp in self.__waypoints],
             "features": [feat.ID for feat in self.__features],
@@ -268,9 +268,9 @@ class Connection:
             "sinks": [s.to_parchmint_v1() for s in self.sinks],
             "name": self.name,
             "id": self.ID,
-            "source": self.source.to_parchmint_v1()
-            if self.source is not None
-            else None,
+            "source": (
+                self.source.to_parchmint_v1() if self.source is not None else None
+            ),
             "params": self.params.to_parchmint_v1(),
             "layer": self.layer.ID if self.layer is not None else None,
         }
@@ -359,9 +359,11 @@ class Connection:
             entity=json_data["entity"],
             params=Params(json_data["params"]),
             source=Target(json_data=json_data["source"]),
-            sinks=[Target(json_data=sink) for sink in json_data["sinks"]]
-            if "sinks" in json_data.keys()
-            else [],
+            sinks=(
+                [Target(json_data=sink) for sink in json_data["sinks"]]
+                if "sinks" in json_data.keys()
+                else []
+            ),
             paths=[
                 ConnectionPath.from_parchmint_v1_2(path, device_ref)
                 for path in json_data["paths"]
