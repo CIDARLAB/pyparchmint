@@ -857,9 +857,11 @@ class Device:
                 device_ref.map_valve(
                     device_ref.get_component(componentid),
                     device_ref.get_connection(connectionid),
-                    get_valve_type(valve_type)
-                    if valve_type is not None
-                    else ValveType.NORMALLY_OPEN,
+                    (
+                        get_valve_type(valve_type)
+                        if valve_type is not None
+                        else ValveType.NORMALLY_OPEN
+                    ),
                 )
 
         return device_ref
