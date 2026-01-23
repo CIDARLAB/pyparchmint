@@ -73,8 +73,8 @@ class Device:
         self.graph = nx.MultiDiGraph()
 
         # Stores the valve / connection mappings
-        self._valve_map: Dict[Component, Connection] = {}
-        self._valve_type_map: Dict[Component, ValveType] = {}
+        self._valve_map: Dict[str, Connection] = {}
+        self._valve_type_map: Dict[str, ValveType] = {}
 
     @property
     def xspan(self) -> Optional[int]:
@@ -129,7 +129,9 @@ class Device:
         Returns:
             List[Component]: List of valve components in the device
         """
-        return list(self._valve_map.keys())
+        # Retrieve the list of
+        valve_ids = list(self._valve_map.keys())
+        return [self.get_component(valve_id) for valve_id in valve_ids]
 
     def map_valve(
         self,
@@ -145,17 +147,8 @@ class Device:
             type_info (Optional[ValveType]): Type informaiton of the valve
 
         """
-        self._valve_map[valve] = connection
-        if type_info is not None:
-            self.update_valve_type(valve, type_info)
-
-    def get_valves(self) -> List[Component]:
-        """Returns the list of valves in the device
-
-        Returns:
-            List[Component]: Valve Component Objects
-        """
-        return list(self._valve_map.keys())
+        self._valve_map[valve.ID] = connection
+        self.update_valve_type(valve, type_info)
 
     def get_valve_connection(self, valve: Component) -> Connection:
         """Returns the connection associated with the valve object
@@ -166,7 +159,7 @@ class Device:
         Returns:
             Connection: connection object on which the valve is placed
         """
-        return self._valve_map[valve]
+        return self._valve_map[valve.ID]
 
     def update_valve_type(self, valve: Component, type_info: ValveType) -> None:
         """Updates the type of the valve to normally closed  or normally open
@@ -178,8 +171,8 @@ class Device:
         Raises:
             KeyError: Raises the error if the valve object is not mapped as a valve in the device
         """
-        if valve in self._valve_map:
-            self._valve_type_map[valve] = type_info
+        if valve.ID in self._valve_map.keys():
+            self._valve_type_map[valve.ID] = type_info
         else:
             raise KeyError(
                 "Could not update type for valve: {} since it is not found in the valveMap of they device".format(
@@ -195,8 +188,8 @@ class Device:
         """
         for valve in self.valves:
             if valve.ID == valve_id:
-                self._valve_map.pop(valve)
-                self._valve_type_map.pop(valve)
+                self._valve_map.pop(valve.ID)
+                self._valve_type_map.pop(valve.ID)
                 break
 
         self.remove_component(valve_id)
@@ -621,7 +614,7 @@ class Device:
         Returns:
             Dict: dictionary that can be used in json.dumps()
         """
-        self.params.set_param("x-span", self.xspan)
+        self.params.set_param("length", self.xspan)
         self.params.set_param("y-span", self.yspan)
         ret = {}
         ret["name"] = self.name
@@ -629,7 +622,6 @@ class Device:
         ret["connections"] = [c.to_parchmint_v1_2() for c in self.connections]
         ret["params"] = self.params.to_parchmint_v1()
         ret["layers"] = [layer.to_parchmint_v1() for layer in self.layers]
-
         ret["features"] = [feature.to_parchmint_v1_2() for feature in self.features]
 
         # Modify the version of the parchmint
@@ -637,14 +629,17 @@ class Device:
 
         # Add the valvemap information
         valve_objects = []
-        for valve, connection in self._valve_map.items():
+        for valve_id, connection in self._valve_map.items():
+            if valve_id not in self._valve_type_map:
+                raise Exception(f"Could not find type info for valve id: {valve_id}")
             valve_object = {
-                "componentid": valve.ID,
+                "componentid": valve_id,
                 "connectionid": connection.ID,
-                "type": str(self._valve_type_map[valve]),
+                "type": str(self._valve_type_map[valve_id]),
             }
             valve_objects.append(valve_object)
         ret["valves"] = valve_objects
+        ret["isPnR"] = False
 
         return ret
 

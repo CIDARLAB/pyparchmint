@@ -286,6 +286,19 @@ class Connection:
             dict: dictionary that can be used in json.dumps()
         """
 
+        # Set the position parameter if it doesnt exist, set it to -1, -1
+        if not self.params.exists("start"):
+            self.params.set_param("start", ["Point", -1, -1])
+
+        if not self.params.exists("end"):
+            self.params.set_param("end", [-1, -1])
+
+        if not self.params.exists("wayPoints"):
+            self.params.set_param("wayPoints", [[-1, -1]])
+
+        if not self.params.exists("segments"):
+            self.params.set_param("segments", [[[-1, -1], [-1, -1]]])
+
         ret = {
             "sinks": [s.to_parchmint_v1() for s in self.sinks],
             "name": self.name,
