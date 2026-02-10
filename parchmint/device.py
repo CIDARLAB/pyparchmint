@@ -75,6 +75,8 @@ class Device:
         # Stores the valve / connection mappings
         self._valve_map: Dict[str, Connection] = {}
         self._valve_type_map: Dict[str, ValveType] = {}
+        # Optional: valve ID -> control-layer port ID (e.g. Cport_0) for JSON/MINT
+        self._valve_control_port_map: Dict[str, str] = {}
 
     @property
     def xspan(self) -> Optional[int]:
@@ -149,6 +151,10 @@ class Device:
         """
         self._valve_map[valve.ID] = connection
         self.update_valve_type(valve, type_info)
+
+    def set_valve_control_port(self, valve_id: str, control_port_id: str) -> None:
+        """Associate a control-layer port (e.g. Cport_0) with a valve for export."""
+        self._valve_control_port_map[valve_id] = control_port_id
 
     def get_valve_connection(self, valve: Component) -> Connection:
         """Returns the connection associated with the valve object
@@ -637,6 +643,8 @@ class Device:
                 "connectionid": connection.ID,
                 "type": str(self._valve_type_map[valve_id]),
             }
+            if valve_id in self._valve_control_port_map:
+                valve_object["controlportid"] = self._valve_control_port_map[valve_id]
             valve_objects.append(valve_object)
         ret["valves"] = valve_objects
         ret["isPnR"] = False
@@ -852,7 +860,7 @@ class Device:
             for valve_object in valve_objects:
                 componentid = valve_object["componentid"]
                 connectionid = valve_object["connectionid"]
-                # Note - Sets it to default normally open if nothign is specified
+                # Note - Sets it to default normally open if nothing is specified
                 valve_type = valve_object["type"] if "type" in valve_object else None
                 device_ref.map_valve(
                     device_ref.get_component(componentid),
@@ -861,5 +869,7 @@ class Device:
                     if valve_type is not None
                     else ValveType.NORMALLY_OPEN,
                 )
+                if "controlportid" in valve_object:
+                    device_ref.set_valve_control_port(componentid, valve_object["controlportid"])
 
         return device_ref
