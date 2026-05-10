@@ -245,7 +245,9 @@ class Component:
         return (x, y)
 
     def __hash__(self) -> int:
-        return hash(repr(self))
+        # Must stay stable whenever __dict__ mutates — orientation/mirror constraints
+        # use Component instances as dict keys after components are resized.
+        return hash(self.ID)
 
     def rotate_point(
         self, xpos: float, ypos: float, angle: float
