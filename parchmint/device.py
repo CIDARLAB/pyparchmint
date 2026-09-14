@@ -256,12 +256,12 @@ class Device:
             Exception: if the passed object is not a Component instance
         """
         if isinstance(component, Component):
-            # Check if Component Exists, if it does ignore it
             if self.component_exists(component.ID):
                 print(
                     "Component {} already present in device, "
                     "hence skipping the component".format(component.name)
                 )
+                return
             self.components.append(component)
             self.graph.add_node(component.ID)
         else:
